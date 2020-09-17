@@ -8,7 +8,7 @@ import argparse
 PROGRAM_DESCRIPTION = "Learns eight queens puzzle through genetic algorithm"
 DEFAULTS = {
     'chess_size': 8,
-    'pop_size': 50,
+    'pop_size': 100,
     'max_gen': 50,
     'crossover_prob': 0.9,
     'mutation_prob': 0.4,
