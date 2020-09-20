@@ -12,6 +12,7 @@ DEFAULTS = {
     'pop_size': 100,
     'max_gen': 50,
     'num_solutions': 5,
+    'breed_size': 2,
     'crossover_prob': 0.9,
     'mutation_prob': 0.4,
 }
@@ -40,10 +41,11 @@ class CheckPositiveIntegerConstraintAction(Action):
 
 
 def main(chess_size: int, population_size: int, max_generations: int, 
-        num_solutions: int, crossover_prob: float, mutation_prob: float):
-    print('Hello, world: {} - {} - {} - {} - {} - {}'
+        num_solutions: int, breed_size: int, crossover_prob: float,
+        mutation_prob: float):
+    print('Hello, world: {} - {} - {} - {} - {} - {} - {}'
         .format(chess_size, population_size, max_generations, num_solutions,
-            crossover_prob, mutation_prob))
+            breed_size, crossover_prob, mutation_prob))
 
 if __name__ == '__main__':
     parser = ArgumentParser(description=PROGRAM_DESCRIPTION)
@@ -72,6 +74,12 @@ if __name__ == '__main__':
         action=CheckPositiveIntegerConstraintAction, type=int,
         default=DEFAULTS['num_solutions'])
 
+    parser.add_argument('-bs', '--breed_size',
+        help="""Specify the number of children should be created in each
+            generation. (default={})""".format(DEFAULTS['breed_size']),
+        action=CheckPositiveIntegerConstraintAction, type=int,
+        default=DEFAULTS['breed_size'])
+
     parser.add_argument('-cp', '--crossover_prob', 
         help="""Specify the probability that a given individual will recombine 
             (default={})""".format(DEFAULTS['crossover_prob']),
@@ -86,4 +94,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     main(args.chess_size, args.pop_size, args.max_gen, args.num_solutions, 
-        args.crossover_prob, args.mutation_prob)
+        args.breed_size, args.crossover_prob, args.mutation_prob)
