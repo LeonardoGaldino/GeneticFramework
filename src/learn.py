@@ -4,18 +4,23 @@ This module instantiate genetic algorithm framework to find solutions for the
 eight queen problem.
 """
 from argparse import ArgumentParser, Action
+from typing import Type, Any
 
 
 PROGRAM_DESCRIPTION = "Learns eight queens puzzle through genetic algorithm"
-DEFAULTS = {
-    'chess_size': 8,
-    'pop_size': 100,
-    'max_gen': 50,
-    'num_solutions': 5,
-    'breed_size': 2,
-    'crossover_prob': 0.9,
-    'mutation_prob': 0.4,
-}
+
+
+class CLIArgumentDescription:
+
+    def __init__(self, _type: Type, default_value: Any, short_name: str, 
+        full_name: str, help_message: str, action_cls: Type[Action]):
+        self.type = _type
+        self.default_value = default_value
+        self.short_name = '-{}'.format(short_name)
+        self.full_name = '--{}'.format(full_name)
+        self.help_message = help_message.replace('\n', '').replace('\td', '') + \
+            " (default={})".format(default_value)
+        self.action_cls = action_cls
 
 
 class CheckProbabilityConstraintAction(Action):
@@ -40,58 +45,60 @@ class CheckPositiveIntegerConstraintAction(Action):
         setattr(namespace, self.dest, values)
 
 
-def main(chess_size: int, population_size: int, max_generations: int, 
-        num_solutions: int, breed_size: int, crossover_prob: float,
-        mutation_prob: float):
-    print('Hello, world: {} - {} - {} - {} - {} - {} - {}'
-        .format(chess_size, population_size, max_generations, num_solutions,
-            breed_size, crossover_prob, mutation_prob))
+ARGS = [
+    CLIArgumentDescription(_type=int, default_value=8, 
+        short_name='cs', full_name='chess_size', 
+        help_message="""Specify the size of the chess board in which the puzzle 
+            takes place.""", action_cls=CheckPositiveIntegerConstraintAction),
+
+    CLIArgumentDescription(_type=int, default_value=100, 
+        short_name='ps', full_name='population_size', 
+        help_message="""Specify the size of the population that the algorithm 
+            will evolve to find solutions.""",
+        action_cls=CheckPositiveIntegerConstraintAction),
+        
+    CLIArgumentDescription(_type=int, default_value=50, 
+        short_name='mg', full_name='max_generations', 
+        help_message="""Specify the maximum number of generations the 
+            algorithm should evolve to find solutions.""",
+        action_cls=CheckPositiveIntegerConstraintAction),
+
+    CLIArgumentDescription(_type=int, default_value=5, 
+        short_name='ns', full_name='number_solutions', 
+        help_message="""Specify the number of solutions the algorithm should 
+            find.""",
+        action_cls=CheckPositiveIntegerConstraintAction),
+
+    CLIArgumentDescription(_type=int, default_value=2, 
+        short_name='bs', full_name='breed_size', 
+        help_message="""Specify the number of children that should be created 
+            in each generation.""",
+        action_cls=CheckPositiveIntegerConstraintAction),
+
+    CLIArgumentDescription(_type=float, default_value=0.4, 
+        short_name='mp', full_name='mutation_probability', 
+        help_message="""Specify the probability that a mutation will occur 
+            when new individual is generated.""",
+        action_cls=CheckProbabilityConstraintAction),
+
+    CLIArgumentDescription(_type=float, default_value=0.9, 
+        short_name='cp', full_name='crossover_probability', 
+        help_message="""Specify the probability that two given individuals 
+            will recombine.""",
+        action_cls=CheckProbabilityConstraintAction),
+]
+
+
+def main(**kwargs):
+    print('CLI Arguments: {}'.format(kwargs))
 
 if __name__ == '__main__':
     parser = ArgumentParser(description=PROGRAM_DESCRIPTION)
 
-    parser.add_argument('-cs', '--chess_size', 
-        help="""Specify the size of the chess board in which the puzzle takes 
-            place (default={})""".format(DEFAULTS['chess_size']),
-        action=CheckPositiveIntegerConstraintAction, type=int,
-        default=DEFAULTS['chess_size'])
-
-    parser.add_argument('-ps', '--pop_size', 
-        help="""Specify the size of the population that the algorithm will 
-            evolve to find solutions (default={})""".format(DEFAULTS['pop_size']),
-        action=CheckPositiveIntegerConstraintAction, type=int,
-        default=DEFAULTS['pop_size'])
-
-    parser.add_argument('-mg', '--max_gen',
-        help="""Specify the maximum number of generations the algorithm should 
-            evolve to find solutions (default={})""".format(DEFAULTS['max_gen']),
-        action=CheckPositiveIntegerConstraintAction, type=int,
-        default=DEFAULTS['max_gen'])
-
-    parser.add_argument('-ns', '--num_solutions',
-        help="""Specify the number of solutions the algorithm should find. 
-            (default={})""".format(DEFAULTS['num_solutions']),
-        action=CheckPositiveIntegerConstraintAction, type=int,
-        default=DEFAULTS['num_solutions'])
-
-    parser.add_argument('-bs', '--breed_size',
-        help="""Specify the number of children should be created in each
-            generation. (default={})""".format(DEFAULTS['breed_size']),
-        action=CheckPositiveIntegerConstraintAction, type=int,
-        default=DEFAULTS['breed_size'])
-
-    parser.add_argument('-cp', '--crossover_prob', 
-        help="""Specify the probability that a given individual will recombine 
-            (default={})""".format(DEFAULTS['crossover_prob']),
-        action=CheckProbabilityConstraintAction, type=float, 
-        default=DEFAULTS['crossover_prob'])
-
-    parser.add_argument('-mp', '--mutation_prob',
-        help="""Specify the probability that a mutation will occur in a new  
-            individual (default={})""".format(DEFAULTS['mutation_prob']),
-        action=CheckProbabilityConstraintAction, type=float, 
-        default=DEFAULTS['mutation_prob'])
-
+    for arg in ARGS:
+        parser.add_argument(arg.short_name, arg.full_name, 
+            help=arg.help_message, action=arg.action_cls, type=arg.type, 
+            default=arg.default_value)
     args = parser.parse_args()
-    main(args.chess_size, args.pop_size, args.max_gen, args.num_solutions, 
-        args.breed_size, args.crossover_prob, args.mutation_prob)
+
+    main(**args.__dict__)
