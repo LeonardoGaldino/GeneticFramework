@@ -1,6 +1,7 @@
 """Module containing core classes for genetic algorithms."""
 from abc import ABC, abstractmethod
-from typing import Any, Type, List
+from typing import Any, Type, List, Tuple
+from functools import lru_cache
 
 
 class Gene(ABC):
@@ -140,11 +141,14 @@ class Individual:
         self.gene = gene
         return self
 
+    # Caches fitness computation to avoid wasting CPU time
+    @lru_cache
     def fitness(self) -> float:
         return self.fitness_computer_cls.fitness(self.gene)
 
     def self_mutate(self) -> 'Individual':
         self.gene_mutator_cls.mutate_inplace(self.gene)
+        self.fitness.cache_clear()
         return self
 
     def recombine(self, other: 'Individual') -> List['Individual']:
@@ -157,3 +161,86 @@ class Individual:
 
     def __str__(self) -> str:
         return self.gene.__str__()
+
+
+class MatingSelector(ABC):
+    
+    @staticmethod
+    @abstractmethod
+    def select_couples(List[Individual]) -> List[Tuple(Individual)]:
+        """Pairs individuals to mate and produce children. Subclass should
+        implement this logic of selecting individual to mate."""
+        pass
+
+
+class SurvivorSelector(ABC):
+    """Class responsible for selecting survivors for the following
+    generation. Subclasses should implement this logic."""
+
+
+    @staticmethod
+    @abstractmethod
+    def select_survivors(population_size: int, parents: List[Individual],
+        breed: List[Individual]) -> List[Individual]:
+        """Implements logic of choosing which individuals will survive to next
+        generation."""
+        pass
+
+
+class Population:
+
+    def __init__(self, population: List[Individual], crossover_prob: float,
+            mutation_prob: float, breed_size: int, 
+            mating_selector_cls: Type[MatingSelector], 
+            survivor_selector_cls: Type[SurvivorSelector]):
+        self.population = population
+        self.crossover_prob = crossover_prob
+        self.mutation_prob = mutation_prob
+        self.breed_size = breed_size
+        self.mating_selector_cls = mating_selector_cls
+        self.survivor_selector_cls = survivor_selector_cls
+
+    def _offspring(self) -> List[Individual]:
+        # Use mating_selector to choose parents and recombine them
+        pass 
+
+    def _kill_population(self):
+        # Use survivor_selector to choose parents and recombine them
+        pass
+
+    def next_generation(self):
+        """ Update the object with new individuals: use internal methods
+        _offspring and _kill_population"""
+        pass
+
+
+"""
+Responsible for best individuals selection logic on a running experiment
+"""
+class IndividualSelector(ABC):
+    
+    @property
+    @abstractmethod
+    def best_individuals(self) -> List[Individual]:
+        """Returns the best individuals selected and stored so far."""
+        pass
+
+    @abstractmethod
+    def analyze_individuals(self, population: Population):
+        """Updates (if necessary) the list of best individuals with 
+        individuals from the specified population."""
+        pass
+
+
+class Experiment:
+    
+    def __init__(self, population_size: int, max_generations: int, 
+        crossover_prob: float, mutation_prob: float, num_solutions: int, 
+        breed_size: int, gene_cls: Type[Gene], 
+        fitness_computer_cls: Type[FitnessComputer], 
+        mutator_cls: Type[GeneMutator],
+        recombiner_cls: Type[GeneRecombiner],
+        mating_selector_cls: Type[MatingSelector],
+        survivor_selector_cls: Type[SurvivorSelector],
+        individual_selector_cls: Type[IndividualSelector]):
+        pass
