@@ -105,10 +105,9 @@ class GeneRecombiner(GeneTypeSpecifier, ABC):
     
     @classmethod
     @abstractmethod
-    def recombine(cls: Type['GeneRecombiner'], gene1: Gene, gene2: Gene) -> List[Gene]:
-        """Recombines two genes into a list (possible singleton) of new genes.
-        Implementations should use @validate_gene_args to ensure gene arg has 
-        correct type.
+    def recombine(cls: Type['GeneRecombiner'], gene1: Gene, gene2: Gene) -> Gene:
+        """Recombines two genes into a new genes. Implementations should use 
+        @validate_gene_args to ensure gene arg has correct type.
         """
         pass
 
