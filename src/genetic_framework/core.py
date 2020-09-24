@@ -21,7 +21,7 @@ class Gene(ABC):
 
     @data.setter
     @abstractmethod
-    def data(self, new_data: Any) -> Any:
+    def data(self, new_data: Any):
         """Set data property (contains the gene's data). Type should not be specified."""
         pass
     
