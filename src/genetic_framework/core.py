@@ -146,15 +146,20 @@ class Individual:
         return self.fitness_computer_cls.fitness(self.gene)
 
     def self_mutate(self) -> 'Individual':
+        """Use gene_mutator to change this individual gene and return itself"""
         self.gene_mutator_cls.mutate_inplace(self.gene)
         self.fitness.cache_clear()
         return self
 
-    def recombine(self, other: 'Individual') -> List['Individual']:
-        return list(map(lambda gene: self.new_individual(gene), 
-            self.gene_recombiner_cls.recombine(self.gene, other.gene)))
-
+    def recombine(self, other: 'Individual') -> 'Individual':
+        """Use gene_recombiner to combine this individual with other argument
+        to generate a new individual"""
+        new_gene = self.gene_recombiner_cls.recombine(self.gene, other.gene)
+        return self.new_individual(new_gene)
+            
     def new_individual(self, gene: Gene) -> 'Individual':
+        """Returns a new individual with the given gene using the same fitness
+        computer, gene_mutator, gene_recombiner of this individual"""
         return Individual(self.gene_cls, self.fitness_computer_cls, 
             self.gene_mutator_cls, self.gene_recombiner_cls).set_gene(gene)
 
@@ -200,17 +205,25 @@ class Population:
         self.survivor_selector_cls = survivor_selector_cls
 
     def _offspring(self) -> List[Individual]:
-        # Use mating_selector to choose parents and recombine them
-        pass 
-
-    def _kill_population(self):
-        # Use survivor_selector to choose parents and recombine them
-        pass
+        """Internal method used to create a list of new individuals (breed)
+        from the current generation."""
+        parents = self.mating_selector_cls.select_couples(self.population)
+        breed = [[p1.recombine(p2) for i in range(self.breed_size)]
+            for (p1,p2) in parents]
+        return breed
 
     def evolve(self):
-        """ Update the object with new individuals: use internal methods
-        _offspring and _kill_population"""
-        pass
+        """Method used to evolve the population into the next generation"""
+        breed = self._offspring()
+        survivors = self.survivor_selector_cls.select_survivors(len(self.population),
+            self.population, breed)
+        self.population = survivors
+        self.avg_fitness.cache_clear()
+
+    @lru_cache
+    def avg_fitness(self) -> float:
+        return sum(map(lambda individual: individual.fitness(), 
+            self.population))/len(self.population)
 
 
 """
@@ -242,4 +255,41 @@ class Experiment:
         mating_selector_cls: Type[MatingSelector],
         survivor_selector_cls: Type[SurvivorSelector],
         individual_selector_cls: Type[IndividualSelector]):
-        pass
+        self.population_size = population_size
+        self.max_generations = max_generations
+        self.crossover_prob = crossover_prob
+        self.mutation_prob = mutation_prob
+        self.num_solutions = num_solutions
+        self.breed_size = breed_size
+        self.gene_cls = gene_cls
+        self.fitness_computer_cls = fitness_computer_cls
+        self.mutator_cls = mutator_cls
+        self.recombiner_cls = recombiner_cls
+        self.mating_selector_cls = mating_selector_cls
+        self.survivor_selector_cls = survivor_selector_cls
+        self.individual_selector_cls = individual_selector_cls
+
+    def _generate_initial_individuals(self) -> List[Individual]:
+        """Internal method used to generate individuals for the first 
+        generation of the experiment"""
+        return [Individual(self.gene_cls, self.fitness_computer_cls, 
+            self.gene_mutator_cls, self.gene_recombiner_cls).initialize_gene()
+                for i in range(self.population_size)]
+
+    def run_experiment(self) -> [Individual]:
+        initial_individuals = self._generate_initial_individuals()
+        population = Population(initial_individuals, self.crossover_prob, 
+            self.mutation_prob, self.breed_size, self.mating_selector_cls,
+            self.survivor_selector_cls)
+        solution_selector = self.individual_selector_cls(self.num_solutions)
+
+        for i in range(max_generations):
+            print("Evolving Generation {}: {} average fitness..."
+                .format(i+1, population.avg_fitness()))
+            population.evolve()
+            solution_selector.update_individuals(population)
+        print("Maximum generations achieved: {} average fitness."
+            .format(population.avg_fitness()))
+
+        return solution_selector.best_individuals
+            
