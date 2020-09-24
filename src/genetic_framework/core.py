@@ -226,7 +226,7 @@ class IndividualSelector(ABC):
         pass
 
     @abstractmethod
-    def analyze_individuals(self, population: Population):
+    def update_individuals(self, population: Population):
         """Updates (if necessary) the list of best individuals with 
         individuals from the specified population."""
         pass
