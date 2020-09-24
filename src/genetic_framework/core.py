@@ -208,7 +208,7 @@ class Population:
         # Use survivor_selector to choose parents and recombine them
         pass
 
-    def next_generation(self):
+    def evolve(self):
         """ Update the object with new individuals: use internal methods
         _offspring and _kill_population"""
         pass
