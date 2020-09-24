@@ -160,7 +160,7 @@ class Individual:
             self.gene_mutator_cls, self.gene_recombiner_cls).set_gene(gene)
 
     def __str__(self) -> str:
-        return self.gene.__str__()
+        return str(self.gene)
 
 
 class MatingSelector(ABC):
