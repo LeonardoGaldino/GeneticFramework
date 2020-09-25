@@ -13,7 +13,9 @@ class BitStringFlipBitMutator(GeneMutator):
     @staticmethod
     def _mutate(gene: BitStringGene):
         chosen_bit = randint(0, 8*len(gene.data) - 1)
-        gene.flip_bit(chosen_bit)
+
+        # ^ operator is bitwise xor. It flips the specified bit.
+        gene.data[bit_index/8] ^= (1 << (bit_index % 8))
 
     @classmethod
     @validate_gene_args

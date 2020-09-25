@@ -22,13 +22,6 @@ class BitStringGene(Gene):
     @data.setter
     def data(self, new_data: Any):
         self.data = new_data
-
-    def flip_bit(self, bit_index: int):
-        if bit_index >= 8*len(self.data):
-            raise ValueError('Tried to access BitString invalid bit index ({})'
-                .format(bit_index))
-        # ^ operator is bitwise xor. It flips the specified bit.
-        self.data[bit_index/8] ^= (1 << (bit_index % 8))
     
     def __str__(self) -> str:
         return '[{}, {}, {}]'.format(*self.data)
