@@ -171,7 +171,7 @@ class MatingSelector(ABC):
     
     @staticmethod
     @abstractmethod
-    def select_couples(List[Individual]) -> List[Tuple(Individual)]:
+    def select_couples(population: List[Individual]) -> List[Tuple[Individual]]:
         """Pairs individuals to mate and produce children. Subclass should
         implement this logic of selecting individual to mate."""
         pass
