@@ -13,13 +13,15 @@ class Gene(ABC):
         This method doesn't return another instance, just modifies the current."""
         pass
 
-    @property
+    # (https://github.com/python/mypy/issues/4165)
+    @property # type:ignore
     @abstractmethod
     def data(self) -> Any:
         """Property containing the gene's data. Type should not be specified."""
         pass
 
-    @data.setter
+    # (https://github.com/python/mypy/issues/4165)
+    @data.setter # type:ignore
     @abstractmethod
     def data(self, new_data: Any):
         """Set data property (contains the gene's data). Type should not be specified."""
@@ -171,7 +173,7 @@ class MatingSelector(ABC):
     
     @staticmethod
     @abstractmethod
-    def select_couples(population: List[Individual]) -> List[Tuple[Individual]]:
+    def select_couples(population: List[Individual]) -> List[Tuple[Individual, Individual]]:
         """Pairs individuals to mate and produce children. Subclass should
         implement this logic of selecting individual to mate."""
         pass
@@ -207,9 +209,11 @@ class Population:
     def _offspring(self) -> List[Individual]:
         """Internal method used to create a list of new individuals (breed)
         from the current generation."""
-        parents = self.mating_selector_cls.select_couples(self.population)
-        breed = [[p1.recombine(p2) for i in range(self.breed_size)]
-            for (p1,p2) in parents]
+        parents: List[Tuple[Individual, Individual]] = self.mating_selector_cls\
+            .select_couples(self.population)
+        breed = [p1.recombine(p2) for i in range(self.breed_size)
+            for (p1, p2) in parents]
+
         return breed
 
     def evolve(self):
@@ -230,6 +234,10 @@ class Population:
 Responsible for best individuals selection logic on a running experiment
 """
 class IndividualSelector(ABC):
+
+    @abstractmethod
+    def __init__(self, number_solutions: int):
+        pass
     
     @property
     @abstractmethod
@@ -273,17 +281,17 @@ class Experiment:
         """Internal method used to generate individuals for the first 
         generation of the experiment"""
         return [Individual(self.gene_cls, self.fitness_computer_cls, 
-            self.gene_mutator_cls, self.gene_recombiner_cls).initialize_gene()
+            self.mutator_cls, self.recombiner_cls).initialize_gene()
                 for i in range(self.population_size)]
 
-    def run_experiment(self) -> [Individual]:
+    def run_experiment(self) -> List[Individual]:
         initial_individuals = self._generate_initial_individuals()
         population = Population(initial_individuals, self.crossover_prob, 
             self.mutation_prob, self.breed_size, self.mating_selector_cls,
             self.survivor_selector_cls)
         solution_selector = self.individual_selector_cls(self.num_solutions)
 
-        for i in range(max_generations):
+        for i in range(self.max_generations):
             print("Evolving Generation {}: {} average fitness..."
                 .format(i+1, population.avg_fitness()))
             population.evolve()
