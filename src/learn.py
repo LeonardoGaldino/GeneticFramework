@@ -13,7 +13,7 @@ PROGRAM_DESCRIPTION = "Learns eight queens puzzle through genetic algorithm"
 class CLIArgumentDescription:
 
     def __init__(self, _type: Type, default_value: Any, short_name: str, 
-        full_name: str, help_message: str, action_cls: Type[Action]):
+        full_name: str, help_message: str, action_cls: Type[Action]) -> None:
         self.type = _type
         self.default_value = default_value
         self.short_name = '-{}'.format(short_name)
@@ -26,7 +26,7 @@ class CLIArgumentDescription:
 class CheckProbabilityConstraintAction(Action):
     """Class responsible for sanitizing probability CLI inputs' range [0, 1]"""
     
-    def __call__(self, parser, namespace, values, option_string):
+    def __call__(self, parser, namespace, values, option_string = None) -> None:
         if values < 0 or values > 1.0:
             raise ValueError(
                 "{} flag has a value out of probability boundaries [0, 1.0]: {}"
@@ -37,7 +37,7 @@ class CheckProbabilityConstraintAction(Action):
 class CheckPositiveIntegerConstraintAction(Action):
     """Class responsible for sanitizing positive integers"""
     
-    def __call__(self, parser, namespace, values, option_string):
+    def __call__(self, parser, namespace, values, option_string = None) -> None:
         if values <= 0:
             raise ValueError(
                 "{} flag has non positive value which is not allowed: {}"
@@ -89,7 +89,7 @@ ARGS = [
 ]
 
 
-def main(**kwargs):
+def main(**kwargs) -> None:
     print('CLI Arguments: {}'.format(kwargs))
 
 if __name__ == '__main__':

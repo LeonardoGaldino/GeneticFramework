@@ -13,7 +13,7 @@ T = TypeVar('T')
 class Phenotype(Generic[T], ABC):
 
     @abstractmethod
-    def __init__(self, **custom_data):
+    def __init__(self, **custom_data) -> None:
         self.custom_data = custom_data
 
     # (https://github.com/python/mypy/issues/4165)
@@ -25,7 +25,7 @@ class Phenotype(Generic[T], ABC):
     # (https://github.com/python/mypy/issues/4165)
     @data.setter # type:ignore
     @abstractmethod
-    def data(self, new_data: T):
+    def data(self, new_data: T) -> None:
         ... 
 
     @abstractmethod
@@ -37,11 +37,11 @@ class Genotype(Generic[T], ABC):
     """Defines an abstract class for holding information about Genes."""
 
     @abstractmethod
-    def __init__(self, **custom_data):
+    def __init__(self, **custom_data) -> None:
         self.custom_data = custom_data
 
     @abstractmethod
-    def initialize(self):
+    def initialize(self) -> None:
         """Initialize itself with random values possibly following some policy.
         This method doesn't return another instance, just modifies the current."""
         ...
@@ -56,7 +56,7 @@ class Genotype(Generic[T], ABC):
     # (https://github.com/python/mypy/issues/4165)
     @data.setter # type:ignore
     @abstractmethod
-    def data(self, new_data: T):
+    def data(self, new_data: T) -> None:
         """Set data property (contains the gene's data)."""
         ...
     
@@ -77,7 +77,7 @@ GenotypeT = TypeVar('GenotypeT', bound=Genotype)
 class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
 
     @abstractmethod
-    def __init__(self, **custom_data):
+    def __init__(self, **custom_data) -> None:
         self.custom_data = custom_data
 
     @staticmethod
@@ -86,7 +86,7 @@ class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
         ...
 
     @abstractmethod
-    def initialize(self):
+    def initialize(self) -> None:
         ...
 
     @abstractmethod
@@ -106,7 +106,7 @@ class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
     # (https://github.com/python/mypy/issues/4165)
     @data.setter # type:ignore
     @abstractmethod
-    def data(self, new_data: T):
+    def data(self, new_data: T) -> None:
         ...
 
     @abstractmethod
@@ -165,7 +165,7 @@ class Mutator(Generic[ChromosomeT], ABC):
 
     @staticmethod
     @abstractmethod
-    def mutate_inplace(chromosome: ChromosomeT):
+    def mutate_inplace(chromosome: ChromosomeT) -> None:
         """Mutate a given chromosome (modifying it, not returning a new one). 
         Subclasses should specify the correct type of Chromosome as parameter. 
         (Accordingly to the ChromosomeType specified at the class declaration)
@@ -206,7 +206,7 @@ class Individual(Generic[ChromosomeT]):
             fitness_computer_cls: Type[FitnessComputer],
             mutator_cls: Type[Mutator], 
             recombiner_cls: Type[Recombiner],
-            **chromosome_custom_data):
+            **chromosome_custom_data) -> None:
         self.chromosome_cls = chromosome_cls
         self.fitness_computer_cls = fitness_computer_cls
         self.mutator_cls = mutator_cls
@@ -223,7 +223,7 @@ class Individual(Generic[ChromosomeT]):
         return self._chromosome
 
     @chromosome.setter
-    def chromosome(self, new_chromosome: ChromosomeT):
+    def chromosome(self, new_chromosome: ChromosomeT) -> None:
         self.fitness.cache_clear()
         self._chromosome = new_chromosome
 
@@ -288,7 +288,7 @@ class Population:
     def __init__(self, population: List[Individual], crossover_prob: float,
             mutation_prob: float, breed_size: int, 
             mating_selector_cls: Type[MatingSelector], 
-            survivor_selector_cls: Type[SurvivorSelector]):
+            survivor_selector_cls: Type[SurvivorSelector]) -> None:
         self.population = population
         self.crossover_prob = crossover_prob
         self.mutation_prob = mutation_prob
@@ -305,7 +305,7 @@ class Population:
 
         return breed
 
-    def evolve(self):
+    def evolve(self) -> None:
         """Method used to evolve the population into the next generation"""
         breed = self._offspring()
         survivors = self.survivor_selector_cls.select_survivors(len(self.population),
@@ -326,7 +326,7 @@ class IndividualSelector(ABC):
     """
 
     @abstractmethod
-    def __init__(self, number_solutions: int):
+    def __init__(self, number_solutions: int) -> None:
         ...
     
     @property
@@ -336,7 +336,7 @@ class IndividualSelector(ABC):
         ...
 
     @abstractmethod
-    def update_individuals(self, population: Population):
+    def update_individuals(self, population: Population) -> None:
         """Updates (if necessary) the list of best individuals with 
         individuals from the specified population."""
         ...
@@ -353,7 +353,7 @@ class Experiment(Generic[ChromosomeT]):
         mating_selector_cls: Type[MatingSelector],
         survivor_selector_cls: Type[SurvivorSelector],
         individual_selector_cls: Type[IndividualSelector],
-        **custom_data):
+        **custom_data) -> None:
         self.population_size = population_size
         self.max_generations = max_generations
         self.crossover_prob = crossover_prob

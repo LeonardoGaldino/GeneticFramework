@@ -5,7 +5,7 @@ from genetic_framework.core import *
 
 class QueenPhenotype(Phenotype[Tuple[int, int]]):
 
-    def __init__(self, **custom_data):
+    def __init__(self, **custom_data) -> None:
         super().__init__(**custom_data)
         self._data: Tuple[int, int] = (-1, -1)
 
@@ -14,7 +14,7 @@ class QueenPhenotype(Phenotype[Tuple[int, int]]):
         return self._data
 
     @data.setter
-    def data(self, new_data: Tuple[int, int]):
+    def data(self, new_data: Tuple[int, int]) -> None:
         # TODO: Validate if new data is within boundaries
         self._data = new_data
 
@@ -24,11 +24,11 @@ class QueenPhenotype(Phenotype[Tuple[int, int]]):
 
 class BytesGenotype(Genotype[int]):
 
-    def __init__(self, **custom_data):
+    def __init__(self, **custom_data) -> None:
         super().__init__(**custom_data)
         self._data: int = 0
 
-    def initialize(self):
+    def initialize(self) -> None:
         # TODO: randomize a valid column number (within boundaries)
         self._data = 1
 
@@ -37,7 +37,7 @@ class BytesGenotype(Genotype[int]):
         return self._data
 
     @data.setter
-    def data(self, new_data: int):
+    def data(self, new_data: int) -> None:
         # TODO: Validate if new data is within boundaries
         self._data = new_data
     
@@ -47,12 +47,12 @@ class BytesGenotype(Genotype[int]):
 
 class BitStringChromosome(Chromosome[bytearray, QueenPhenotype, BytesGenotype]):
 
-    def __init__(self, **custom_data):
+    def __init__(self, **custom_data) -> None:
         super().__init__(custom_data)
         # TODO: calculate and instatiate bytearray with correct size
         self._data: bytearray = bytearray(3)
 
-    def initialize(self):
+    def initialize(self) -> None:
         # TODO: make it random and generic according to tab size
         for i in len(self.data):
             self._data[i] = 0
@@ -62,7 +62,7 @@ class BitStringChromosome(Chromosome[bytearray, QueenPhenotype, BytesGenotype]):
         return self._data
 
     @data.setter
-    def data(self, new_data: bytearray):
+    def data(self, new_data: bytearray) -> None:
         self._data = new_data
     
     @staticmethod
