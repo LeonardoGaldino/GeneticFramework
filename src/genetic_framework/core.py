@@ -20,17 +20,17 @@ class Phenotype(Generic[T], ABC):
     @property # type:ignore
     @abstractmethod
     def data(self) -> T:
-        pass
+        ...
 
     # (https://github.com/python/mypy/issues/4165)
     @data.setter # type:ignore
     @abstractmethod
     def data(self, new_data: T):
-        pass 
+        ... 
 
     @abstractmethod
     def __str__(self) -> str:
-        pass
+        ...
 
 
 class Genotype(Generic[T], ABC):
@@ -44,25 +44,25 @@ class Genotype(Generic[T], ABC):
     def initialize(self):
         """Initialize itself with random values possibly following some policy.
         This method doesn't return another instance, just modifies the current."""
-        pass
+        ...
 
     # (https://github.com/python/mypy/issues/4165)
     @property # type:ignore
     @abstractmethod
     def data(self) -> T:
         """Property containing the gene's data."""
-        pass
+        ...
 
     # (https://github.com/python/mypy/issues/4165)
     @data.setter # type:ignore
     @abstractmethod
     def data(self, new_data: T):
         """Set data property (contains the gene's data)."""
-        pass
+        ...
     
     @abstractmethod
     def __str__(self) -> str:
-        pass
+        ...
 
 
 """ Python's method override is invariant, hence we cannot override methods 
@@ -83,35 +83,35 @@ class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
     @staticmethod
     @abstractmethod
     def genotype_to_phenotype(gene: GenotypeT) -> PhenotypeT:
-        pass
+        ...
 
     @abstractmethod
     def initialize(self):
-        pass
+        ...
 
     @abstractmethod
     def genotypes(self) -> List[GenotypeT]:
-        pass
+        ...
 
     @abstractmethod
     def phenotypes(self) -> List[PhenotypeT]:
-        pass
+        ...
 
     # (https://github.com/python/mypy/issues/4165)
     @property # type:ignore
     @abstractmethod
     def data(self) -> T:
-        pass
+        ...
 
     # (https://github.com/python/mypy/issues/4165)
     @data.setter # type:ignore
     @abstractmethod
     def data(self, new_data: T):
-        pass
+        ...
 
     @abstractmethod
     def __str__(self) -> str:
-        pass
+        ...
 
 """ Python's method override is invariant, hence we cannot override methods 
 with specific types of Chromosome, only with Chromosome base class. This is
@@ -140,7 +140,7 @@ class FitnessComputer(Generic[ChromosomeT], ABC):
         the correct type of Chromosome as parameter. 
         (Accordingly to the ChromosomeType specified at the class declaration)
         """
-        pass
+        ...
 
 
 class Mutator(Generic[ChromosomeT], ABC):
@@ -161,7 +161,7 @@ class Mutator(Generic[ChromosomeT], ABC):
         the correct type of Chromosome as parameter. 
         (Accordingly to the ChromosomeType specified at the class declaration)
         """
-        pass
+        ...
 
     @staticmethod
     @abstractmethod
@@ -170,7 +170,7 @@ class Mutator(Generic[ChromosomeT], ABC):
         Subclasses should specify the correct type of Chromosome as parameter. 
         (Accordingly to the ChromosomeType specified at the class declaration)
         """
-        pass
+        ...
 
 
 class Recombiner(Generic[ChromosomeT], ABC):
@@ -190,7 +190,7 @@ class Recombiner(Generic[ChromosomeT], ABC):
         specify the correct type of Chromosome as parameter.
         (Accordingly to the ChromosomeType specified at the class declaration)
         """
-        pass
+        ...
 
 
 class Individual(Generic[ChromosomeT]):
@@ -266,7 +266,7 @@ class MatingSelector(ABC):
     def select_couples(population: List[Individual]) -> List[Tuple[Individual, Individual]]:
         """Pairs individuals to mate and produce children. Subclass should
         implement this logic of selecting individual to mate."""
-        pass
+        ...
 
 
 class SurvivorSelector(ABC):
@@ -280,7 +280,7 @@ class SurvivorSelector(ABC):
         breed: List[Individual]) -> List[Individual]:
         """Implements logic of choosing which individuals will survive to next
         generation."""
-        pass
+        ...
 
 
 class Population:
@@ -327,19 +327,19 @@ class IndividualSelector(ABC):
 
     @abstractmethod
     def __init__(self, number_solutions: int):
-        pass
+        ...
     
     @property
     @abstractmethod
     def best_individuals(self) -> List[Individual]:
         """Returns the best individuals selected and stored so far."""
-        pass
+        ...
 
     @abstractmethod
     def update_individuals(self, population: Population):
         """Updates (if necessary) the list of best individuals with 
         individuals from the specified population."""
-        pass
+        ...
 
 
 class Experiment(Generic[ChromosomeT]):
