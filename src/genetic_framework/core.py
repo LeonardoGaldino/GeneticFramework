@@ -1,6 +1,6 @@
 """Module containing core classes for genetic algorithms."""
 from abc import ABC, abstractmethod
-from typing import Type, List, Tuple, TypeVar, Generic
+from typing import Type, List, Tuple, TypeVar, Generic, Dict
 from functools import lru_cache
 
 
@@ -13,7 +13,7 @@ T = TypeVar('T')
 class Phenotype(Generic[T], ABC):
 
     @abstractmethod
-    def __init__(self, **custom_data) -> None:
+    def __init__(self, custom_data: Dict = {}) -> None:
         self.custom_data = custom_data
 
     # (https://github.com/python/mypy/issues/4165)
@@ -37,7 +37,7 @@ class Genotype(Generic[T], ABC):
     """Defines an abstract class for holding information about Genes."""
 
     @abstractmethod
-    def __init__(self, **custom_data) -> None:
+    def __init__(self, custom_data: Dict = {}) -> None:
         self.custom_data = custom_data
 
     @abstractmethod
@@ -77,7 +77,7 @@ GenotypeT = TypeVar('GenotypeT', bound=Genotype)
 class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
 
     @abstractmethod
-    def __init__(self, **custom_data) -> None:
+    def __init__(self, custom_data: Dict = {}) -> None:
         self.custom_data = custom_data
 
     @staticmethod
@@ -123,7 +123,19 @@ specify which type of Chromosome they work with.
 """
 ChromosomeT = TypeVar('ChromosomeT', bound=Chromosome)
 
-class FitnessComputer(Generic[ChromosomeT], ABC):
+
+class CustomDataHolder:
+    """Class that defines custom_data: data that some subclasses need to have
+    in its class object, not in an instance.
+    """
+    custom_data: Dict = {}
+
+    @classmethod
+    def set_custom_data(cls, custom_data: Dict) -> None:
+        cls.custom_data = custom_data
+
+
+class FitnessComputer(Generic[ChromosomeT], CustomDataHolder, ABC):
     """Defines an abstract class for for types that knows how to compute the 
     fitness for a given type of Chromosome. Subclasses should specify
     through inheritance the kind of Chromosome it works for:
@@ -143,7 +155,7 @@ class FitnessComputer(Generic[ChromosomeT], ABC):
         ...
 
 
-class Mutator(Generic[ChromosomeT], ABC):
+class Mutator(Generic[ChromosomeT], CustomDataHolder, ABC):
     """Abstract class that represents Mutators. Mutators can modify Genotypes.
     Subclasses should specify through inheritance the kind of Chromosome it 
     works for: 
@@ -173,7 +185,7 @@ class Mutator(Generic[ChromosomeT], ABC):
         ...
 
 
-class Recombiner(Generic[ChromosomeT], ABC):
+class Recombiner(Generic[ChromosomeT], CustomDataHolder, ABC):
     """Abstract class that represents Recombiners. Recombiners knows how to
     combine two Chromosomes into a new one. Subclasses should specify 
     through inheritance the kind of Chromosome it works for:
@@ -206,13 +218,14 @@ class Individual(Generic[ChromosomeT]):
             fitness_computer_cls: Type[FitnessComputer],
             mutator_cls: Type[Mutator], 
             recombiner_cls: Type[Recombiner],
-            **chromosome_custom_data) -> None:
+            custom_data: Dict = {}) -> None:
         self.chromosome_cls = chromosome_cls
         self.fitness_computer_cls = fitness_computer_cls
         self.mutator_cls = mutator_cls
         self.recombiner_cls = recombiner_cls
+        self.custom_data = custom_data
         
-        self._chromosome = self.chromosome_cls(**chromosome_custom_data)
+        self._chromosome = self.chromosome_cls(custom_data)
 
     def initialize(self) -> 'Individual':
         self.chromosome.initialize()
@@ -250,7 +263,7 @@ class Individual(Generic[ChromosomeT]):
         """Returns a new individual with the given gene using the same fitness
         computer, genemutator, recombiner of this individual"""
         new_individual = Individual(self.chromosome_cls, self.fitness_computer_cls, 
-            self.mutator_cls, self.recombiner_cls)
+            self.mutator_cls, self.recombiner_cls, self.custom_data)
         new_individual.chromosome = chromosome
 
         return new_individual
@@ -259,7 +272,7 @@ class Individual(Generic[ChromosomeT]):
         return str(self.chromosome)
 
 
-class MatingSelector(ABC):
+class MatingSelector(CustomDataHolder, ABC):
     
     @staticmethod
     @abstractmethod
@@ -269,7 +282,7 @@ class MatingSelector(ABC):
         ...
 
 
-class SurvivorSelector(ABC):
+class SurvivorSelector(CustomDataHolder, ABC):
     """Class responsible for selecting survivors for the following
     generation. Subclasses should implement this logic."""
 
@@ -326,7 +339,7 @@ class IndividualSelector(ABC):
     """
 
     @abstractmethod
-    def __init__(self, number_solutions: int) -> None:
+    def __init__(self, number_solutions: int, custom_data: Dict = {}) -> None:
         ...
     
     @property
@@ -353,7 +366,7 @@ class Experiment(Generic[ChromosomeT]):
         mating_selector_cls: Type[MatingSelector],
         survivor_selector_cls: Type[SurvivorSelector],
         individual_selector_cls: Type[IndividualSelector],
-        **custom_data) -> None:
+        custom_data: Dict = {}) -> None:
         self.population_size = population_size
         self.max_generations = max_generations
         self.crossover_prob = crossover_prob
@@ -361,11 +374,22 @@ class Experiment(Generic[ChromosomeT]):
         self.num_solutions = num_solutions
         self.breed_size = breed_size
         self.chromosome_cls = chromosome_cls
+
         self.fitness_computer_cls = fitness_computer_cls
+        self.fitness_computer_cls.set_custom_data(custom_data)
+
         self.mutator_cls = mutator_cls
+        self.mutator_cls.set_custom_data(custom_data)
+        
         self.recombiner_cls = recombiner_cls
+        self.recombiner_cls.set_custom_data(custom_data)
+        
         self.mating_selector_cls = mating_selector_cls
+        self.mating_selector_cls.set_custom_data(custom_data)
+
         self.survivor_selector_cls = survivor_selector_cls
+        self.survivor_selector_cls.set_custom_data(custom_data)
+
         self.individual_selector_cls = individual_selector_cls
         self.custom_data = custom_data
 
@@ -373,15 +397,16 @@ class Experiment(Generic[ChromosomeT]):
         """Internal method used to generate individuals for the first 
         generation of the experiment"""
         return [Individual(self.chromosome_cls, self.fitness_computer_cls, 
-            self.mutator_cls, self.recombiner_cls, **self.custom_data).initialize()
+            self.mutator_cls, self.recombiner_cls, self.custom_data).initialize()
                 for i in range(self.population_size)]
 
     def run_experiment(self) -> List[Individual]:
+
         initial_individuals = self._generate_initial_individuals()
         population = Population(initial_individuals, self.crossover_prob, 
             self.mutation_prob, self.breed_size, self.mating_selector_cls,
             self.survivor_selector_cls)
-        solution_selector = self.individual_selector_cls(self.num_solutions)
+        solution_selector = self.individual_selector_cls(self.num_solutions, self.custom_data)
 
         for i in range(self.max_generations):
             print("Evolving Generation {}: {} average fitness..."

@@ -5,8 +5,8 @@ from genetic_framework.core import *
 
 class QueenPhenotype(Phenotype[Tuple[int, int]]):
 
-    def __init__(self, **custom_data) -> None:
-        super().__init__(**custom_data)
+    def __init__(self, custom_data: Dict = {}) -> None:
+        super().__init__(custom_data)
         self._data: Tuple[int, int] = (-1, -1)
 
     @property
@@ -24,8 +24,8 @@ class QueenPhenotype(Phenotype[Tuple[int, int]]):
 
 class BytesGenotype(Genotype[int]):
 
-    def __init__(self, **custom_data) -> None:
-        super().__init__(**custom_data)
+    def __init__(self, custom_data: Dict = {}) -> None:
+        super().__init__(custom_data)
         self._data: int = 0
 
     def initialize(self) -> None:
@@ -47,14 +47,14 @@ class BytesGenotype(Genotype[int]):
 
 class BitStringChromosome(Chromosome[bytearray, QueenPhenotype, BytesGenotype]):
 
-    def __init__(self, **custom_data) -> None:
+    def __init__(self, custom_data: Dict = {}) -> None:
         super().__init__(custom_data)
         # TODO: calculate and instatiate bytearray with correct size
         self._data: bytearray = bytearray(3)
 
     def initialize(self) -> None:
         # TODO: make it random and generic according to tab size
-        for i in len(self.data):
+        for i in range(len(self.data)):
             self._data[i] = 0
 
     @property
