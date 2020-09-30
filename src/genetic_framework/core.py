@@ -1,10 +1,16 @@
 """Module containing core classes for genetic algorithms."""
 from abc import ABC, abstractmethod
-from typing import Any, Type, List, Tuple
+from typing import Any, Type, List, Tuple, TypeVar, Generic
 from functools import lru_cache
 
 
-class Phenotype(ABC):
+""" TypeVariable for Generic types Phenotype, Genotype since each subclass
+of Phenotype and Genotype will use its own data type to represent its data.
+"""
+T = TypeVar('T')
+
+
+class Phenotype(Generic[T], ABC):
 
     @abstractmethod
     def __init__(self, **custom_data):
@@ -13,13 +19,13 @@ class Phenotype(ABC):
     # (https://github.com/python/mypy/issues/4165)
     @property # type:ignore
     @abstractmethod
-    def data(self) -> Any:
+    def data(self) -> T:
         pass
 
     # (https://github.com/python/mypy/issues/4165)
     @data.setter # type:ignore
     @abstractmethod
-    def data(self, new_data: Any):
+    def data(self, new_data: T):
         pass 
 
     @abstractmethod
@@ -27,8 +33,8 @@ class Phenotype(ABC):
         pass
 
 
-class Genotype(ABC):
-    """Defines an abstract class for holding information about individuals."""
+class Genotype(Generic[T], ABC):
+    """Defines an abstract class for holding information about Genes."""
 
     @abstractmethod
     def __init__(self, **custom_data):
@@ -43,15 +49,15 @@ class Genotype(ABC):
     # (https://github.com/python/mypy/issues/4165)
     @property # type:ignore
     @abstractmethod
-    def data(self) -> Any:
-        """Property containing the gene's data. Type should not be specified."""
+    def data(self) -> T:
+        """Property containing the gene's data."""
         pass
 
     # (https://github.com/python/mypy/issues/4165)
     @data.setter # type:ignore
     @abstractmethod
-    def data(self, new_data: Any):
-        """Set data property (contains the gene's data). Type should not be specified."""
+    def data(self, new_data: T):
+        """Set data property (contains the gene's data)."""
         pass
     
     @abstractmethod
@@ -98,65 +104,96 @@ class Chromosome(ABC):
     def __str__(self) -> str:
         pass
 
+""" Python's method override is invariant, hence we cannot override methods 
+with specific types of Chromosome, only with Chromosome base class. This is
+a problem, because we want a subclass of FitnessComputer, for example, to be
+able to compute fitness method over a specific subclass of Chromosome, not 
+against Chromosome base class. For this we create a TypeVar to use with
+Generics and make it Covariant. That way, subclasses of FitnessComputer will
+specify which type of Chromosome they work with.
+"""
+ChromosomeT = TypeVar('ChromosomeT', bound=Chromosome)
 
-class FitnessComputer(ABC):
-    """Defines an abstract class for for types that knows how to compute fitness
-    for a given type of Gene.
+class FitnessComputer(Generic[ChromosomeT], ABC):
+    """Defines an abstract class for for types that knows how to compute the 
+    fitness for a given type of Chromosome. Subclasses should specify
+    through inheritance the kind of Chromosome it works for:
+
+    class SubClassFitnessComputer(FitnessComputer[SubClassChromosome])...
+
+    Then, fitness method can receive SubClassChromosome safely typechecked.
     """
 
     @staticmethod
     @abstractmethod
-    def fitness(chromosome: Chromosome) -> float:
-        """Computes fitness for a given Gene. Implementations should use
-        @validate_gene_args to ensure gene arg has correct type.
+    def fitness(chromosome: ChromosomeT) -> float:
+        """Computes fitness for a given Chromosome. Subclasses should specify
+        the correct type of Chromosome as parameter. 
+        (Accordingly to the ChromosomeType specified at the class declaration)
         """
         pass
 
 
-class Mutator(ABC):
-    """Abstract class that models Mutators. Subclasses should specify the 
-    type of gene it works with through gene_cls() static method."""
+class Mutator(Generic[ChromosomeT], ABC):
+    """Abstract class that represents Mutators. Mutators can modify Genotypes.
+    Subclasses should specify through inheritance the kind of Chromosome it 
+    works for: 
+
+    class SubClassMutator(Mutator[SubClassChromosome])...
+
+    Then, mutate and mutate_inplace methods can receive SubClassChromosome 
+    safely typechecked.
+    """
 
     @staticmethod
     @abstractmethod
-    def mutate(chromosome: Chromosome) -> Chromosome:
-        """Mutate a given gene into a new one. Implementations should use
-        @validate_gene_args to ensure gene arg has correct type.
+    def mutate(chromosome: ChromosomeT) -> ChromosomeT:
+        """Mutate a given chromosome into a new one. Subclasses should specify
+        the correct type of Chromosome as parameter. 
+        (Accordingly to the ChromosomeType specified at the class declaration)
         """
         pass
 
     @staticmethod
     @abstractmethod
-    def mutate_inplace(chromosome: Chromosome):
-        """Mutate a given gene modifying the argument. Implementations should use
-        @validate_gene_args to ensure gene arg has correct type.
+    def mutate_inplace(chromosome: ChromosomeT):
+        """Mutate a given chromosome (modifying it, not returning a new one). 
+        Subclasses should specify the correct type of Chromosome as parameter. 
+        (Accordingly to the ChromosomeType specified at the class declaration)
         """
         pass
 
 
-class Recombiner(ABC):
-    """Abstract class that models Recombiners. Subclasses should specify the 
-    type of gene it works with through gene_cls() static method."""
+class Recombiner(Generic[ChromosomeT], ABC):
+    """Abstract class that represents Recombiners. Recombiners knows how to
+    combine two Chromosomes into a new one. Subclasses should specify 
+    through inheritance the kind of Chromosome it works for:
+
+    class SubClassRecombiner(Recombiner[SubClassChromosome])...
+
+    Then, recombine method can receive SubClassChromosome safely typechecked.
+    """
     
     @staticmethod
     @abstractmethod
-    def recombine(chromosome1: Chromosome, chromosome2: Chromosome) -> Chromosome:
-        """Recombines two genes into a new genes. Implementations should use 
-        @validate_gene_args to ensure gene arg has correct type.
+    def recombine(chromosome1: ChromosomeT, chromosome2: ChromosomeT) -> ChromosomeT:
+        """Recombines two Chromosomes into a new one. Subclasses should 
+        specify the correct type of Chromosome as parameter.
+        (Accordingly to the ChromosomeType specified at the class declaration)
         """
         pass
 
 
-class Individual:
+class Individual(Generic[ChromosomeT]):
     """Class representing a Individual.
 
-        gene_clchromosome_clss: The individual's chromosome type
-        fitness_computer_cls: Class for computing fitness.
-        gene_mutator_cls: Class for mutating the individual.
-        gene_recombiner_cls: Class for recombining individual with another one.
+    chromosome_cls: The individual's chromosome type
+    fitness_computer_cls: Class for computing fitness.
+    mutator_cls: Class for mutating the individual.
+    recombiner_cls: Class for recombining individual with another one.
     """
     
-    def __init__(self, chromosome_cls: Type[Chromosome],
+    def __init__(self, chromosome_cls: Type[ChromosomeT],
             fitness_computer_cls: Type[FitnessComputer],
             mutator_cls: Type[Mutator], 
             recombiner_cls: Type[Recombiner],
@@ -173,11 +210,11 @@ class Individual:
         return self
 
     @property
-    def chromosome(self) -> Chromosome:
+    def chromosome(self) -> ChromosomeT:
         return self._chromosome
 
     @chromosome.setter
-    def chromosome(self, new_chromosome: Chromosome):
+    def chromosome(self, new_chromosome: ChromosomeT):
         self.fitness.cache_clear()
         self._chromosome = new_chromosome
 
@@ -200,7 +237,7 @@ class Individual:
 
         return self.new_individual(new_chromosome)
             
-    def new_individual(self, chromosome: Chromosome) -> 'Individual':
+    def new_individual(self, chromosome: ChromosomeT) -> 'Individual':
         """Returns a new individual with the given gene using the same fitness
         computer, genemutator, recombiner of this individual"""
         new_individual = Individual(self.chromosome_cls, self.fitness_computer_cls, 
@@ -273,10 +310,11 @@ class Population:
             self.population))/len(self.population)
 
 
-"""
-Responsible for best individuals selection logic on a running experiment
-"""
+
 class IndividualSelector(ABC):
+    """
+    Responsible for best individuals selection logic on a running experiment
+    """
 
     @abstractmethod
     def __init__(self, number_solutions: int):
@@ -295,11 +333,11 @@ class IndividualSelector(ABC):
         pass
 
 
-class Experiment:
+class Experiment(Generic[ChromosomeT]):
     
     def __init__(self, population_size: int, max_generations: int, 
         crossover_prob: float, mutation_prob: float, num_solutions: int, 
-        breed_size: int, chromosome_cls: Type[Chromosome], 
+        breed_size: int, chromosome_cls: Type[ChromosomeT], 
         fitness_computer_cls: Type[FitnessComputer], 
         mutator_cls: Type[Mutator],
         recombiner_cls: Type[Recombiner],
