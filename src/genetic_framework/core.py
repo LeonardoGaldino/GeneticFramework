@@ -4,8 +4,35 @@ from typing import Any, Type, List, Tuple
 from functools import lru_cache
 
 
-class Gene(ABC):
+class Phenotype(ABC):
+
+    @abstractmethod
+    def __init__(self, **custom_data):
+        self.custom_data = custom_data
+
+    # (https://github.com/python/mypy/issues/4165)
+    @property # type:ignore
+    @abstractmethod
+    def data(self) -> Any:
+        pass
+
+    # (https://github.com/python/mypy/issues/4165)
+    @data.setter # type:ignore
+    @abstractmethod
+    def data(self, new_data: Any):
+        pass 
+
+    @abstractmethod
+    def __str__(self) -> str:
+        pass
+
+
+class Genotype(ABC):
     """Defines an abstract class for holding information about individuals."""
+
+    @abstractmethod
+    def __init__(self, **custom_data):
+        self.custom_data = custom_data
 
     @abstractmethod
     def initialize(self):
@@ -32,82 +59,88 @@ class Gene(ABC):
         pass
 
 
-class GeneTypeSpecifier(ABC):
-    """Class used to specify subclasses that must define the type of gene it
-    works with."""
+class Chromosome(ABC):
+
+    @abstractmethod
+    def __init__(self, **custom_data):
+        self.custom_data = custom_data
 
     @staticmethod
     @abstractmethod
-    def gene_cls() -> Type[Gene]:
-        """Defines the type of gene the subclass will work for. Subclasses
-        should return the Gene CLASS, not an instance of Gene.
-        """
+    def genotype_to_phenotype(gene: Genotype) -> Phenotype:
+        pass
+
+    @abstractmethod
+    def initialize(self):
+        pass
+
+    @abstractmethod
+    def genotypes(self) -> List[Genotype]:
+        pass
+
+    @abstractmethod
+    def phenotypes(self) -> List[Phenotype]:
+        pass
+
+    # (https://github.com/python/mypy/issues/4165)
+    @property # type:ignore
+    @abstractmethod
+    def data(self) -> Any:
+        pass
+
+    # (https://github.com/python/mypy/issues/4165)
+    @data.setter # type:ignore
+    @abstractmethod
+    def data(self, new_data: Any):
+        pass
+
+    @abstractmethod
+    def __str__(self) -> str:
         pass
 
 
-# Decorator for validating each gene parameter for the specified class gene type
-def validate_gene_args(m):
-    def wrapper(*args):
-        # args[0] should be 'cls': the class reference.
-        # it should contain gene_cls method: be instance of GeneTypeSpecifier
-        if not hasattr(args[0], 'gene_cls') or not callable(args[0].gene_cls):
-             raise AttributeError(
-                'Decorated method with validate_gene_cls should be in GeneTypeSpecifier subclass.'
-                )
-
-        # Validate each gene parameter
-        gene_cls = args[0].gene_cls()
-        for i in range(1, len(args)):
-            if not isinstance(args[i], gene_cls):
-                raise TypeError("Gene '{}' is not a supported type for class '{}'."
-                    .format(args[i].__class__.__name__, args[0].__name__))
-
-        return m(*args)
-    return wrapper
-
-
-class FitnessComputer(GeneTypeSpecifier, ABC):
+class FitnessComputer(ABC):
     """Defines an abstract class for for types that knows how to compute fitness
     for a given type of Gene.
     """
 
-    @classmethod
+    @staticmethod
     @abstractmethod
-    def fitness(cls: Type['FitnessComputer'], gene: Gene) -> float:
+    def fitness(chromosome: Chromosome) -> float:
         """Computes fitness for a given Gene. Implementations should use
         @validate_gene_args to ensure gene arg has correct type.
         """
         pass
 
 
-class GeneMutator(GeneTypeSpecifier, ABC):
+class Mutator(ABC):
     """Abstract class that models Mutators. Subclasses should specify the 
     type of gene it works with through gene_cls() static method."""
 
-    @classmethod
+    @staticmethod
     @abstractmethod
-    def mutate(cls: Type['GeneMutator'], gene: Gene) -> Gene:
+    def mutate(chromosome: Chromosome) -> Chromosome:
         """Mutate a given gene into a new one. Implementations should use
         @validate_gene_args to ensure gene arg has correct type.
         """
         pass
 
-    @classmethod
+    @staticmethod
     @abstractmethod
-    def mutate_inplace(cls: Type['GeneMutator'], gene: Gene):
+    def mutate_inplace(chromosome: Chromosome):
         """Mutate a given gene modifying the argument. Implementations should use
         @validate_gene_args to ensure gene arg has correct type.
         """
         pass
 
 
-class GeneRecombiner(GeneTypeSpecifier, ABC):
+class Recombiner(ABC):
     """Abstract class that models Recombiners. Subclasses should specify the 
     type of gene it works with through gene_cls() static method."""
     
-    @classmethod
+    @staticmethod
     @abstractmethod
-    def recombine(cls: Type['GeneRecombiner'], gene1: Gene, gene2: Gene) -> Gene:
+    def recombine(chromosome1: Chromosome, chromosome2: Chromosome) -> Chromosome:
         """Recombines two genes into a new genes. Implementations should use 
         @validate_gene_args to ensure gene arg has correct type.
         """
@@ -117,56 +150,67 @@ class GeneRecombiner(GeneTypeSpecifier, ABC):
 class Individual:
     """Class representing a Individual.
 
-        gene_cls: The individual's gene class.
+        gene_clchromosome_clss: The individual's chromosome type
         fitness_computer_cls: Class for computing fitness.
         gene_mutator_cls: Class for mutating the individual.
         gene_recombiner_cls: Class for recombining individual with another one.
     """
     
-    def __init__(self, gene_cls: Type[Gene],
+    def __init__(self, chromosome_cls: Type[Chromosome],
             fitness_computer_cls: Type[FitnessComputer],
-            gene_mutator_cls: Type[GeneMutator], 
-            gene_recombiner_cls: Type[GeneRecombiner]):
-        self.gene_cls = gene_cls
+            mutator_cls: Type[Mutator], 
+            recombiner_cls: Type[Recombiner],
+            **chromosome_custom_data):
+        self.chromosome_cls = chromosome_cls
         self.fitness_computer_cls = fitness_computer_cls
-        self.gene_mutator_cls = gene_mutator_cls
-        self.gene_recombiner_cls = gene_recombiner_cls
+        self.mutator_cls = mutator_cls
+        self.recombiner_cls = recombiner_cls
         
-        self.gene = self.gene_cls()
+        self._chromosome = self.chromosome_cls(**chromosome_custom_data)
 
-    def initialize_gene(self) -> 'Individual':
-        self.gene.initialize()
+    def initialize(self) -> 'Individual':
+        self.chromosome.initialize()
         return self
 
-    def set_gene(self, gene: Gene) -> 'Individual':
-        self.gene = gene
-        return self
+    @property
+    def chromosome(self) -> Chromosome:
+        return self._chromosome
+
+    @chromosome.setter
+    def chromosome(self, new_chromosome: Chromosome):
+        self.fitness.cache_clear()
+        self._chromosome = new_chromosome
 
     # Caches fitness computation to avoid wasting CPU time
     @lru_cache
     def fitness(self) -> float:
-        return self.fitness_computer_cls.fitness(self.gene)
+        return self.fitness_computer_cls.fitness(self.chromosome)
 
     def self_mutate(self) -> 'Individual':
-        """Use gene_mutator to change this individual gene and return itself"""
-        self.gene_mutator_cls.mutate_inplace(self.gene)
+        """Use mutator to change this individual chromosome and return itself"""
+        self.mutator_cls.mutate_inplace(self.chromosome)
         self.fitness.cache_clear()
         return self
 
     def recombine(self, other: 'Individual') -> 'Individual':
-        """Use gene_recombiner to combine this individual with other argument
+        """Use recombiner to combine this individual with other argument
         to generate a new individual"""
-        new_gene = self.gene_recombiner_cls.recombine(self.gene, other.gene)
-        return self.new_individual(new_gene)
+        new_chromosome = self.recombiner_cls.recombine(self.chromosome,\
+                other.chromosome)
+
+        return self.new_individual(new_chromosome)
             
-    def new_individual(self, gene: Gene) -> 'Individual':
+    def new_individual(self, chromosome: Chromosome) -> 'Individual':
         """Returns a new individual with the given gene using the same fitness
-        computer, gene_mutator, gene_recombiner of this individual"""
-        return Individual(self.gene_cls, self.fitness_computer_cls, 
-            self.gene_mutator_cls, self.gene_recombiner_cls).set_gene(gene)
+        computer, genemutator, recombiner of this individual"""
+        new_individual = Individual(self.chromosome_cls, self.fitness_computer_cls, 
+            self.mutator_cls, self.recombiner_cls)
+        new_individual.chromosome = chromosome
+
+        return new_individual
 
     def __str__(self) -> str:
-        return str(self.gene)
+        return str(self.chromosome)
 
 
 class MatingSelector(ABC):
@@ -209,10 +253,9 @@ class Population:
     def _offspring(self) -> List[Individual]:
         """Internal method used to create a list of new individuals (breed)
         from the current generation."""
-        parents: List[Tuple[Individual, Individual]] = self.mating_selector_cls\
-            .select_couples(self.population)
-        breed = [p1.recombine(p2) for i in range(self.breed_size)
-            for (p1, p2) in parents]
+        parents = self.mating_selector_cls.select_couples(self.population)
+        breed = [p1.recombine(p2) for i in range(self.breed_size) for (p1, p2)\
+            in parents]
 
         return breed
 
@@ -256,32 +299,34 @@ class Experiment:
     
     def __init__(self, population_size: int, max_generations: int, 
         crossover_prob: float, mutation_prob: float, num_solutions: int, 
-        breed_size: int, gene_cls: Type[Gene], 
+        breed_size: int, chromosome_cls: Type[Chromosome], 
         fitness_computer_cls: Type[FitnessComputer], 
-        mutator_cls: Type[GeneMutator],
-        recombiner_cls: Type[GeneRecombiner],
+        mutator_cls: Type[Mutator],
+        recombiner_cls: Type[Recombiner],
         mating_selector_cls: Type[MatingSelector],
         survivor_selector_cls: Type[SurvivorSelector],
-        individual_selector_cls: Type[IndividualSelector]):
+        individual_selector_cls: Type[IndividualSelector],
+        **custom_data):
         self.population_size = population_size
         self.max_generations = max_generations
         self.crossover_prob = crossover_prob
         self.mutation_prob = mutation_prob
         self.num_solutions = num_solutions
         self.breed_size = breed_size
-        self.gene_cls = gene_cls
+        self.chromosome_cls = chromosome_cls
         self.fitness_computer_cls = fitness_computer_cls
         self.mutator_cls = mutator_cls
         self.recombiner_cls = recombiner_cls
         self.mating_selector_cls = mating_selector_cls
         self.survivor_selector_cls = survivor_selector_cls
         self.individual_selector_cls = individual_selector_cls
+        self.custom_data = custom_data
 
     def _generate_initial_individuals(self) -> List[Individual]:
         """Internal method used to generate individuals for the first 
         generation of the experiment"""
-        return [Individual(self.gene_cls, self.fitness_computer_cls, 
-            self.mutator_cls, self.recombiner_cls).initialize_gene()
+        return [Individual(self.chromosome_cls, self.fitness_computer_cls, 
+            self.mutator_cls, self.recombiner_cls, **self.custom_data).initialize()
                 for i in range(self.population_size)]
 
     def run_experiment(self) -> List[Individual]:
