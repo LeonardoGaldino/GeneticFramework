@@ -8,8 +8,8 @@ An evolutionary approach to the eight queens puzzle.
 3. Run `pipenv run python src/main.py`. (or any other module)
 
 ### Type checking
-Currently done with `mypy`.
-Run `mypy src` in top level directory.
+Type check is being done with `mypy`. Make sure to have it installed (v0.761).  
+Then, run `mypy src` in top level directory.
 
 ### Observations
 1. Run modules from top level directory through **pipenv**.
