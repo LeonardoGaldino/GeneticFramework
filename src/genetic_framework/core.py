@@ -1,11 +1,11 @@
 """Module containing core classes for genetic algorithms."""
 from abc import ABC, abstractmethod
-from typing import Any, Type, List, Tuple, TypeVar, Generic
+from typing import Type, List, Tuple, TypeVar, Generic
 from functools import lru_cache
 
 
-""" TypeVariable for Generic types Phenotype, Genotype since each subclass
-of Phenotype and Genotype will use its own data type to represent its data.
+""" TypeVariable for Generic types Chromosome, Phenotype, Genotype since each
+subclass of these will use its own data type to represent its internal data.
 """
 T = TypeVar('T')
 
@@ -65,7 +65,7 @@ class Genotype(Generic[T], ABC):
         pass
 
 
-class Chromosome(ABC):
+class Chromosome(Generic[T], ABC):
 
     @abstractmethod
     def __init__(self, **custom_data):
@@ -91,13 +91,13 @@ class Chromosome(ABC):
     # (https://github.com/python/mypy/issues/4165)
     @property # type:ignore
     @abstractmethod
-    def data(self) -> Any:
+    def data(self) -> T:
         pass
 
     # (https://github.com/python/mypy/issues/4165)
     @data.setter # type:ignore
     @abstractmethod
-    def data(self, new_data: Any):
+    def data(self, new_data: T):
         pass
 
     @abstractmethod
