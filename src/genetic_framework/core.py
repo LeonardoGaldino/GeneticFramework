@@ -65,7 +65,16 @@ class Genotype(Generic[T], ABC):
         pass
 
 
-class Chromosome(Generic[T], ABC):
+""" Python's method override is invariant, hence we cannot override methods 
+with specific types of Pheno/GenoTypes, only with their base class. For more
+details on why this is a problem and why the below TypeVars addresses this,
+check details on top of ChromosomeT TypeVar (right below Chromosome class
+definition).
+"""
+PhenotypeT = TypeVar('PhenotypeT', bound=Phenotype)
+GenotypeT = TypeVar('GenotypeT', bound=Genotype)
+
+class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
 
     @abstractmethod
     def __init__(self, **custom_data):
@@ -73,7 +82,7 @@ class Chromosome(Generic[T], ABC):
 
     @staticmethod
     @abstractmethod
-    def genotype_to_phenotype(gene: Genotype) -> Phenotype:
+    def genotype_to_phenotype(gene: GenotypeT) -> PhenotypeT:
         pass
 
     @abstractmethod
@@ -81,11 +90,11 @@ class Chromosome(Generic[T], ABC):
         pass
 
     @abstractmethod
-    def genotypes(self) -> List[Genotype]:
+    def genotypes(self) -> List[GenotypeT]:
         pass
 
     @abstractmethod
-    def phenotypes(self) -> List[Phenotype]:
+    def phenotypes(self) -> List[PhenotypeT]:
         pass
 
     # (https://github.com/python/mypy/issues/4165)
