@@ -20,11 +20,11 @@ class QueenPositionPhenotype(Phenotype[Tuple[int, int]]):
         chess_size = self.custom_data['chess_size']
 
         if new_data[0] < 0 or new_data[0] >= chess_size:
-            raise ValueError("""Tried to set QueenPositionPhenotype data[0] with ({}). Should be [{}, {}]"""
+            raise ValueError('Tried to set QueenPositionPhenotype data[0] with ({}). Should be [{}, {}]'
                 .format(new_data[0], 0, chess_size - 1))
 
         if new_data[1] < 0 or new_data[1] >= chess_size:
-            raise ValueError("""Tried to set QueenPositionPhenotype data[1] with ({}). Should be [{}, {}]"""
+            raise ValueError('Tried to set QueenPositionPhenotype data[1] with ({}). Should be [{}, {}]'
                 .format(new_data[1], 0, chess_size - 1))
                 
         self._data = new_data
@@ -34,6 +34,7 @@ class QueenPositionPhenotype(Phenotype[Tuple[int, int]]):
 
 
 class BitStringGenotype(Genotype[str]):
+    STRING_SIZE = 32
 
     def __init__(self, custom_data: Dict = {}) -> None:
         super().__init__(custom_data)
@@ -55,7 +56,7 @@ class BitStringGenotype(Genotype[str]):
         integer_data = int(new_data, 2)
 
         if integer_data < 0 or integer_data >= chess_size:
-            raise ValueError("""Tried to set StringGenotype data with ({}). Should be [{}, {}]"""
+            raise ValueError('Tried to set BitStringGenotype data with ({}). Should be [{}, {}]'
                 .format(integer_data, 0, chess_size - 1))
 
         self._data = new_data
@@ -71,8 +72,12 @@ class BitStringChromosome(Chromosome[str, QueenPositionPhenotype, BitStringGenot
         self._data = ""
 
     def initialize(self) -> None:
-        # TODO: make it random and generic according to tab size
+        chess_size = self.custom_data['chess_size']
+
         self._data = ""
+        for i in range(chess_size):
+            self._data += "{:032b}".format(randint(0, chess_size - 1))
+
 
     @property
     def data(self) -> str:
@@ -80,23 +85,51 @@ class BitStringChromosome(Chromosome[str, QueenPositionPhenotype, BitStringGenot
 
     @data.setter
     def data(self, new_data: str) -> None:
-        # TODO: Check if new_data is valid
+        chess_size = self.custom_data['chess_size']
+        genotype_size = BitStringGenotype.STRING_SIZE
+
+        if (len(new_data) % genotype_size) != 0:
+            raise ValueError('Tried to set BitStringChromosome data with string not multiple of {}. Was {}.'
+                .format(genotype_size, len(new_data)))
+        if len(new_data)//genotype_size != chess_size:
+            raise ValueError('Tried to set BitStringChromosome data with wrong string length ({}). Expected {}.'
+                .format(len(new_data), chess_size*genotype_size))
+
+        values = [int(new_data[i*genotype_size : (i+1)*genotype_size], 2) \
+            for i in range(chess_size)]
+
+        for i in range(chess_size):
+            if values[i] < 0 or values[i] >= chess_size:
+                raise ValueError('Tried to set BitStringChromosome data with date out of boundaries ({}). Expected [{}, {}].'
+                    .format(values[i], 0, chess_size - 1))
+
         self._data = new_data
-    
+
     @staticmethod
-    def genotype_to_phenotype(gene: BitStringGenotype) -> QueenPositionPhenotype:
-        # TODO: correctly populate phenotype instead of dumping -1
-        p = QueenPositionPhenotype()
-        p.data = (-1, -1)
-        return p
+    def genotype_to_phenotype(gene: BitStringGenotype, **kwargs) -> QueenPositionPhenotype:
+        new_phenotype = QueenPositionPhenotype(gene.custom_data)
+        new_phenotype.data = (kwargs['index'], int(gene.data, 2))
+        return new_phenotype
 
     def genotypes(self) -> List[BitStringGenotype]:
-        # TODO: correctly create genotypes instead of creating empty genes
-        return list(map(lambda v: BitStringGenotype(), self.data))
+        chess_size = self.custom_data['chess_size']
+        genotype_size = BitStringGenotype.STRING_SIZE
+        genos = [BitStringGenotype(self.custom_data)]*chess_size
+
+        for i in range(chess_size):
+            genos[i].data = self.data[i*genotype_size : (i+1)*genotype_size]
+
+        return genos
 
     def phenotypes(self) -> List[QueenPositionPhenotype]:
-        return list(map(lambda gene: BitStringChromosome \
-            .genotype_to_phenotype(gene), self.genotypes()))
+        chess_size = self.custom_data['chess_size']
+        genos = self.genotypes()
+        phenos: List[QueenPositionPhenotype] = []
+
+        for i in range(chess_size):
+            phenos.append(BitStringChromosome.genotype_to_phenotype(genos[i], index=i))
+
+        return phenos
 
     def __str__(self) -> str:
         return self.data
