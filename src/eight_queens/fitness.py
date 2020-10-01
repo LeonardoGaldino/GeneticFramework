@@ -8,8 +8,8 @@ from eight_queens.chromosomes import *
 class QueenAttackCountFitnessComputer(FitnessComputer[BitStringChromosome]):
     
     @staticmethod
-    def _is_horizontally_attacking(x1: int, x2: int) -> bool:
-        return x1 == x2
+    def _is_horizontally_attacking(y1: int, y2: int) -> bool:
+        return y1 == y2
 
     @staticmethod
     def _is_diagonally_attacking(x1: int, y1: int, x2: int, y2: int) -> bool:
@@ -27,7 +27,7 @@ class QueenAttackCountFitnessComputer(FitnessComputer[BitStringChromosome]):
 
                 attacking_queens_count += \
                     QueenAttackCountFitnessComputer \
-                        ._is_horizontally_attacking(p1.data[1], p2.data[1]) \
+                        ._is_horizontally_attacking(p1.data[0], p2.data[0]) \
                     or QueenAttackCountFitnessComputer \
                         ._is_diagonally_attacking(p1.data[0], p1.data[1], p2.data[0], p2.data[1])
 

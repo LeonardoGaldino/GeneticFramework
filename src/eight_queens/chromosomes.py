@@ -114,7 +114,7 @@ class BitStringChromosome(Chromosome[str, QueenPositionPhenotype, BitStringGenot
     @staticmethod
     def genotype_to_phenotype(gene: BitStringGenotype, **kwargs) -> QueenPositionPhenotype:
         new_phenotype = QueenPositionPhenotype(gene.custom_data)
-        new_phenotype.data = (kwargs['index'], int(gene.data, 2))
+        new_phenotype.data = (int(gene.data, 2), kwargs['index'])
         return new_phenotype
 
     def genotypes(self) -> List[BitStringGenotype]:
