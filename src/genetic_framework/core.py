@@ -276,7 +276,7 @@ class MatingSelector(CustomDataHolder, ABC):
     
     @staticmethod
     @abstractmethod
-    def select_couples(population: List[Individual]) -> List[Tuple[Individual, Individual]]:
+    def select_couples(population: List[Individual], num_pairs: int) -> List[Tuple[Individual, Individual]]:
         """Pairs individuals to mate and produce children. Subclass should
         implement this logic of selecting individual to mate."""
         ...
@@ -312,7 +312,7 @@ class Population:
     def _offspring(self) -> List[Individual]:
         """Internal method used to create a list of new individuals (breed)
         from the current generation."""
-        parents = self.mating_selector_cls.select_couples(self.population)
+        parents = self.mating_selector_cls.select_couples(self.population, self.breed_size)
         breed = [p1.recombine(p2) for i in range(self.breed_size) for (p1, p2)\
             in parents]
 
