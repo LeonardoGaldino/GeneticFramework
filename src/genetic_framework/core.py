@@ -340,7 +340,8 @@ class IndividualSelector(ABC):
 
     @abstractmethod
     def __init__(self, number_solutions: int, custom_data: Dict = {}) -> None:
-        ...
+        self.number_solutions = number_solutions
+        self.custom_data = custom_data
     
     @property
     @abstractmethod
