@@ -7,8 +7,7 @@ from genetic_framework.core import *
 class BestFitnessMatingSelector(MatingSelector):
 
     @staticmethod
-    def select_couples(population: List[Individual], num_pairs: int) \
-            -> List[Tuple[Individual, Individual]]:
+    def select_couples(population: List[Individual]) -> List[Tuple[Individual, Individual]]:
         population.sort(key=lambda individual: -individual.fitness())
         pairs: List[Tuple[Individual, Individual]] = []
         size = len(population)
@@ -17,7 +16,7 @@ class BestFitnessMatingSelector(MatingSelector):
             return []
 
         i = 0
-        while i < num_pairs and i < size - 1:
+        while i < size - 1:
             pairs.append((population[i], population[i+1]))
             i += 2
         if (size % 2) != 0:
