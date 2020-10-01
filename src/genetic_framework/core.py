@@ -362,8 +362,7 @@ class Population:
             self.population))/len(self.population)
 
 
-
-class IndividualSelector(ABC):
+class SolutionSelector(ABC):
     """
     Responsible for best individuals selection logic on a running experiment
     """
@@ -396,7 +395,7 @@ class Experiment:
         recombiner_cls: Type[Recombiner],
         mating_selector_cls: Type[MatingSelector],
         survivor_selector_cls: Type[SurvivorSelector],
-        individual_selector_cls: Type[IndividualSelector],
+        solution_selector_cls: Type[SolutionSelector],
         custom_data: Dict = {}) -> None:
         self.population_size = population_size
         self.max_generations = max_generations
@@ -421,7 +420,7 @@ class Experiment:
         self.survivor_selector_cls = survivor_selector_cls
         self.survivor_selector_cls.set_custom_data(custom_data)
 
-        self.individual_selector_cls = individual_selector_cls
+        self.solution_selector_cls = solution_selector_cls
         self.custom_data = custom_data
 
     def _generate_initial_individuals(self) -> List[Individual]:
@@ -437,7 +436,7 @@ class Experiment:
         population = Population(initial_individuals, self.crossover_prob, 
             self.mutation_prob, self.breed_size, self.mating_selector_cls,
             self.survivor_selector_cls)
-        solution_selector = self.individual_selector_cls(self.num_solutions, self.custom_data)
+        solution_selector = self.solution_selector_cls(self.num_solutions, self.custom_data)
 
         for i in range(self.max_generations):
             print("Evolving Generation {}: {} average fitness..."

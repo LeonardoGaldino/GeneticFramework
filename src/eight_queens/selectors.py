@@ -52,7 +52,7 @@ class BestFitnessSurvivorSelector(SurvivorSelector):
         return new_generation_individuals
 
 
-class KBestFitnessIndividualSelector(IndividualSelector):
+class KBestFitnessSolutionSelector(SolutionSelector):
 
     def __init__(self, number_solutions: int, custom_data: Dict = {}) -> None:
         super().__init__(number_solutions, custom_data)

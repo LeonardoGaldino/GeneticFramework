@@ -43,8 +43,8 @@ class MatingSelectorEnum(Enum):
     BEST_FITNESS = BestFitnessMatingSelector    
 
 
-class IndividualSelectorEnum(Enum):
-    K_BEST_FITNESS = KBestFitnessIndividualSelector
+class SolutionSelectorEnum(Enum):
+    K_BEST_FITNESS = KBestFitnessSolutionSelector
 
 
 class CLIArgumentDescription:
@@ -177,7 +177,7 @@ ARGS = [
 
     CLIArgumentDescription(_type=SurvivorSelectorEnum, 
         default_value=SurvivorSelectorEnum.BEST_FITNESS.value, 
-        short_name='ssel', full_name='survivor_selector', 
+        short_name='susel', full_name='survivor_selector', 
         help_message="""Specify Survivor Selector class. Will define how 
             individuals are chosen to go on to next generation.""",
         action_cls=EnumConstraintAction),
@@ -189,10 +189,10 @@ ARGS = [
             individuals are chosen to generate children for next generation.""",
         action_cls=EnumConstraintAction),
 
-    CLIArgumentDescription(_type=IndividualSelectorEnum, 
-        default_value=IndividualSelectorEnum.K_BEST_FITNESS.value, 
-        short_name='isel', full_name='individual_selector', 
-        help_message="""Specify Individual Selector class. Will define how 
+    CLIArgumentDescription(_type=SolutionSelectorEnum, 
+        default_value=SolutionSelectorEnum.K_BEST_FITNESS.value, 
+        short_name='sosel', full_name='solution_selector', 
+        help_message="""Specify Solution Selector class. Will define how 
             best individuals are chosen as solution to the problem after the
             experiment.""",
         action_cls=EnumConstraintAction),
@@ -207,7 +207,7 @@ def main(**kwargs) -> None:
         kwargs['chromosome'], kwargs['fitness_computer'], 
         kwargs['mutator'], kwargs['recombiner'],
         kwargs['mating_selector'], kwargs['survivor_selector'], 
-        kwargs['individual_selector'], dict(chess_size=kwargs['chess_size']))
+        kwargs['solution_selector'], dict(chess_size=kwargs['chess_size']))
     best_individuals = experiment.run_experiment()
 
     print('\nSolutions:')
