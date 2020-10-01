@@ -1,7 +1,7 @@
 from random import randint
 from functools import reduce
 
-from genetic_framework.core import *
+from genetic_framework.recombiner import Recombiner
 from eight_queens.chromosomes import *
 
 

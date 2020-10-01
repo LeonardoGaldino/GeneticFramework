@@ -1,8 +1,8 @@
-from typing import Generic, Tuple
+from typing import Generic, Tuple, Dict, List
 from random import randint
 from math import log2, ceil
 
-from genetic_framework.core import *
+from genetic_framework.chromosome import Phenotype, Genotype, Chromosome
 
 
 class QueenPositionPhenotype(Phenotype[Tuple[int, int]]):

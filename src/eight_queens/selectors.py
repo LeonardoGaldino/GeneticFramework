@@ -1,7 +1,8 @@
 from copy import deepcopy
 from typing import List, Tuple, Dict
 
-from genetic_framework.core import *
+from genetic_framework.selectors import SurvivorSelector, MatingSelector, SolutionSelector
+from genetic_framework.individual import Individual
 
 
 class BestFitnessMatingSelector(MatingSelector):

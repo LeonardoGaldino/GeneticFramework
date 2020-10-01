@@ -7,7 +7,7 @@ from argparse import ArgumentParser, Action
 from typing import Type, Any
 from enum import Enum
 
-from genetic_framework.core import *
+from genetic_framework.experiment import Experiment
 from eight_queens.chromosomes import *
 from eight_queens.fitness import *
 from eight_queens.mutators import *

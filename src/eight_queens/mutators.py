@@ -2,7 +2,7 @@ from random import randint
 from copy import deepcopy
 from functools import reduce
 
-from genetic_framework.core import *
+from genetic_framework.mutator import Mutator
 from eight_queens.chromosomes import BitStringChromosome
 
 
