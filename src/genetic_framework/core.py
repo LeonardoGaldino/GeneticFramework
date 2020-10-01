@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Type, List, Tuple, TypeVar, Generic, Dict
 from functools import lru_cache
 from random import random, randint
+from math import sqrt
 
 
 """ TypeVariable for Generic types Chromosome, Phenotype, Genotype since each
@@ -355,11 +356,23 @@ class Population:
             self.population, breed)
         self.population = survivors
         self.avg_fitness.cache_clear()
+        self.sd_fitness.cache_clear()
 
     @lru_cache
     def avg_fitness(self) -> float:
         return sum(map(lambda individual: individual.fitness(), 
             self.population))/len(self.population)
+
+    @lru_cache
+    def sd_fitness(self) -> float:
+        avg = self.avg_fitness()
+        squared_difference = 0.0
+        for individual in self.population:
+            diff = individual.fitness() - avg
+            squared_difference += diff * diff
+
+        pop_size = float(len(self.population))
+        return sqrt(squared_difference / (pop_size - 1))
 
 
 class SolutionSelector(ABC):
@@ -439,12 +452,12 @@ class Experiment:
         solution_selector = self.solution_selector_cls(self.num_solutions, self.custom_data)
 
         for i in range(self.max_generations):
-            print("Evolving Generation {}: {} average fitness..."
-                .format(i+1, population.avg_fitness()))
+            print("Evolving Generation {}: {:.3f} avg, {:.3f} standard deviation (fitness)."
+                .format(i+1, population.avg_fitness(), population.sd_fitness()))
             population.evolve()
             solution_selector.update_individuals(population.population)
-        print("Maximum generations achieved: {} average fitness."
-            .format(population.avg_fitness()))
+        print("Maximum generations achieved: {:.3f} avg, {:.3f} standard deviation (fitness)."
+            .format(population.avg_fitness(), population.sd_fitness()))
 
         return solution_selector.best_individuals
             
