@@ -1,4 +1,5 @@
 from copy import copy
+from typing import List, Tuple, Dict
 
 from genetic_framework.core import *
 
@@ -6,10 +7,23 @@ from genetic_framework.core import *
 class BestFitnessMatingSelector(MatingSelector):
 
     @staticmethod
-    def select_couples(population: List[Individual]) \
+    def select_couples(population: List[Individual], num_pairs: int) \
             -> List[Tuple[Individual, Individual]]:
-        # TODO: implement this method
-        return [(individual, individual) for individual in population]
+        population.sort(key=lambda individual: -individual.fitness())
+        pairs: List[Tuple[Individual, Individual]] = []
+        size = len(population)
+
+        if size <= 1:
+            return []
+
+        i = 0
+        while i < num_pairs and i < size - 1:
+            pairs.append((population[i], population[i+1]))
+            i += 2
+        if (size % 2) != 0:
+            pairs.append((population[i-1], population[i]))
+
+        return pairs
 
 
 class BestFitnessSurvivorSelector(SurvivorSelector):
