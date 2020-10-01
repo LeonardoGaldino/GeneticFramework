@@ -120,10 +120,12 @@ class BitStringChromosome(Chromosome[str, QueenPositionPhenotype, BitStringGenot
     def genotypes(self) -> List[BitStringGenotype]:
         chess_size = self.custom_data['chess_size']
         genotype_size = BitStringGenotype.STRING_SIZE
-        genos = [BitStringGenotype(self.custom_data)]*chess_size
+        genos: List[BitStringGenotype] = []
 
         for i in range(chess_size):
-            genos[i].data = self.data[i*genotype_size : (i+1)*genotype_size]
+            gene = BitStringGenotype(self.custom_data)
+            gene.data = self.data[i*genotype_size : (i+1)*genotype_size]
+            genos.append(gene)
 
         return genos
 
