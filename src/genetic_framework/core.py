@@ -32,6 +32,10 @@ class Phenotype(Generic[T], ABC):
     def __str__(self) -> str:
         ...
 
+    @abstractmethod
+    def __repr__(self) -> str:
+        ...
+
 
 class Genotype(Generic[T], ABC):
     """Defines an abstract class for holding information about Genes."""
@@ -62,6 +66,10 @@ class Genotype(Generic[T], ABC):
     
     @abstractmethod
     def __str__(self) -> str:
+        ...
+
+    @abstractmethod
+    def __repr__(self) -> str:
         ...
 
 
@@ -111,6 +119,10 @@ class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
 
     @abstractmethod
     def __str__(self) -> str:
+        ...
+
+    @abstractmethod
+    def __repr__(self) -> str:
         ...
 
 """ Python's method override is invariant, hence we cannot override methods 
@@ -270,6 +282,9 @@ class Individual(Generic[ChromosomeT]):
 
     def __str__(self) -> str:
         return str(self.chromosome)
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class MatingSelector(CustomDataHolder, ABC):

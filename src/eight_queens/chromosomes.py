@@ -32,6 +32,9 @@ class QueenPositionPhenotype(Phenotype[Tuple[int, int]]):
     def __str__(self) -> str:
         return '({}, {})'.format(self.data[0], self.data[1])
 
+    def __repr__(self) -> str:
+        return self.__str__()
+
 
 class BitStringGenotype(Genotype[str]):
     STRING_SIZE = 32
@@ -63,6 +66,9 @@ class BitStringGenotype(Genotype[str]):
     
     def __str__(self) -> str:
         return str(self.data)
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class BitStringChromosome(Chromosome[str, QueenPositionPhenotype, BitStringGenotype]):
@@ -133,3 +139,6 @@ class BitStringChromosome(Chromosome[str, QueenPositionPhenotype, BitStringGenot
 
     def __str__(self) -> str:
         return self.data
+
+    def __repr__(self) -> str:
+        return self.__str__()
