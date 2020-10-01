@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from typing import Type, List, Tuple, TypeVar, Generic, Dict
 from functools import lru_cache
+from random import random
 
 
 """ TypeVariable for Generic types Chromosome, Phenotype, Genotype since each
@@ -330,6 +331,10 @@ class Population:
         parents = self.mating_selector_cls.select_couples(self.population)
         breed = [p1.recombine(p2) for i in range(self.breed_size) for (p1, p2)\
             in parents]
+        for child in breed:
+            r = random()
+            if r < self.mutation_prob:
+                child.self_mutate()
 
         return breed
 
