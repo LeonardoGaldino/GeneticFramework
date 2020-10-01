@@ -356,11 +356,11 @@ class IndividualSelector(ABC):
         ...
 
 
-class Experiment(Generic[ChromosomeT]):
+class Experiment:
     
     def __init__(self, population_size: int, max_generations: int, 
         crossover_prob: float, mutation_prob: float, num_solutions: int, 
-        breed_size: int, chromosome_cls: Type[ChromosomeT], 
+        breed_size: int, chromosome_cls: Type[Chromosome], 
         fitness_computer_cls: Type[FitnessComputer], 
         mutator_cls: Type[Mutator],
         recombiner_cls: Type[Recombiner],
