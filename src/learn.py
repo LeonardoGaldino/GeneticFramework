@@ -18,7 +18,10 @@ from eight_queens.utils import *
 
 PROGRAM_DESCRIPTION = "Learns eight queens puzzle through genetic algorithm"
 
-
+""" Enums for choosing classes for tunning the algorithm
+If new classes are implemented, add them in the corresponding enum
+to make it available as CLI argument.
+"""
 class FitnessComputerEnum(Enum):
     QUEEN_ATTACK_COUNT = QueenAttackCountFitnessComputer
 
@@ -48,6 +51,7 @@ class SolutionSelectorEnum(Enum):
 
 
 class CLIArgumentDescription:
+    # Class designed to model the fields that an CLI Argument should define
 
     def __init__(self, _type: Type, default_value: Any, short_name: str, 
         full_name: str, help_message: str, action_cls: Type[Action]) -> None:
@@ -59,6 +63,8 @@ class CLIArgumentDescription:
             " (default={})".format(default_value)
         self.action_cls = action_cls
 
+
+# argparse.Actions for validating CLI arguments.
 
 class EnumConstraintAction(Action):
     """Class responsible for sanitizing probability CLI inputs' range [0, 1]"""
@@ -105,6 +111,7 @@ class CheckPositiveIntegerConstraintAction(Action):
         setattr(namespace, self.dest, values)
 
 
+# Every CLI Argument this script takes
 ARGS = [
     CLIArgumentDescription(_type=int, default_value=8, 
         short_name='cs', full_name='chess_size', 
