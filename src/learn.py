@@ -54,11 +54,12 @@ class CLIArgumentDescription:
     # Class designed to model the fields that an CLI Argument should define
 
     def __init__(self, _type: Type, default_value: Any, short_name: str, 
-        full_name: str, help_message: str, action_cls: Type[Action]) -> None:
+        full_name: str, value_name: str, help_message: str, action_cls: Type[Action]) -> None:
         self.type = _type
         self.default_value = default_value
         self.short_name = '-{}'.format(short_name)
         self.full_name = '--{}'.format(full_name)
+        self.value_name = value_name
         self.help_message = help_message.replace('\n', '').replace('\td', '') + \
             " (default={})".format(default_value)
         self.action_cls = action_cls
@@ -114,91 +115,91 @@ class CheckPositiveIntegerConstraintAction(Action):
 # Every CLI Argument this script takes
 ARGS = [
     CLIArgumentDescription(_type=int, default_value=8, 
-        short_name='cs', full_name='chess_size', 
+        short_name='cs', full_name='chess_size', value_name='CHESS_SIZE',
         help_message="""Specify the size of the chess board in which the puzzle 
             takes place.""", action_cls=CheckPositiveIntegerConstraintAction),
 
     CLIArgumentDescription(_type=int, default_value=100, 
-        short_name='ps', full_name='population_size', 
+        short_name='ps', full_name='population_size', value_name='POP_SIZE',
         help_message="""Specify the size of the population that the algorithm 
             will evolve to find solutions.""",
         action_cls=CheckPositiveIntegerConstraintAction),
         
     CLIArgumentDescription(_type=int, default_value=50, 
-        short_name='mg', full_name='max_generations', 
+        short_name='mg', full_name='max_generations', value_name='MAX_GENS',
         help_message="""Specify the maximum number of generations the 
             algorithm should evolve to find solutions.""",
         action_cls=CheckPositiveIntegerConstraintAction),
 
     CLIArgumentDescription(_type=int, default_value=5, 
-        short_name='ns', full_name='number_solutions', 
+        short_name='ns', full_name='number_solutions', value_name='NUM_SOLUTIONS',
         help_message="""Specify the number of solutions the algorithm should 
             find.""",
         action_cls=CheckPositiveIntegerConstraintAction),
 
     CLIArgumentDescription(_type=int, default_value=2, 
-        short_name='bs', full_name='breed_size', 
+        short_name='bs', full_name='breed_size', value_name='BREED_SIZE',
         help_message="""Specify the number of children that should be created 
             for each pair or parents.""",
         action_cls=CheckPositiveIntegerConstraintAction),
 
     CLIArgumentDescription(_type=float, default_value=0.4, 
-        short_name='mp', full_name='mutation_probability', 
+        short_name='mp', full_name='mutation_probability', value_name='MUTATION_PROB',
         help_message="""Specify the probability that a mutation will occur 
             when new individual is generated.""",
         action_cls=CheckProbabilityConstraintAction),
 
     CLIArgumentDescription(_type=float, default_value=0.9, 
-        short_name='cp', full_name='crossover_probability', 
+        short_name='cp', full_name='crossover_probability', value_name='CROSS_PROB',
         help_message="""Specify the probability that two given individuals 
             will recombine.""",
         action_cls=CheckProbabilityConstraintAction),
 
     CLIArgumentDescription(_type=FitnessComputerEnum, 
         default_value=FitnessComputerEnum.QUEEN_ATTACK_COUNT.value, 
-        short_name='fc', full_name='fitness_computer', 
+        short_name='fc', full_name='fitness_computer', value_name='FITNESS_COMPUTER',
         help_message="""Specify the class responsible for computing individuals 
             fitness.""",
         action_cls=EnumConstraintAction),
 
     CLIArgumentDescription(_type=ChromosomeEnum, 
         default_value=ChromosomeEnum.BIT_STRING.value, 
-        short_name='chr', full_name='chromosome', 
+        short_name='chr', full_name='chromosome', value_name='CHROMOSOME',
         help_message="""Specify the chromosome class. Will define how solutions
             are encoded and manipulated.""",
         action_cls=EnumConstraintAction),
 
     CLIArgumentDescription(_type=MutatorEnum, 
         default_value=MutatorEnum.RANDOMIZE_GENE.value, 
-        short_name='mut', full_name='mutator', 
+        short_name='mut', full_name='mutator', value_name='MUTATOR',
         help_message="""Specify the mutator class. Will define how solutions
             are mutated during evolution.""",
         action_cls=EnumConstraintAction),
 
     CLIArgumentDescription(_type=RecombinerEnum, 
         default_value=RecombinerEnum.CUT_CROSS_FILL.value, 
-        short_name='rec', full_name='recombiner', 
+        short_name='rec', full_name='recombiner', value_name='RECOMBINER',
         help_message="""Specify the recombiner class. Will define how solutions
             are recombined together to generate new ones during evolution.""",
         action_cls=EnumConstraintAction),
 
     CLIArgumentDescription(_type=SurvivorSelectorEnum, 
         default_value=SurvivorSelectorEnum.BEST_FITNESS.value, 
-        short_name='susel', full_name='survivor_selector', 
+        short_name='susel', full_name='survivor_selector', value_name='SURVIVOR_SEL',
         help_message="""Specify Survivor Selector class. Will define how 
             individuals are chosen to go on to next generation.""",
         action_cls=EnumConstraintAction),
 
     CLIArgumentDescription(_type=MatingSelectorEnum, 
         default_value=MatingSelectorEnum.BEST_FITNESS.value, 
-        short_name='msel', full_name='mating_selector', 
+        short_name='msel', full_name='mating_selector', value_name='MATING_SEL',
         help_message="""Specify Mating Selector class. Will define how 
             individuals are chosen to generate children for next generation.""",
         action_cls=EnumConstraintAction),
 
     CLIArgumentDescription(_type=SolutionSelectorEnum, 
         default_value=SolutionSelectorEnum.K_BEST_FITNESS.value, 
-        short_name='sosel', full_name='solution_selector', 
+        short_name='sosel', full_name='solution_selector', value_name='SOLUTION_SEL',
         help_message="""Specify Solution Selector class. Will define how 
             best individuals are chosen as solution to the problem after the
             experiment.""",
@@ -230,7 +231,7 @@ if __name__ == '__main__':
     for arg in ARGS:
         parser.add_argument(arg.short_name, arg.full_name, 
             help=arg.help_message, action=arg.action_cls, type=arg.type, 
-            default=arg.default_value)
+            metavar=arg.value_name, default=arg.default_value)
     args = parser.parse_args()
 
     main(**args.__dict__)
