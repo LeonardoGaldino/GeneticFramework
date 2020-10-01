@@ -5,6 +5,7 @@ eight queen problem.
 """
 from argparse import ArgumentParser, Action
 from typing import Type, Any
+from enum import Enum
 
 from genetic_framework.core import *
 from eight_queens.chromosomes import *
@@ -16,6 +17,34 @@ from eight_queens.utils import *
 
 
 PROGRAM_DESCRIPTION = "Learns eight queens puzzle through genetic algorithm"
+
+
+class FitnessComputerEnum(Enum):
+    QUEEN_ATTACK_COUNT = QueenAttackCountFitnessComputer
+
+
+class ChromosomeEnum(Enum):
+    BIT_STRING = BitStringChromosome
+
+
+class MutatorEnum(Enum):
+    RANDOMIZE_GENE = RandomizeGeneMutator
+
+
+class RecombinerEnum(Enum):
+    CUT_CROSS_FILL = CutCrossFillRecombiner
+
+
+class SurvivorSelectorEnum(Enum):
+    BEST_FITNESS = BestFitnessSurvivorSelector
+
+
+class MatingSelectorEnum(Enum):
+    BEST_FITNESS = BestFitnessMatingSelector    
+
+
+class IndividualSelectorEnum(Enum):
+    K_BEST_FITNESS = KBestFitnessIndividualSelector
 
 
 class CLIArgumentDescription:
@@ -31,9 +60,32 @@ class CLIArgumentDescription:
         self.action_cls = action_cls
 
 
+class EnumConstraintAction(Action):
+    """Class responsible for sanitizing probability CLI inputs' range [0, 1]"""
+
+    def __init__(self, **kwargs):
+        enum = kwargs.pop("type", None)
+        kwargs['type'] = str
+
+        if enum is None:
+            raise ValueError("type must be assigned an Enum when using EnumAction")
+        if not issubclass(enum, Enum):
+            raise TypeError("type must be an Enum when using EnumAction")
+
+        # Generate choices from the Enum
+        kwargs.setdefault("choices", tuple(e.name for e in enum))
+
+        super().__init__(**kwargs)
+
+        self._enum = enum
+
+    def __call__(self, parser, namespace, values, option_string = None) -> None:
+        setattr(namespace, self.dest, self._enum[values].value)
+
+
 class CheckProbabilityConstraintAction(Action):
     """Class responsible for sanitizing probability CLI inputs' range [0, 1]"""
-    
+
     def __call__(self, parser, namespace, values, option_string = None) -> None:
         if values < 0 or values > 1.0:
             raise ValueError(
@@ -94,6 +146,56 @@ ARGS = [
         help_message="""Specify the probability that two given individuals 
             will recombine.""",
         action_cls=CheckProbabilityConstraintAction),
+
+    CLIArgumentDescription(_type=FitnessComputerEnum, 
+        default_value=FitnessComputerEnum.QUEEN_ATTACK_COUNT.value, 
+        short_name='fc', full_name='fitness_computer', 
+        help_message="""Specify the class responsible for computing individuals 
+            fitness.""",
+        action_cls=EnumConstraintAction),
+
+    CLIArgumentDescription(_type=ChromosomeEnum, 
+        default_value=ChromosomeEnum.BIT_STRING.value, 
+        short_name='chr', full_name='chromosome', 
+        help_message="""Specify the chromosome class. Will define how solutions
+            are encoded and manipulated.""",
+        action_cls=EnumConstraintAction),
+
+    CLIArgumentDescription(_type=MutatorEnum, 
+        default_value=MutatorEnum.RANDOMIZE_GENE.value, 
+        short_name='mut', full_name='mutator', 
+        help_message="""Specify the mutator class. Will define how solutions
+            are mutated during evolution.""",
+        action_cls=EnumConstraintAction),
+
+    CLIArgumentDescription(_type=RecombinerEnum, 
+        default_value=RecombinerEnum.CUT_CROSS_FILL.value, 
+        short_name='rec', full_name='recombiner', 
+        help_message="""Specify the recombiner class. Will define how solutions
+            are recombined together to generate new ones during evolution.""",
+        action_cls=EnumConstraintAction),
+
+    CLIArgumentDescription(_type=SurvivorSelectorEnum, 
+        default_value=SurvivorSelectorEnum.BEST_FITNESS.value, 
+        short_name='ssel', full_name='survivor_selector', 
+        help_message="""Specify Survivor Selector class. Will define how 
+            individuals are chosen to go on to next generation.""",
+        action_cls=EnumConstraintAction),
+
+    CLIArgumentDescription(_type=MatingSelectorEnum, 
+        default_value=MatingSelectorEnum.BEST_FITNESS.value, 
+        short_name='msel', full_name='mating_selector', 
+        help_message="""Specify Mating Selector class. Will define how 
+            individuals are chosen to generate children for next generation.""",
+        action_cls=EnumConstraintAction),
+
+    CLIArgumentDescription(_type=IndividualSelectorEnum, 
+        default_value=IndividualSelectorEnum.K_BEST_FITNESS.value, 
+        short_name='isel', full_name='individual_selector', 
+        help_message="""Specify Individual Selector class. Will define how 
+            best individuals are chosen as solution to the problem after the
+            experiment.""",
+        action_cls=EnumConstraintAction),
 ]
 
 
@@ -102,10 +204,10 @@ def main(**kwargs) -> None:
     experiment = Experiment(kwargs['population_size'], kwargs['max_generations'], 
         kwargs['crossover_probability'], kwargs['mutation_probability'],
         kwargs['number_solutions'], kwargs['breed_size'], 
-        BitStringChromosome, QueenAttackCountFitnessComputer, 
-        RandomizeGeneMutator, CutCrossFillRecombiner,
-        BestFitnessMatingSelector, BestFitnessSurvivorSelector, 
-        KBestFitnessIndividualSelector, dict(chess_size=kwargs['chess_size']))
+        kwargs['chromosome'], kwargs['fitness_computer'], 
+        kwargs['mutator'], kwargs['recombiner'],
+        kwargs['mating_selector'], kwargs['survivor_selector'], 
+        kwargs['individual_selector'], dict(chess_size=kwargs['chess_size']))
     best_individuals = experiment.run_experiment()
 
     print('\nSolutions:')
