@@ -350,7 +350,7 @@ class IndividualSelector(ABC):
         ...
 
     @abstractmethod
-    def update_individuals(self, population: Population) -> None:
+    def update_individuals(self, population: List[Individual]) -> None:
         """Updates (if necessary) the list of best individuals with 
         individuals from the specified population."""
         ...
@@ -413,7 +413,7 @@ class Experiment:
             print("Evolving Generation {}: {} average fitness..."
                 .format(i+1, population.avg_fitness()))
             population.evolve()
-            solution_selector.update_individuals(population)
+            solution_selector.update_individuals(population.population)
         print("Maximum generations achieved: {} average fitness."
             .format(population.avg_fitness()))
 
