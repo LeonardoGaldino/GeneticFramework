@@ -62,7 +62,6 @@ class KBestFitnessIndividualSelector(IndividualSelector):
     def best_individuals(self) -> List[Individual]:
         return self._best_individuals
 
-    @abstractmethod
     def update_individuals(self, population: List[Individual]) -> None:
         population.sort(key=lambda individual: individual.fitness())
         lower_bound = len(population) - self.number_solutions
