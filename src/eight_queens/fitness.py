@@ -5,7 +5,7 @@ from genetic_framework.core import *
 from eight_queens.chromosomes import *
 
 
-class BitStringFitnessComputer(FitnessComputer[BitStringChromosome]):
+class QueenAttackCountFitnessComputer(FitnessComputer[BitStringChromosome]):
     
     @staticmethod
     def _is_horizontally_attacking(x1: int, x2: int) -> bool:
@@ -24,12 +24,12 @@ class BitStringFitnessComputer(FitnessComputer[BitStringChromosome]):
             for p2 in phenotypes:
                 if p1 == p2:
                     continue
-                
+
                 attacking_queens_count += \
-                    BitStringFitnessComputer \
+                    QueenAttackCountFitnessComputer \
                         ._is_horizontally_attacking(p1.data[1], p2.data[1]) \
-                    or BitStringFitnessComputer \
+                    or QueenAttackCountFitnessComputer \
                         ._is_diagonally_attacking(p1.data[0], p1.data[1], p2.data[0], p2.data[1])
 
-        return attacking_queens_count/2
+        return attacking_queens_count
 
