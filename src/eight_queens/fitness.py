@@ -31,5 +31,5 @@ class QueenAttackCountFitnessComputer(FitnessComputer[BitStringChromosome]):
                     or QueenAttackCountFitnessComputer \
                         ._is_diagonally_attacking(p1.data[0], p1.data[1], p2.data[0], p2.data[1])
 
-        return attacking_queens_count
+        return 1/(1+attacking_queens_count)
 
