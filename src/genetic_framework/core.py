@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from typing import Type, List, Tuple, TypeVar, Generic, Dict
 from functools import lru_cache
-from random import random
+from random import random, randint
 
 
 """ TypeVariable for Generic types Chromosome, Phenotype, Genotype since each
@@ -329,12 +329,22 @@ class Population:
         """Internal method used to create a list of new individuals (breed)
         from the current generation."""
         parents = self.mating_selector_cls.select_couples(self.population)
-        breed = [p1.recombine(p2) for i in range(self.breed_size) for (p1, p2)\
-            in parents]
-        for child in breed:
-            r = random()
-            if r < self.mutation_prob:
-                child.self_mutate()
+        breed = []
+
+        for (p1, p2) in parents:
+            for i in range(self.breed_size):
+                # Generate child maybe cloned from parents
+                crossover_r = random()
+                if crossover_r < self.crossover_prob:
+                    breed.append(p1.recombine(p2))
+                else:
+                    chosen_parent_clone = p1 if randint(0, 1) == 0 else p2
+                    breed.append(chosen_parent_clone)
+
+                # Maybe mutate generated child
+                mutation_r = random()
+                if mutation_r < self.mutation_prob:
+                    breed[-1].self_mutate()
 
         return breed
 
