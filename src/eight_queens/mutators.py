@@ -1,5 +1,5 @@
 from random import randint
-from copy import copy
+from copy import deepcopy
 from functools import reduce
 
 from genetic_framework.core import *
@@ -11,7 +11,7 @@ class RandomizeGeneMutator(Mutator[BitStringChromosome]):
     @staticmethod
     def mutate(chromosome: BitStringChromosome) -> BitStringChromosome:
         new_chromosome = BitStringChromosome(chromosome.custom_data)
-        new_chromosome.data = copy(chromosome.data)
+        new_chromosome.data = deepcopy(chromosome.data)
         RandomizeGeneMutator.mutate_inplace(new_chromosome)
         return new_chromosome
 

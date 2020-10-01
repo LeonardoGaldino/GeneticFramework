@@ -1,4 +1,4 @@
-from copy import copy
+from copy import deepcopy
 from typing import List, Tuple, Dict
 
 from genetic_framework.core import *
@@ -64,15 +64,21 @@ class KBestFitnessSolutionSelector(SolutionSelector):
 
     def update_individuals(self, population: List[Individual]) -> None:
         population.sort(key=lambda individual: individual.fitness())
-        lower_bound = len(population) - self.number_solutions
+        size = len(population)
     
         if not self._best_individuals:
-            self._best_individuals = copy(population[lower_bound:])
+            # if no best individuals have been stored yet: 
+            # copy <number_solutions> best individuals from population
+            self._best_individuals = deepcopy(population[size - self.number_solutions:])
             return
 
-        i = lower_bound
-        while i < len(population) and \
-                population[i].fitness() > self.best_individuals[i - lower_bound].fitness():
-            self._best_individuals[i - lower_bound] = population[i]
+        i = 0
+        while i < self.number_solutions and \
+                population[size - 1 - i].fitness() > self._best_individuals[i].fitness():
+            self._best_individuals[i] = deepcopy(population[size - 1 - i])
             i += 1
+        if i > 0:
+            # elements have been added to the beginning: resort individuals
+            self._best_individuals.sort(key=lambda individual: individual.fitness())
+        
                 
