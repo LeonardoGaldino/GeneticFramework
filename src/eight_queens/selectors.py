@@ -59,6 +59,10 @@ class KBestFitnessSolutionSelector(SolutionSelector):
         self._best_individuals: List[Individual] = []
     
     @property
+    def best_individual(self) -> Individual:
+        return self._best_individuals[-1]
+
+    @property
     def best_individuals(self) -> List[Individual]:
         return self._best_individuals
 

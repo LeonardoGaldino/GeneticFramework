@@ -1,11 +1,12 @@
 """Module containing core classes for genetic algorithms."""
 from abc import ABC, abstractmethod
-from typing import Type, List, Tuple, TypeVar, Generic, Dict
+from typing import Type, List, Tuple, TypeVar, Generic, Dict, Optional
 from functools import lru_cache
 from random import random, randint
 from math import sqrt
 
 
+EPS = 1e-9
 """ TypeVariable for Generic types Chromosome, Phenotype, Genotype since each
 subclass of these will use its own data type to represent its internal data.
 """
@@ -384,6 +385,12 @@ class SolutionSelector(ABC):
     def __init__(self, number_solutions: int, custom_data: Dict = {}) -> None:
         self.number_solutions = number_solutions
         self.custom_data = custom_data
+
+    @property
+    @abstractmethod
+    def best_individual(self) -> Individual:
+        """Returns the best individual selected and stored so far."""
+        ...
     
     @property
     @abstractmethod
@@ -401,8 +408,9 @@ class SolutionSelector(ABC):
 class Experiment:
     
     def __init__(self, population_size: int, max_generations: int, 
-        crossover_prob: float, mutation_prob: float, num_solutions: int, 
-        breed_size: int, chromosome_cls: Type[Chromosome], 
+        crossover_prob: float, mutation_prob: float, target_fitness: Optional[float],
+        num_solutions: int, breed_size: int, 
+        chromosome_cls: Type[Chromosome], 
         fitness_computer_cls: Type[FitnessComputer], 
         mutator_cls: Type[Mutator],
         recombiner_cls: Type[Recombiner],
@@ -414,6 +422,7 @@ class Experiment:
         self.max_generations = max_generations
         self.crossover_prob = crossover_prob
         self.mutation_prob = mutation_prob
+        self.target_fitness = target_fitness
         self.num_solutions = num_solutions
         self.breed_size = breed_size
         self.chromosome_cls = chromosome_cls
@@ -444,20 +453,33 @@ class Experiment:
                 for i in range(self.population_size)]
 
     def run_experiment(self) -> List[Individual]:
-
         initial_individuals = self._generate_initial_individuals()
         population = Population(initial_individuals, self.crossover_prob, 
             self.mutation_prob, self.breed_size, self.mating_selector_cls,
             self.survivor_selector_cls)
         solution_selector = self.solution_selector_cls(self.num_solutions, self.custom_data)
 
-        for i in range(self.max_generations):
+        generation = 1
+        while generation <= self.max_generations:
             print("Evolving Generation {}: {:.3f} avg, {:.3f} standard deviation (fitness)."
-                .format(i+1, population.avg_fitness(), population.sd_fitness()))
+                .format(generation, population.avg_fitness(), population.sd_fitness()))
+
             population.evolve()
             solution_selector.update_individuals(population.population)
-        print("Maximum generations achieved: {:.3f} avg, {:.3f} standard deviation (fitness)."
-            .format(population.avg_fitness(), population.sd_fitness()))
+            generation += 1
+
+            if self.target_fitness is not None \
+                and float_less_equal(self.target_fitness, 
+                    solution_selector.best_individual.fitness()):
+                    print("Target fitness achieved ({})."
+                        .format(solution_selector.best_individual.fitness()))
+                    break
+        else:
+            print("Maximum generations achieved: {:.3f} avg, {:.3f} standard deviation (fitness)."
+                .format(population.avg_fitness(), population.sd_fitness()))
 
         return solution_selector.best_individuals
             
+
+def float_less_equal(f1: float, f2: float) -> bool:
+    return abs(f1-f2) < EPS or f1 < f2

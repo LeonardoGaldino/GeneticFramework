@@ -66,9 +66,9 @@ class CLIArgumentDescription:
 
 
 # argparse.Actions for validating CLI arguments.
-
 class EnumConstraintAction(Action):
-    """Class responsible for sanitizing probability CLI inputs' range [0, 1]"""
+    """Class responsible for sanitizing enum CLI inputs 
+    (making sure value is a valid enum)"""
 
     def __init__(self, **kwargs):
         enum = kwargs.pop("type", None)
@@ -111,6 +111,12 @@ class CheckPositiveIntegerConstraintAction(Action):
                     .format(option_string, values))
         setattr(namespace, self.dest, values)
 
+class NoConstraintAction(Action):
+    """Dummy Action for arguments with no constraints"""
+    
+    def __call__(self, parser, namespace, values, option_string = None) -> None:
+        setattr(namespace, self.dest, values)
+
 
 # Every CLI Argument this script takes
 ARGS = [
@@ -142,6 +148,12 @@ ARGS = [
         help_message="""Specify the number of children that should be created 
             for each pair or parents.""",
         action_cls=CheckPositiveIntegerConstraintAction),
+
+    CLIArgumentDescription(_type=float, default_value=None, 
+        short_name='tf', full_name='target_fitness', value_name='TARGET_FITNESS',
+        help_message="""Specify the fitness of a good enough solution, so that 
+            the algorithm can stop.""",
+        action_cls=NoConstraintAction),
 
     CLIArgumentDescription(_type=float, default_value=0.4, 
         short_name='mp', full_name='mutation_probability', value_name='MUTATION_PROB',
@@ -211,7 +223,7 @@ def main(**kwargs) -> None:
     print('Using these CLI arguments: {}'.format(kwargs))
     experiment = Experiment(kwargs['population_size'], kwargs['max_generations'], 
         kwargs['crossover_probability'], kwargs['mutation_probability'],
-        kwargs['number_solutions'], kwargs['breed_size'], 
+        kwargs['target_fitness'], kwargs['number_solutions'], kwargs['breed_size'], 
         kwargs['chromosome'], kwargs['fitness_computer'], 
         kwargs['mutator'], kwargs['recombiner'],
         kwargs['mating_selector'], kwargs['survivor_selector'], 
