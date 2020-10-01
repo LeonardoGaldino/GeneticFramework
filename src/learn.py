@@ -80,7 +80,7 @@ ARGS = [
     CLIArgumentDescription(_type=int, default_value=2, 
         short_name='bs', full_name='breed_size', 
         help_message="""Specify the number of children that should be created 
-            in each generation.""",
+            for each pair or parents.""",
         action_cls=CheckPositiveIntegerConstraintAction),
 
     CLIArgumentDescription(_type=float, default_value=0.4, 
