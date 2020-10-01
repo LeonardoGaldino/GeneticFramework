@@ -6,6 +6,14 @@ eight queen problem.
 from argparse import ArgumentParser, Action
 from typing import Type, Any
 
+from genetic_framework.core import *
+from eight_queens.chromosomes import *
+from eight_queens.fitness import *
+from eight_queens.mutators import *
+from eight_queens.recombiners import *
+from eight_queens.selectors import *
+from eight_queens.utils import *
+
 
 PROGRAM_DESCRIPTION = "Learns eight queens puzzle through genetic algorithm"
 
@@ -90,7 +98,22 @@ ARGS = [
 
 
 def main(**kwargs) -> None:
-    print('CLI Arguments: {}'.format(kwargs))
+    print('Using these CLI arguments: {}'.format(kwargs))
+    experiment = Experiment(kwargs['population_size'], kwargs['max_generations'], 
+        kwargs['crossover_probability'], kwargs['mutation_probability'],
+        kwargs['number_solutions'], kwargs['breed_size'], 
+        BitStringChromosome, QueenAttackCountFitnessComputer, 
+        RandomizeGeneMutator, CutCrossFillRecombiner,
+        BestFitnessMatingSelector, BestFitnessSurvivorSelector, 
+        KBestFitnessIndividualSelector, dict(chess_size=kwargs['chess_size']))
+    best_individuals = experiment.run_experiment()
+
+    print('\nSolutions:')
+    for individual in best_individuals:
+        print('Fitness: {}'.format(individual.fitness()))
+        print_chess_board(individual.chromosome)
+        print('\n')
+
 
 if __name__ == '__main__':
     parser = ArgumentParser(description=PROGRAM_DESCRIPTION)
