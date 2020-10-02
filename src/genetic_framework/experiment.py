@@ -66,14 +66,13 @@ class Experiment:
             self.survivor_selector_cls)
         solution_selector = self.solution_selector_cls(self.num_solutions, self.custom_data)
 
-        generation = 1
-        while generation <= self.max_generations:
+        while population.generation <= self.max_generations:
             print("Evolving Generation {}: {:.3f} avg, {:.3f} standard deviation (fitness)."
-                .format(generation, population.avg_fitness(), population.sd_fitness()))
+                .format(population.generation, population.avg_fitness(),
+                     population.sd_fitness()))
 
             population.evolve()
             solution_selector.update_individuals(population.population)
-            generation += 1
 
             if self.target_fitness is not None \
                 and float_less_equal(self.target_fitness, 

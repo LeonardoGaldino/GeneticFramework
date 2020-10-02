@@ -19,6 +19,7 @@ class Population:
         self.breed_size = breed_size
         self.mating_selector_cls = mating_selector_cls
         self.survivor_selector_cls = survivor_selector_cls
+        self.generation = 1
 
     def _offspring(self) -> List[Individual]:
         """Internal method used to create a list of new individuals (breed)
@@ -49,6 +50,7 @@ class Population:
         survivors = self.survivor_selector_cls.select_survivors(len(self.population),
             self.population, breed)
         self.population = survivors
+        self.generation += 1
         self.avg_fitness.cache_clear()
         self.sd_fitness.cache_clear()
 
