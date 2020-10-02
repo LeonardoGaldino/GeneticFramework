@@ -29,6 +29,7 @@ class Individual(Generic[ChromosomeT]):
         self.generation = generation
         self.custom_data = custom_data
         
+        self.num_fitness_computed = 0
         self._chromosome = self.chromosome_cls(custom_data)
 
     def initialize(self) -> 'Individual':
@@ -47,6 +48,7 @@ class Individual(Generic[ChromosomeT]):
     # Caches fitness computation to avoid wasting CPU time
     @lru_cache
     def fitness(self) -> float:
+        self.num_fitness_computed += 1
         return self.fitness_computer_cls.fitness(self.chromosome)
 
     def self_mutate(self) -> 'Individual':

@@ -149,6 +149,12 @@ ARGS = [
             for each pair or parents.""",
         action_cls=CheckPositiveIntegerConstraintAction),
 
+    CLIArgumentDescription(_type=int, default_value=10000, 
+        short_name='mfc', full_name='max_fitness_comp', value_name='MAX_FIT_COMPS',
+        help_message="""Maximum number of fitness computations allowed to be 
+            done before algorithm stops.""",
+        action_cls=CheckPositiveIntegerConstraintAction),
+
     CLIArgumentDescription(_type=float, default_value=None, 
         short_name='tf', full_name='target_fitness', value_name='TARGET_FITNESS',
         help_message="""Specify the fitness of a good enough solution, so that 
@@ -224,7 +230,7 @@ def main(**kwargs) -> None:
     experiment = Experiment(kwargs['population_size'], kwargs['max_generations'], 
         kwargs['crossover_probability'], kwargs['mutation_probability'],
         kwargs['target_fitness'], kwargs['number_solutions'], kwargs['breed_size'], 
-        kwargs['chromosome'], kwargs['fitness_computer'], 
+        kwargs['max_fitness_comp'], kwargs['chromosome'], kwargs['fitness_computer'], 
         kwargs['mutator'], kwargs['recombiner'],
         kwargs['mating_selector'], kwargs['survivor_selector'], 
         kwargs['solution_selector'], dict(chess_size=kwargs['chess_size']))
