@@ -23,3 +23,29 @@ class RandomizeGeneMutator(Mutator[BitStringChromosome]):
         genes = chromosome.genotypes
         genes[gene_index].data = "{:032b}".format(new_gene_value)
         chromosome.genotypes = genes
+
+
+class SwapGeneMutator(Mutator[BitStringChromosome]):
+
+    @staticmethod
+    def mutate(chromosome: BitStringChromosome) -> BitStringChromosome:
+        new_chromosome = deepcopy(chromosome)
+        SwapGeneMutator.mutate_inplace(new_chromosome)
+        return new_chromosome
+
+    @staticmethod
+    def mutate_inplace(chromosome: BitStringChromosome) -> None:
+        chess_size = SwapGeneMutator.custom_data['chess_size']
+
+        r1 = randint(0, chess_size - 1)
+        r2 = randint(0, chess_size - 1)
+        while r1 == r2:
+            r2 = randint(0, chess_size - 1)
+
+        genes = chromosome.genotypes
+
+        # Swap genes
+        genes[r1], genes[r2] = genes[r2], genes[r1]
+        chromosome.genotypes = genes
+
+
