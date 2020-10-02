@@ -226,7 +226,7 @@ ARGS = [
 
 
 def main(**kwargs) -> None:
-    print('Using these CLI arguments: {}'.format(kwargs))
+    print('Using these CLI arguments: {}\n'.format(kwargs))
     experiment = Experiment(kwargs['population_size'], kwargs['max_generations'], 
         kwargs['crossover_probability'], kwargs['mutation_probability'],
         kwargs['target_fitness'], kwargs['number_solutions'], kwargs['breed_size'], 
