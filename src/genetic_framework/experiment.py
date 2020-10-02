@@ -56,7 +56,7 @@ class Experiment:
         """Internal method used to generate individuals for the first 
         generation of the experiment"""
         return [Individual(self.chromosome_cls, self.fitness_computer_cls, 
-            self.mutator_cls, self.recombiner_cls, self.custom_data).initialize()
+            self.mutator_cls, self.recombiner_cls, 1, self.custom_data).initialize()
                 for i in range(self.population_size)]
 
     def run_experiment(self) -> List[Individual]:

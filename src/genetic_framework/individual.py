@@ -20,11 +20,13 @@ class Individual(Generic[ChromosomeT]):
             fitness_computer_cls: Type[FitnessComputer],
             mutator_cls: Type[Mutator], 
             recombiner_cls: Type[Recombiner],
+            generation: int = 1,
             custom_data: Dict = {}) -> None:
         self.chromosome_cls = chromosome_cls
         self.fitness_computer_cls = fitness_computer_cls
         self.mutator_cls = mutator_cls
         self.recombiner_cls = recombiner_cls
+        self.generation = generation
         self.custom_data = custom_data
         
         self._chromosome = self.chromosome_cls(custom_data)
@@ -59,13 +61,13 @@ class Individual(Generic[ChromosomeT]):
         new_chromosome = self.recombiner_cls.recombine(self.chromosome,\
                 other.chromosome)
 
-        return self.new_individual(new_chromosome)
+        return self.new_individual(new_chromosome, self.generation + 1)
             
-    def new_individual(self, chromosome: ChromosomeT) -> 'Individual':
+    def new_individual(self, chromosome: ChromosomeT, generation: int = 1) -> 'Individual':
         """Returns a new individual with the given gene using the same fitness
         computer, genemutator, recombiner of this individual"""
         new_individual = Individual(self.chromosome_cls, self.fitness_computer_cls, 
-            self.mutator_cls, self.recombiner_cls, self.custom_data)
+            self.mutator_cls, self.recombiner_cls, generation, self.custom_data)
         new_individual.chromosome = chromosome
 
         return new_individual

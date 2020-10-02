@@ -232,7 +232,7 @@ def main(**kwargs) -> None:
 
     print('\nSolutions:')
     for individual in best_individuals:
-        print('Fitness: {}'.format(individual.fitness()))
+        print('Gen: {}, Fitness: {}'.format(individual.generation, individual.fitness()))
         print_chess_board(individual.chromosome)
         print('\n')
 
