@@ -96,14 +96,32 @@ class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
     def initialize(self) -> None:
         ...
 
-    @property
+    # Compute it from underlying self._data
+    # (https://github.com/python/mypy/issues/4165)    
+    @property # type:ignore
     @abstractmethod
     def genotypes(self) -> List[GenotypeT]:
         ...
 
-    @property
+    # Use genotypes to change underlying self._data
+    # (https://github.com/python/mypy/issues/4165)
+    @genotypes.setter # type:ignore
+    @abstractmethod
+    def genotypes(self, genes: List[GenotypeT]) -> None:
+        ...
+
+    # Compute it from underlying self._data
+    # (https://github.com/python/mypy/issues/4165)
+    @property # type:ignore
     @abstractmethod
     def phenotypes(self) -> List[PhenotypeT]:
+        ...
+
+    # Use phenotypes to change underlying self._data
+    # (https://github.com/python/mypy/issues/4165)
+    @phenotypes.setter # type:ignore
+    @abstractmethod
+    def phenotypes(self, phenotypes: List[PhenotypeT]) -> None:
         ...
 
     # (https://github.com/python/mypy/issues/4165)

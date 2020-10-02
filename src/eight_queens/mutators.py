@@ -1,6 +1,5 @@
 from random import randint
 from copy import deepcopy
-from functools import reduce
 
 from genetic_framework.mutator import Mutator
 from eight_queens.chromosomes import BitStringChromosome
@@ -24,4 +23,4 @@ class RandomizeGeneMutator(Mutator[BitStringChromosome]):
 
         genes = chromosome.genotypes
         genes[gene_index].data = "{:032b}".format(new_gene_value)
-        chromosome.data = reduce(lambda acc, gene: acc + gene.data, genes, '')
+        chromosome.genotypes = genes

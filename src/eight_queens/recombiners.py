@@ -1,5 +1,4 @@
 from random import randint
-from functools import reduce
 
 from genetic_framework.recombiner import Recombiner
 from eight_queens.chromosomes import *
@@ -18,5 +17,5 @@ class CutCrossFillRecombiner(Recombiner[BitStringChromosome]):
         cut_point = randint(0, chess_size)
         mixed_genes = genes1[:cut_point] + genes2[cut_point:]
 
-        new_chromosome.data = reduce(lambda acc, gene: acc + gene.data, mixed_genes, '')
+        new_chromosome.genotypes = mixed_genes
         return new_chromosome
