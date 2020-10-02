@@ -117,6 +117,7 @@ class BitStringChromosome(Chromosome[str, QueenPositionPhenotype, BitStringGenot
         new_phenotype.data = (int(gene.data, 2), kwargs['index'])
         return new_phenotype
 
+    @property
     def genotypes(self) -> List[BitStringGenotype]:
         chess_size = self.custom_data['chess_size']
         genotype_size = BitStringGenotype.STRING_SIZE
@@ -129,9 +130,10 @@ class BitStringChromosome(Chromosome[str, QueenPositionPhenotype, BitStringGenot
 
         return genos
 
+    @property
     def phenotypes(self) -> List[QueenPositionPhenotype]:
         chess_size = self.custom_data['chess_size']
-        genos = self.genotypes()
+        genos = self.genotypes
         phenos: List[QueenPositionPhenotype] = []
 
         for i in range(chess_size):

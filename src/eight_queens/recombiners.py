@@ -12,8 +12,8 @@ class CutCrossFillRecombiner(Recombiner[BitStringChromosome]):
         chess_size = CutCrossFillRecombiner.custom_data['chess_size']
 
         new_chromosome = BitStringChromosome(chromosome1.custom_data)
-        genes1 = chromosome1.genotypes()
-        genes2 = chromosome2.genotypes()
+        genes1 = chromosome1.genotypes
+        genes2 = chromosome2.genotypes
 
         cut_point = randint(0, chess_size)
         mixed_genes = genes1[:cut_point] + genes2[cut_point:]

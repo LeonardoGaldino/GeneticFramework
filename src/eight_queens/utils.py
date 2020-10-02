@@ -6,7 +6,7 @@ from eight_queens.chromosomes import *
 def print_chess_board(chromosome: BitStringChromosome) -> None:
     chess_size = chromosome.custom_data['chess_size']
     queen_positions = [(pheno.data[0], pheno.data[1]) 
-        for pheno in chromosome.phenotypes()]
+        for pheno in chromosome.phenotypes]
     
     board: List[List[str]] = []
     for i in range(chess_size):

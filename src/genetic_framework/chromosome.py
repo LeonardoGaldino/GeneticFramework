@@ -80,6 +80,7 @@ definition).
 PhenotypeT = TypeVar('PhenotypeT', bound=Phenotype)
 GenotypeT = TypeVar('GenotypeT', bound=Genotype)
 
+
 class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
 
     @abstractmethod
@@ -95,10 +96,12 @@ class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
     def initialize(self) -> None:
         ...
 
+    @property
     @abstractmethod
     def genotypes(self) -> List[GenotypeT]:
         ...
 
+    @property
     @abstractmethod
     def phenotypes(self) -> List[PhenotypeT]:
         ...

@@ -22,6 +22,6 @@ class RandomizeGeneMutator(Mutator[BitStringChromosome]):
         gene_index = randint(0, chess_size - 1)
         new_gene_value = randint(0, chess_size - 1)
 
-        genes = chromosome.genotypes()
+        genes = chromosome.genotypes
         genes[gene_index].data = "{:032b}".format(new_gene_value)
         chromosome.data = reduce(lambda acc, gene: acc + gene.data, genes, '')

@@ -17,7 +17,7 @@ class QueenAttackCountFitnessComputer(FitnessComputer[BitStringChromosome]):
 
     @staticmethod
     def fitness(chromosome: BitStringChromosome) -> float:
-        phenotypes = chromosome.phenotypes()
+        phenotypes = chromosome.phenotypes
 
         attacking_queens_count = 0.0
         for p1 in phenotypes:
