@@ -39,7 +39,8 @@ class MutatorEnum(Enum):
 
 
 class RecombinerEnum(Enum):
-    CUT_CROSS_FILL = CutCrossFillRecombiner
+    BIT_STR_CUT_CROSS_FILL = BitStringCutCrossfillRecombiner
+    INT_PERM = IntPermutationRecombiner
 
 
 class SurvivorSelectorEnum(Enum):
@@ -199,7 +200,7 @@ ARGS = [
         action_cls=EnumConstraintAction),
 
     CLIArgumentDescription(_type=RecombinerEnum, 
-        default_value=RecombinerEnum.CUT_CROSS_FILL.value, 
+        default_value=RecombinerEnum.BIT_STR_CUT_CROSS_FILL.value, 
         short_name='rec', full_name='recombiner', value_name='RECOMBINER',
         help_message="""Specify the recombiner class. Will define how solutions
             are recombined together to generate new ones during evolution.""",
