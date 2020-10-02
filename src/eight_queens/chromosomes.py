@@ -1,45 +1,10 @@
-from typing import Generic, Tuple, Dict, List
+from typing import Dict, List
 from random import randint
-from math import log2, ceil
 from functools import reduce
 
 from eight_queens.phenotypes import QueenPositionPhenotype
-from genetic_framework.chromosome import Genotype, Chromosome
-
-
-class BitStringGenotype(Genotype[str]):
-    STRING_SIZE = 32
-
-    def __init__(self, custom_data: Dict = {}) -> None:
-        super().__init__(custom_data)
-        self._data: str = ""
-
-
-    def initialize(self) -> None:
-        chess_size = self.custom_data['chess_size']
-        column = randint(0, chess_size - 1)
-        self._data = "{:032b}".format(column)
-
-    @property
-    def data(self) -> str:
-        return self._data
-
-    @data.setter
-    def data(self, new_data: str) -> None:
-        chess_size = self.custom_data['chess_size']
-        integer_data = int(new_data, 2)
-
-        if integer_data < 0 or integer_data >= chess_size:
-            raise ValueError('Tried to set BitStringGenotype data with ({}). Should be [{}, {}]'
-                .format(integer_data, 0, chess_size - 1))
-
-        self._data = new_data
-    
-    def __str__(self) -> str:
-        return str(self.data)
-
-    def __repr__(self) -> str:
-        return self.__str__()
+from eight_queens.genotypes import BitStringGenotype
+from genetic_framework.chromosome import Chromosome
 
 
 class BitStringChromosome(Chromosome[str, QueenPositionPhenotype, BitStringGenotype]):
@@ -54,7 +19,6 @@ class BitStringChromosome(Chromosome[str, QueenPositionPhenotype, BitStringGenot
         self._data = ""
         for i in range(chess_size):
             self._data += "{:032b}".format(randint(0, chess_size - 1))
-
 
     @property
     def data(self) -> str:
