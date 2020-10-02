@@ -92,6 +92,11 @@ class Chromosome(Generic[PhenotypeT, GenotypeT], ABC):
     def genotype_to_phenotype(gene: GenotypeT, **kwargs) -> PhenotypeT:
         ...
 
+    @staticmethod
+    @abstractmethod
+    def phenotype_to_genotype(phenotype: PhenotypeT, **kwargs) -> GenotypeT:
+        ...
+
     @abstractmethod
     def initialize(self) -> None:
         ...

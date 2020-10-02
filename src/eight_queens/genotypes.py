@@ -24,8 +24,12 @@ class BitStringGenotype(Genotype[str]):
     @data.setter
     def data(self, new_data: str) -> None:
         chess_size = self.custom_data['chess_size']
-        integer_data = int(new_data, 2)
 
+        if len(new_data) != BitStringGenotype.STRING_SIZE:
+            raise ValueError('Tried to set BitStringGenotype data with data of wrong size ({}). Should be {}.'
+                .format(len(new_data), BitStringGenotype.STRING_SIZE))
+
+        integer_data = int(new_data, 2)
         if integer_data < 0 or integer_data >= chess_size:
             raise ValueError('Tried to set BitStringGenotype data with ({}). Should be [{}, {}]'
                 .format(integer_data, 0, chess_size - 1))
