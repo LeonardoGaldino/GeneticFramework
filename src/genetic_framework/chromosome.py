@@ -81,7 +81,7 @@ PhenotypeT = TypeVar('PhenotypeT', bound=Phenotype)
 GenotypeT = TypeVar('GenotypeT', bound=Genotype)
 
 
-class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
+class Chromosome(Generic[PhenotypeT, GenotypeT], ABC):
 
     @abstractmethod
     def __init__(self, custom_data: Dict = {}) -> None:
@@ -96,44 +96,28 @@ class Chromosome(Generic[T, PhenotypeT, GenotypeT], ABC):
     def initialize(self) -> None:
         ...
 
-    # Compute it from underlying self._data
     # (https://github.com/python/mypy/issues/4165)    
     @property # type:ignore
     @abstractmethod
     def genotypes(self) -> List[GenotypeT]:
         ...
 
-    # Use genotypes to change underlying self._data
     # (https://github.com/python/mypy/issues/4165)
     @genotypes.setter # type:ignore
     @abstractmethod
     def genotypes(self, genes: List[GenotypeT]) -> None:
         ...
 
-    # Compute it from underlying self._data
     # (https://github.com/python/mypy/issues/4165)
     @property # type:ignore
     @abstractmethod
     def phenotypes(self) -> List[PhenotypeT]:
         ...
 
-    # Use phenotypes to change underlying self._data
     # (https://github.com/python/mypy/issues/4165)
     @phenotypes.setter # type:ignore
     @abstractmethod
     def phenotypes(self, phenotypes: List[PhenotypeT]) -> None:
-        ...
-
-    # (https://github.com/python/mypy/issues/4165)
-    @property # type:ignore
-    @abstractmethod
-    def data(self) -> T:
-        ...
-
-    # (https://github.com/python/mypy/issues/4165)
-    @data.setter # type:ignore
-    @abstractmethod
-    def data(self, new_data: T) -> None:
         ...
 
     @abstractmethod
