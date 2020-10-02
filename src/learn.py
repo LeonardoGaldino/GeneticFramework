@@ -23,7 +23,8 @@ If new classes are implemented, add them in the corresponding enum
 to make it available as CLI argument.
 """
 class FitnessComputerEnum(Enum):
-    QUEEN_ATTACK_COUNT = QueenAttackCountFitnessComputer
+    BIT_STRING_COUNT = BitStringFitnessComputer
+    INT_PERM_COUNT = IntPermutationFitnessComputer
 
 
 class ChromosomeEnum(Enum):
@@ -175,7 +176,7 @@ ARGS = [
         action_cls=CheckProbabilityConstraintAction),
 
     CLIArgumentDescription(_type=FitnessComputerEnum, 
-        default_value=FitnessComputerEnum.QUEEN_ATTACK_COUNT.value, 
+        default_value=FitnessComputerEnum.BIT_STRING_COUNT.value, 
         short_name='fc', full_name='fitness_computer', value_name='FITNESS_COMPUTER',
         help_message="""Specify the class responsible for computing individuals 
             fitness.""",
