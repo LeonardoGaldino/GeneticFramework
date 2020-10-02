@@ -1,5 +1,4 @@
 from typing import Type, List, Tuple
-from math import ceil, log2
 
 from genetic_framework.fitness import FitnessComputer
 from eight_queens.chromosomes import *
