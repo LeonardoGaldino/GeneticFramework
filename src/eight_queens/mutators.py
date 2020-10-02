@@ -9,8 +9,7 @@ class RandomizeGeneMutator(Mutator[BitStringChromosome]):
 
     @staticmethod
     def mutate(chromosome: BitStringChromosome) -> BitStringChromosome:
-        new_chromosome = BitStringChromosome(chromosome.custom_data)
-        new_chromosome.data = deepcopy(chromosome.data)
+        new_chromosome = deepcopy(chromosome)
         RandomizeGeneMutator.mutate_inplace(new_chromosome)
         return new_chromosome
 
