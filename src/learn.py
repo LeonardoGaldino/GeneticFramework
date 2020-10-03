@@ -26,7 +26,6 @@ class FitnessComputerEnum(Enum):
     BIT_STRING_COUNT = BitStringFitnessComputer
     INT_PERM_COUNT = IntPermutationFitnessComputer
 
-
 class ChromosomeEnum(Enum):
     BIT_STRING = BitStringChromosome
     INT_PERMUTATION = IntPermutationChromosome
@@ -67,7 +66,7 @@ class CLIArgumentDescription:
         self.full_name = '--{}'.format(full_name)
         self.value_name = value_name
         self.help_message = help_message.replace('\n', '').replace('\td', '') + \
-            " (default={})".format(default_value)
+            " (default={}).".format(default_value)
         self.action_cls = action_cls
 
 
@@ -86,7 +85,9 @@ class EnumConstraintAction(Action):
             raise TypeError("type must be an Enum when using EnumAction")
 
         # Generate choices from the Enum
-        kwargs.setdefault("choices", tuple(e.name for e in enum))
+        choices = tuple(e.name for e in enum)
+        kwargs.setdefault("choices", choices)
+        kwargs['help'] += ' Choices: {}'.format(choices)
 
         super().__init__(**kwargs)
 
