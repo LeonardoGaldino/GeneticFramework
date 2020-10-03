@@ -7,7 +7,7 @@ from genetic_framework.individual import Individual
 
 class Roulette:
     def __init__(self, population: List[Individual]):
-        self._items: List[Roulette.Item] = list(map(lambda individual: Roulette.Item(individual, individual.fitness), population))
+        self._items: List[Roulette.Item] = list(map(lambda individual: Roulette.Item(individual, individual.fitness()), population))
         
         for i in range(1, len(self._items)):
             self._items[i].acc_probability += self._items[i - 1].acc_probability
