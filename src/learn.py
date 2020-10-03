@@ -48,7 +48,8 @@ class SurvivorSelectorEnum(Enum):
 
 
 class MatingSelectorEnum(Enum):
-    BEST_FITNESS = BestFitnessMatingSelector    
+    BEST_FITNESS = BestFitnessMatingSelector
+    ROULETTE = RouletteMatingSelector
 
 
 class SolutionSelectorEnum(Enum):
