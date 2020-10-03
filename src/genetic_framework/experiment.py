@@ -1,4 +1,4 @@
-from typing import Type, List, Dict, Optional
+from typing import Type, TypeVar, List, Dict, Optional, get_args
 from collections import defaultdict
 
 from genetic_framework.fitness import FitnessComputer
@@ -11,6 +11,26 @@ from genetic_framework.population import Population
 
 
 EPS = 1e-9
+
+# Check if cls class works with the specified chromosome type
+def is_correct_chromosome_type(cls: Type, chromosome_cls: Type[Chromosome]) -> bool:
+    if not hasattr(cls, '__orig_bases__'):
+        return False
+
+    for base in cls.__orig_bases__:
+        args = get_args(base)
+
+        for arg in args:
+            if type(arg) == TypeVar:
+                continue
+            if issubclass(arg, chromosome_cls):
+                return True
+
+        if hasattr(base, '__origin__') \
+            and is_correct_chromosome_type(base.__origin__, chromosome_cls):
+            return True
+
+    return False
 
 
 class Experiment:
@@ -53,6 +73,17 @@ class Experiment:
 
         self.solution_selector_cls = solution_selector_cls
         self.custom_data = custom_data
+
+        classes_to_be_validated = (
+            (fitness_computer_cls, 'FitnessComputer'), 
+            (mutator_cls, 'Mutator'), 
+            (recombiner_cls, 'Recombiner'),
+        )
+
+        for (cls, name) in classes_to_be_validated:
+            if not is_correct_chromosome_type(cls, chromosome_cls):
+               raise TypeError('{} {} does not work with chromosome {}.'
+                    .format(name, cls, chromosome_cls))
 
     def _generate_initial_individuals(self) -> List[Individual]:
         """Internal method used to generate individuals for the first 
