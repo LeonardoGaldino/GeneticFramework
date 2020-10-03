@@ -1,6 +1,7 @@
 from copy import deepcopy
 from typing import List, Tuple, Dict
 from random import random, randint
+from operator import attrgetter
 
 from genetic_framework.selectors import SurvivorSelector, MatingSelector, SolutionSelector
 from genetic_framework.individual import Individual
@@ -79,6 +80,18 @@ class BestFitnessSurvivorSelector(SurvivorSelector):
         return new_generation_individuals
 
 
+class GenerationalSurvivorSelector(SurvivorSelector):
+
+    @staticmethod
+    def select_survivors(population_size: int, parents: List[Individual],
+            breed: List[Individual]) -> List[Individual]:
+        new_generation_individuals: List[Individual] = []
+        new_generation_individuals.extend(parents)
+        new_generation_individuals.extend(breed)
+        new_generation_individuals.sort(key= lambda individual: (individual.generation, individual.fitness()), reverse= True)
+        return new_generation_individuals[:population_size]
+
+
 class KBestFitnessSolutionSelector(SolutionSelector):
 
     def __init__(self, number_solutions: int, custom_data: Dict = {}) -> None:
@@ -111,5 +124,3 @@ class KBestFitnessSolutionSelector(SolutionSelector):
         if i > 0:
             # elements have been added to the beginning: resort individuals
             self._best_individuals.sort(key=lambda individual: individual.fitness())
-        
-                
