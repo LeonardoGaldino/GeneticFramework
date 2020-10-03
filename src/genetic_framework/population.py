@@ -37,6 +37,8 @@ class Population:
                     chosen_parent_clone = p1 if randint(0, 1) == 0 else p2
                     breed.append(chosen_parent_clone)
 
+                breed[-1].generation = self.generation
+
                 # Maybe mutate generated child
                 mutation_r = random()
                 if mutation_r < self.mutation_prob:

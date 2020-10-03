@@ -1,9 +1,11 @@
 from copy import deepcopy
 from typing import List, Tuple, Dict
+from random import random, randint
 
 from genetic_framework.selectors import SurvivorSelector, MatingSelector, SolutionSelector
 from genetic_framework.individual import Individual
 
+from eight_queens.utils import *
 
 class BestFitnessMatingSelector(MatingSelector):
 
@@ -25,6 +27,30 @@ class BestFitnessMatingSelector(MatingSelector):
 
         return pairs
 
+class RouletteMatingSelector(MatingSelector):
+    @staticmethod
+    def select_couples(population: List[Individual]) -> List[Tuple[Individual, Individual]]:
+        pairs: List[Tuple[Individual, Individual]] = []
+        size = len(population)
+
+        roulette = Roulette(population)
+
+        if size <= 1:
+            return []
+
+        for _ in range(int(size / 2)):
+            mate1 = roulette.get_individual()
+            mate2 = roulette.get_individual()
+            while mate1 == mate2:
+                mate2 = roulette.get_individual()
+
+            pairs.append((mate1, mate2))
+
+        return pairs
+
+        
+
+        
 
 class BestFitnessSurvivorSelector(SurvivorSelector):
 
