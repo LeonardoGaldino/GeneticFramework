@@ -89,8 +89,11 @@ class GenerationalSurvivorSelector(SurvivorSelector, ABC):
         
         avg_gen = mean([individual.generation for individual
             in new_generation_individuals])
+        avg_gen = 1.0 if avg_gen == 0.0 else avg_gen
+
         avg_fitness = mean([individual.fitness() for individual
             in new_generation_individuals])
+        avg_fitness = 1.0 if avg_fitness == 0.0 else avg_fitness
 
         def score(ind: Individual) -> float:
             fitness = ind.fitness()

@@ -24,7 +24,10 @@ to make it available as CLI argument.
 """
 class FitnessComputerEnum(Enum):
     BIT_STRING_COUNT = BitStringFitnessComputer
+    BIT_STRING_BOOLEAN = BooleanBitStringFitnessComputer
     INT_PERM_COUNT = IntPermutationFitnessComputer
+    INT_PERM_BOOLEAN = BooleanIntPermutationFitnessComputer
+
 
 class ChromosomeEnum(Enum):
     BIT_STRING = BitStringChromosome

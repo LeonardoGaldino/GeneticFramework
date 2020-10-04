@@ -35,6 +35,14 @@ class BitStringFitnessComputer(FitnessComputer[BitStringChromosome], ABC):
         return 1/(1 + float(attacks))
 
 
+class BooleanBitStringFitnessComputer(FitnessComputer[BitStringChromosome], ABC):
+
+    @staticmethod
+    def fitness(chromosome: BitStringChromosome) -> float:
+        attacks = count_queen_attacks(chromosome.phenotypes)
+        return 1.0 if attacks == 0 else 0.0
+
+
 class IntPermutationFitnessComputer(FitnessComputer[IntPermutationChromosome], ABC):
     
     @staticmethod
@@ -42,3 +50,10 @@ class IntPermutationFitnessComputer(FitnessComputer[IntPermutationChromosome], A
         attacks = count_queen_attacks(chromosome.phenotypes)
         return 1/(1 + float(attacks))
 
+
+class BooleanIntPermutationFitnessComputer(FitnessComputer[IntPermutationChromosome], ABC):
+
+    @staticmethod
+    def fitness(chromosome: IntPermutationChromosome) -> float:
+        attacks = count_queen_attacks(chromosome.phenotypes)
+        return 1.0 if attacks == 0 else 0.0
