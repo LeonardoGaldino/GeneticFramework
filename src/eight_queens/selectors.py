@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import List, Tuple, Dict
 from random import random, randint
 from abc import ABC
+from statistics import mean
 
 from genetic_framework.selectors import SurvivorSelector, MatingSelector, SolutionSelector
 from genetic_framework.individual import Individual
@@ -84,10 +85,20 @@ class GenerationalSurvivorSelector(SurvivorSelector, ABC):
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
             breed: List[Individual]) -> List[Individual]:
-        new_generation_individuals: List[Individual] = []
-        new_generation_individuals.extend(parents)
-        new_generation_individuals.extend(breed)
-        new_generation_individuals.sort(key= lambda individual: (individual.generation, individual.fitness()), reverse= True)
+        new_generation_individuals = parents + breed
+        
+        avg_gen = mean([individual.generation for individual
+            in new_generation_individuals])
+        avg_fitness = mean([individual.fitness() for individual
+            in new_generation_individuals])
+
+        def score(ind: Individual) -> float:
+            fitness = ind.fitness()
+            gen = ind.generation
+
+            return (fitness/avg_fitness)*(gen/avg_gen)
+
+        new_generation_individuals.sort(key=score, reverse=True)
         return new_generation_individuals[:population_size]
 
 
