@@ -22,9 +22,8 @@ class BestFitnessMatingSelector(MatingSelector, ABC):
             return []
 
         i = 0
-        while i < num_pairs:
+        for i in range(0, 2*num_pairs, 2):
             pairs.append((population[i], population[i+1]))
-            i += 2
 
         return pairs
 
