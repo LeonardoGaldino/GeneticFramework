@@ -38,7 +38,7 @@ class Experiment:
     def __init__(self, population_size: int, max_generations: int, 
         crossover_prob: float, mutation_prob: float, target_fitness: Optional[float],
         num_solutions: int, breed_size: int, max_fitness_computations: int,
-        chromosome_cls: Type[Chromosome], 
+        num_parent_pairs: int, chromosome_cls: Type[Chromosome], 
         fitness_computer_cls: Type[FitnessComputer], 
         mutator_cls: Type[Mutator],
         recombiner_cls: Type[Recombiner],
@@ -54,6 +54,7 @@ class Experiment:
         self.num_solutions = num_solutions
         self.breed_size = breed_size
         self.max_fitness_computations = max_fitness_computations
+        self.num_parent_pairs = num_parent_pairs
         self.chromosome_cls = chromosome_cls
 
         self.fitness_computer_cls = fitness_computer_cls
@@ -73,6 +74,9 @@ class Experiment:
 
         self.solution_selector_cls = solution_selector_cls
         self.custom_data = custom_data
+
+        if 2*num_parent_pairs > population_size:
+            raise ValueError('Number of pairs is larger than half the population size!')
 
         classes_to_be_validated = (
             (fitness_computer_cls, 'FitnessComputer'), 
@@ -95,8 +99,8 @@ class Experiment:
     def run_experiment(self) -> List[Individual]:
         initial_individuals = self._generate_initial_individuals()
         population = Population(initial_individuals, self.crossover_prob, 
-            self.mutation_prob, self.breed_size, self.mating_selector_cls,
-            self.survivor_selector_cls)
+            self.mutation_prob, self.breed_size, self.num_parent_pairs,
+            self.mating_selector_cls, self.survivor_selector_cls)
         solution_selector = self.solution_selector_cls(self.num_solutions, self.custom_data)
 
         # Counts how many times fitness wall called for each individual id

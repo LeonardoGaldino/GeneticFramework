@@ -9,7 +9,8 @@ class MatingSelector(CustomDataHolder, ABC):
     
     @staticmethod
     @abstractmethod
-    def select_couples(population: List[Individual]) -> List[Tuple[Individual, Individual]]:
+    def select_couples(population: List[Individual], num_parent_pairs: int) \
+            -> List[Tuple[Individual, Individual]]:
         """Pairs individuals to mate and produce children. Subclass should
         implement this logic of selecting individual to mate."""
         ...

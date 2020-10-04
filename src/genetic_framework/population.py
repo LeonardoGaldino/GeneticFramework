@@ -11,13 +11,14 @@ from genetic_framework.selectors import SurvivorSelector, MatingSelector
 class Population:
 
     def __init__(self, population: List[Individual], crossover_prob: float,
-            mutation_prob: float, breed_size: int, 
+            mutation_prob: float, breed_size: int, num_parent_pairs: int,
             mating_selector_cls: Type[MatingSelector], 
             survivor_selector_cls: Type[SurvivorSelector]) -> None:
         self.population = population
         self.crossover_prob = crossover_prob
         self.mutation_prob = mutation_prob
         self.breed_size = breed_size
+        self.num_parent_pairs = num_parent_pairs
         self.mating_selector_cls = mating_selector_cls
         self.survivor_selector_cls = survivor_selector_cls
         self.generation = 1
@@ -25,7 +26,8 @@ class Population:
     def _offspring(self) -> List[Individual]:
         """Internal method used to create a list of new individuals (breed)
         from the current generation."""
-        parents = self.mating_selector_cls.select_couples(self.population)
+        parents = self.mating_selector_cls \
+            .select_couples(self.population, self.num_parent_pairs)
         breed = []
 
         for (p1, p2) in parents:

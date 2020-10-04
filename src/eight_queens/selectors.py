@@ -13,8 +13,8 @@ from eight_queens.utils import *
 class BestFitnessMatingSelector(MatingSelector, ABC):
 
     @staticmethod
-    def select_couples(population: List[Individual]) -> List[Tuple[Individual, Individual]]:
-        population.sort(key=lambda individual: -individual.fitness())
+    def select_couples(population: List[Individual], num_pairs: int) -> List[Tuple[Individual, Individual]]:
+        population.sort(key=lambda individual: individual.fitness(), reverse=True)
         pairs: List[Tuple[Individual, Individual]] = []
         size = len(population)
 
@@ -22,27 +22,24 @@ class BestFitnessMatingSelector(MatingSelector, ABC):
             return []
 
         i = 0
-        while i < size - 1:
+        while i < num_pairs:
             pairs.append((population[i], population[i+1]))
             i += 2
-        if (size % 2) != 0:
-            pairs.append((population[i-1], population[i]))
 
         return pairs
 
 
 class RouletteMatingSelector(MatingSelector, ABC):
     @staticmethod
-    def select_couples(population: List[Individual]) -> List[Tuple[Individual, Individual]]:
+    def select_couples(population: List[Individual], num_pairs: int) \
+            -> List[Tuple[Individual, Individual]]:
         pairs: List[Tuple[Individual, Individual]] = []
-        size = len(population)
-
         roulette = Roulette(population)
 
-        if size <= 1:
+        if len(population) <= 1:
             return []
 
-        for _ in range(int(size / 2)):
+        for _ in range(num_pairs):
             mate1 = roulette.get_individual()
             mate2 = roulette.get_individual()
             while mate1 == mate2:
@@ -58,8 +55,8 @@ class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
             breed: List[Individual]) -> List[Individual]:
-        parents.sort(key=lambda individual: -individual.fitness())
-        breed.sort(key=lambda individual: -individual.fitness())
+        parents.sort(key=lambda individual: individual.fitness(), reverse=True)
+        breed.sort(key=lambda individual: individual.fitness(), reverse=True)
         new_generation_individuals = []
 
         i, j = 0, 0
