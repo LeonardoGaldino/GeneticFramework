@@ -63,11 +63,5 @@ class Population:
 
     @lru_cache
     def sd_fitness(self) -> float:
-        avg = self.avg_fitness()
-        squared_difference = 0.0
-        for individual in self.population:
-            diff = individual.fitness() - avg
-            squared_difference += diff * diff
-
-        pop_size = float(len(self.population))
-        return sqrt(squared_difference / (pop_size - 1))
+        return stdev([individual.fitness() for individual
+            in self.population], self.avg_fitness())
