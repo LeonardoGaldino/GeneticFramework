@@ -2,6 +2,7 @@ from typing import List, Type
 from functools import lru_cache
 from random import random, randint
 from math import sqrt
+from statistics import mean, stdev
 
 from genetic_framework.individual import Individual
 from genetic_framework.selectors import SurvivorSelector, MatingSelector
@@ -58,8 +59,7 @@ class Population:
 
     @lru_cache
     def avg_fitness(self) -> float:
-        return sum(map(lambda individual: individual.fitness(), 
-            self.population))/len(self.population)
+        return mean([individual.fitness() for individual in self.population])
 
     @lru_cache
     def sd_fitness(self) -> float:
