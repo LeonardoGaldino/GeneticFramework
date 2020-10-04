@@ -1,11 +1,12 @@
 from random import randint
 from copy import deepcopy
+from abc import ABC
 
 from genetic_framework.mutator import Mutator
 from eight_queens.chromosomes import BitStringChromosome, IntPermutationChromosome
 
 
-class RandomizeGeneMutator(Mutator[BitStringChromosome]):
+class RandomizeGeneMutator(Mutator[BitStringChromosome], ABC):
 
     @staticmethod
     def mutate(chromosome: BitStringChromosome) -> BitStringChromosome:
@@ -25,7 +26,7 @@ class RandomizeGeneMutator(Mutator[BitStringChromosome]):
         chromosome.genotypes = genes
 
 
-class BitStringSwapGeneMutator(Mutator[BitStringChromosome]):
+class BitStringSwapGeneMutator(Mutator[BitStringChromosome], ABC):
 
     @staticmethod
     def mutate(chromosome: BitStringChromosome) -> BitStringChromosome:
@@ -49,7 +50,7 @@ class BitStringSwapGeneMutator(Mutator[BitStringChromosome]):
         chromosome.genotypes = genes
 
 
-class IntPermutationSwapGeneMutator(Mutator[IntPermutationChromosome]):
+class IntPermutationSwapGeneMutator(Mutator[IntPermutationChromosome], ABC):
 
     @staticmethod
     def mutate(chromosome: IntPermutationChromosome) -> IntPermutationChromosome:

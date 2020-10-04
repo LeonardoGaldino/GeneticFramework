@@ -1,12 +1,13 @@
 from random import randint
 from typing import List
+from abc import ABC
 
 from genetic_framework.recombiner import Recombiner
 from eight_queens.chromosomes import *
 from eight_queens.genotypes import IntGenotype
 
 
-class BitStringCutCrossfillRecombiner(Recombiner[BitStringChromosome]):
+class BitStringCutCrossfillRecombiner(Recombiner[BitStringChromosome], ABC):
 
     @staticmethod
     def recombine(chromosome1: BitStringChromosome, chromosome2: BitStringChromosome) -> BitStringChromosome:
@@ -23,7 +24,7 @@ class BitStringCutCrossfillRecombiner(Recombiner[BitStringChromosome]):
         return new_chromosome
 
 
-class IntPermutationRecombiner(Recombiner[IntPermutationChromosome]):
+class IntPermutationRecombiner(Recombiner[IntPermutationChromosome], ABC):
     # PMX crossover algorithm
 
     @staticmethod

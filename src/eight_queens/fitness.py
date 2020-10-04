@@ -1,8 +1,10 @@
 from typing import Type, List, Tuple
+from abc import ABC
 
 from genetic_framework.fitness import FitnessComputer
 from eight_queens.phenotypes import QueenPositionPhenotype
 from eight_queens.chromosomes import *
+
 
 def is_horizontally_attacking(y1: int, y2: int) -> bool:
     return y1 == y2
@@ -25,7 +27,7 @@ def count_queen_attacks(phenotypes: List[QueenPositionPhenotype]) -> int:
     return attacking_queens_count//2
 
 
-class BitStringFitnessComputer(FitnessComputer[BitStringChromosome]):
+class BitStringFitnessComputer(FitnessComputer[BitStringChromosome], ABC):
 
     @staticmethod
     def fitness(chromosome: BitStringChromosome) -> float:
@@ -33,7 +35,7 @@ class BitStringFitnessComputer(FitnessComputer[BitStringChromosome]):
         return 1/(1 + float(attacks))
 
 
-class IntPermutationFitnessComputer(FitnessComputer[IntPermutationChromosome]):
+class IntPermutationFitnessComputer(FitnessComputer[IntPermutationChromosome], ABC):
     
     @staticmethod
     def fitness(chromosome: IntPermutationChromosome) -> float:

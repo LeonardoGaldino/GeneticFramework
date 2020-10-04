@@ -1,14 +1,15 @@
 from copy import deepcopy
 from typing import List, Tuple, Dict
 from random import random, randint
-from operator import attrgetter
+from abc import ABC
 
 from genetic_framework.selectors import SurvivorSelector, MatingSelector, SolutionSelector
 from genetic_framework.individual import Individual
 
 from eight_queens.utils import *
 
-class BestFitnessMatingSelector(MatingSelector):
+
+class BestFitnessMatingSelector(MatingSelector, ABC):
 
     @staticmethod
     def select_couples(population: List[Individual]) -> List[Tuple[Individual, Individual]]:
@@ -28,7 +29,8 @@ class BestFitnessMatingSelector(MatingSelector):
 
         return pairs
 
-class RouletteMatingSelector(MatingSelector):
+
+class RouletteMatingSelector(MatingSelector, ABC):
     @staticmethod
     def select_couples(population: List[Individual]) -> List[Tuple[Individual, Individual]]:
         pairs: List[Tuple[Individual, Individual]] = []
@@ -49,11 +51,8 @@ class RouletteMatingSelector(MatingSelector):
 
         return pairs
 
-        
 
-        
-
-class BestFitnessSurvivorSelector(SurvivorSelector):
+class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
 
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
@@ -80,7 +79,7 @@ class BestFitnessSurvivorSelector(SurvivorSelector):
         return new_generation_individuals
 
 
-class GenerationalSurvivorSelector(SurvivorSelector):
+class GenerationalSurvivorSelector(SurvivorSelector, ABC):
 
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
@@ -92,7 +91,7 @@ class GenerationalSurvivorSelector(SurvivorSelector):
         return new_generation_individuals[:population_size]
 
 
-class KBestFitnessSolutionSelector(SolutionSelector):
+class KBestFitnessSolutionSelector(SolutionSelector, ABC):
 
     def __init__(self, number_solutions: int, custom_data: Dict = {}) -> None:
         super().__init__(number_solutions, custom_data)
