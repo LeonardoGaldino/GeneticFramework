@@ -1,6 +1,6 @@
 from copy import deepcopy
 from typing import List, Tuple, Dict
-from random import random, randint
+from random import random, randint, shuffle
 from abc import ABC
 from statistics import mean
 
@@ -48,6 +48,24 @@ class RouletteMatingSelector(MatingSelector, ABC):
 
         return pairs
 
+class BestFromRandomMatingSelector(MatingSelector, ABC):
+    @staticmethod
+    def select_couples(population: List[Individual], num_pairs: int) \
+            -> List[Tuple[Individual, Individual]]:
+        pairs: List[Tuple[Individual, Individual]] = []
+
+        if len(population) <= 1:
+            return []
+
+        random_count = min(5, len(population))
+
+        for _ in range(num_pairs):
+            shuffle(population)
+            possible_mates = population[:random_count]
+            selected_mates = sorted(possible_mates, key= lambda individual: individual.fitness(), reverse= True)[:2]
+            pairs.append((selected_mates[0], selected_mates[1]))
+
+        return pairs
 
 class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
 
