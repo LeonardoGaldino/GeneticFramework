@@ -55,6 +55,7 @@ class SurvivorSelectorEnum(Enum):
 class MatingSelectorEnum(Enum):
     BEST_FITNESS = BestFitnessMatingSelector
     ROULETTE = RouletteMatingSelector
+    BEST_FROM_RAND = BestFromRandomMatingSelector
 
 
 class SolutionSelectorEnum(Enum):
