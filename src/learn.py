@@ -38,6 +38,7 @@ class MutatorEnum(Enum):
     RANDOMIZE_GENE = RandomizeGeneMutator
     BIT_STR_SWAP_GENE = BitStringSwapGeneMutator
     INT_PERM_SWAP_GENE = IntPermutationSwapGeneMutator
+    INT_PERM_SWAP_RANGE = IntPermutationSwapGeneRangeMutator
 
 
 class RecombinerEnum(Enum):
