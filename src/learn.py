@@ -31,7 +31,7 @@ class FitnessComputerEnum(Enum):
 
 class ChromosomeEnum(Enum):
     BIT_STRING = BitStringChromosome
-    INT_PERMUTATION = IntPermutationChromosome
+    INT_PERM = IntPermutationChromosome
 
 
 class MutatorEnum(Enum):
