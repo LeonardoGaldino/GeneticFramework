@@ -44,7 +44,7 @@ class MutatorEnum(Enum):
 
 class RecombinerEnum(Enum):
     BIT_STR_CUT_CROSS_FILL = BitStringCutCrossfillRecombiner
-    INT_PERM = IntPermutationRecombiner
+    PMX_INT_PERM = IntPermutationRecombiner
 
 
 class SurvivorSelectorEnum(Enum):
