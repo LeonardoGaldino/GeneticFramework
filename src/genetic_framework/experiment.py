@@ -1,4 +1,4 @@
-from typing import Type, TypeVar, List, Dict, Optional, get_args
+from typing import Type, Tuple, TypeVar, List, Dict, Optional, get_args
 from collections import defaultdict
 
 from genetic_framework.fitness import FitnessComputer
@@ -8,6 +8,7 @@ from genetic_framework.recombiner import Recombiner
 from genetic_framework.selectors import SurvivorSelector, MatingSelector, SolutionSelector
 from genetic_framework.individual import Individual
 from genetic_framework.population import Population
+from genetic_framework.statistics import StatisticsCollector
 
 
 EPS = 1e-9
@@ -45,6 +46,7 @@ class Experiment:
         mating_selector_cls: Type[MatingSelector],
         survivor_selector_cls: Type[SurvivorSelector],
         solution_selector_cls: Type[SolutionSelector],
+        stats_collector_types: List[Type[StatisticsCollector]],
         custom_data: Dict = {}) -> None:
         self.population_size = population_size
         self.max_generations = max_generations
@@ -73,6 +75,7 @@ class Experiment:
         self.survivor_selector_cls.set_custom_data(custom_data)
 
         self.solution_selector_cls = solution_selector_cls
+        self.stats_collector_types = stats_collector_types
         self.custom_data = custom_data
 
         if 2*num_parent_pairs > population_size:
@@ -96,12 +99,14 @@ class Experiment:
             self.mutator_cls, self.recombiner_cls, 1, self.custom_data).initialize()
                 for i in range(self.population_size)]
 
-    def run_experiment(self) -> List[Individual]:
+    def run_experiment(self) -> Tuple[List[Individual], List[StatisticsCollector]]:
         initial_individuals = self._generate_initial_individuals()
         population = Population(initial_individuals, self.crossover_prob, 
             self.mutation_prob, self.breed_size, self.num_parent_pairs,
             self.mating_selector_cls, self.survivor_selector_cls)
         solution_selector = self.solution_selector_cls(self.num_solutions, self.custom_data)
+        statistics_collectors = [collector_type(self.custom_data) 
+            for collector_type in self.stats_collector_types]
 
         # Counts how many times fitness wall called for each individual id
         individual_num_fitness_computed: Dict[int, int] = defaultdict(int)
@@ -114,6 +119,8 @@ class Experiment:
 
             population.evolve()
             solution_selector.update_individuals(population.population)
+            for collector in statistics_collectors:
+                collector.collect_data_point(population, solution_selector)
 
             for individual in population.population:
                 if individual.num_fitness_computed != individual_num_fitness_computed[id(individual)]:
@@ -135,7 +142,7 @@ class Experiment:
             print("Maximum generations achieved: {:.3f} avg, {:.3f} standard deviation (fitness)."
                 .format(population.avg_fitness(), population.sd_fitness()))
 
-        return solution_selector.best_individuals
+        return (solution_selector.best_individuals, statistics_collectors)
             
 
 def float_less_equal(f1: float, f2: float) -> bool:

@@ -8,6 +8,7 @@ from typing import Type, Any
 from enum import Enum
 
 from genetic_framework.experiment import Experiment
+from genetic_framework.statistics import *
 from eight_queens.chromosomes import *
 from eight_queens.fitness import *
 from eight_queens.mutators import *
@@ -242,9 +243,15 @@ ARGS = [
         action_cls=EnumConstraintAction),
 ]
 
+STATISTICS_COLLECTOR_TYPES = [
+    AvgFitnessPerGenerationStatisticsCollector,
+    BestFitnessPerGenerationStatisticsCollector,
+    FitnessSDPerGenerationStatisticsCollector,
+]
 
 def main(**kwargs) -> None:
     print('Using these CLI arguments: {}\n'.format(kwargs))
+
     experiment = Experiment(kwargs['population_size'], kwargs['max_generations'], 
         kwargs['crossover_probability'], kwargs['mutation_probability'],
         kwargs['target_fitness'], kwargs['number_solutions'], kwargs['breed_size'], 
@@ -252,14 +259,24 @@ def main(**kwargs) -> None:
         kwargs['chromosome'], kwargs['fitness_computer'], 
         kwargs['mutator'], kwargs['recombiner'],
         kwargs['mating_selector'], kwargs['survivor_selector'], 
-        kwargs['solution_selector'], dict(chess_size=kwargs['chess_size']))
-    best_individuals = experiment.run_experiment()
+        kwargs['solution_selector'], STATISTICS_COLLECTOR_TYPES,
+        dict(chess_size=kwargs['chess_size']))
+    best_individuals, stats_collectors = experiment.run_experiment()
 
     print('\nSolutions:')
     for individual in best_individuals:
         print('Gen: {}, Fitness: {}'.format(individual.generation, individual.fitness()))
         print_chess_board(individual.chromosome)
         print('\n')
+    
+    avg_fitness_per_generation = stats_collectors[0]
+    best_fitness_per_generation = stats_collectors[1]
+    sd_fitness_per_generation = stats_collectors[2]
+
+    # TODO: Change this printing section for image with graphics generation
+    print('Avg fitness per generation: {}'.format(avg_fitness_per_generation))
+    print('Best fitness per generation: {}'.format(best_fitness_per_generation))
+    print('SD fitness per generation: {}'.format(sd_fitness_per_generation))
 
 
 if __name__ == '__main__':
