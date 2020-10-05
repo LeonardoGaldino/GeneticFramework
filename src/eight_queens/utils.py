@@ -20,6 +20,7 @@ class Roulette:
     def get_individual(self) -> Individual:
         r = random()
         try:
+            # TODO: Fix stall on line below when BOOLEAN fitness computer is chosen
             selected = next(item.individual for item in self._items if r <= item.acc_probability)
         except StopIteration:
             # When everyone has fitness 0.0, just take random one
