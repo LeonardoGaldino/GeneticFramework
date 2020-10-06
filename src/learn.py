@@ -7,6 +7,9 @@ from argparse import ArgumentParser, Action
 from typing import Type, Any
 from enum import Enum
 
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+
 from genetic_framework.experiment import Experiment
 from genetic_framework.statistics import *
 from eight_queens.chromosomes import *
@@ -208,7 +211,7 @@ ARGS = [
         action_cls=EnumConstraintAction),
 
     CLIArgumentDescription(_type=MutatorEnum, 
-        default_value=MutatorEnum.RANDOMIZE_GENE.value, 
+        default_value=MutatorEnum.BIT_STR_SWAP_GENE.value, 
         short_name='mut', full_name='mutator', value_name='MUTATOR',
         help_message="""Specify the mutator class. Will define how solutions
             are mutated during evolution.""",
@@ -229,7 +232,7 @@ ARGS = [
         action_cls=EnumConstraintAction),
 
     CLIArgumentDescription(_type=MatingSelectorEnum, 
-        default_value=MatingSelectorEnum.BEST_FITNESS.value, 
+        default_value=MatingSelectorEnum.BEST_FROM_RAND.value, 
         short_name='msel', full_name='mating_selector', value_name='MATING_SEL',
         help_message="""Specify Mating Selector class. Will define how 
             individuals are chosen to generate children for next generation.""",
@@ -274,11 +277,34 @@ def main(**kwargs) -> None:
     best_fitness_per_generation = stats_collectors[1]
     sd_fitness_per_generation = stats_collectors[2]
 
-    # TODO: Change this printing section for image with graphics generation
-    print('Avg fitness per generation: {}'.format(avg_fitness_per_generation))
-    print('Best fitness per generation: {}'.format(best_fitness_per_generation))
-    print('SD fitness per generation: {}'.format(sd_fitness_per_generation))
+    x_all, y_avg, y_best, y_sd, y_sdinv = [], [], [], [], []
 
+    for i, (x, y) in enumerate(avg_fitness_per_generation.data):
+        x_all.append(x)
+        y_avg.append(y)
+        y_best.append(best_fitness_per_generation.data[i][1])
+        y_sd.append(y + sd_fitness_per_generation.data[i][1])
+        y_sdinv.append(y - sd_fitness_per_generation.data[i][1])
+
+        if sd_fitness_per_generation.data[i][1] == 0.0:
+            for elem in [x_all, y_avg, y_best, y_sd, y_sdinv]:
+                elem = elem[:i + 1]
+            
+            break
+
+    plt.fill_between(x_all, y_sd, color='lightcoral')
+    plt.fill_between(x_all, y_sdinv, color='white')
+    sd = mpatches.Patch(color='lightcoral', label='Standard Deviation')
+
+    best, = plt.plot(x_all, y_best, color='limegreen', label='Best Individual')
+    avg, = plt.plot(x_all, y_avg, color='crimson', label='Average')
+
+    plt.legend(handles=[sd, avg, best])
+
+    plt.xlabel('Generations')
+    plt.ylabel('Fitness')
+
+    plt.show()
 
 if __name__ == '__main__':
     parser = ArgumentParser(description=PROGRAM_DESCRIPTION)
