@@ -286,12 +286,6 @@ def main(**kwargs) -> None:
         y_sd.append(y + sd_fitness_per_generation.data[i][1])
         y_sdinv.append(y - sd_fitness_per_generation.data[i][1])
 
-        if sd_fitness_per_generation.data[i][1] == 0.0:
-            for elem in [x_all, y_avg, y_best, y_sd, y_sdinv]:
-                elem = elem[:i + 1]
-            
-            break
-
     plt.fill_between(x_all, y_sd, color='lightcoral')
     plt.fill_between(x_all, y_sdinv, color='white')
     sd = mpatches.Patch(color='lightcoral', label='Standard Deviation')
