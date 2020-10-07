@@ -34,6 +34,7 @@ class Individual(Generic[ChromosomeT]):
 
     def initialize(self) -> 'Individual':
         self.chromosome.initialize()
+        self.fitness.cache_clear()
         return self
 
     @property

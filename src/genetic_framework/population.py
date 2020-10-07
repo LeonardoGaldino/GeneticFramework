@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List, Type, Callable, TypeVar
 from functools import lru_cache
 from random import random, randint
 from math import sqrt
@@ -6,6 +6,18 @@ from statistics import mean, stdev
 
 from genetic_framework.individual import Individual
 from genetic_framework.selectors import SurvivorSelector, MatingSelector
+
+T = TypeVar('T')
+def clear_caches_after(fn: Callable[..., T]) -> Callable[..., T]:
+    # Decorator for clearing Population cache after given method execution
+    def wrapper(self, *args):
+        res = fn(self, *args)
+        self.avg_fitness.cache_clear()
+        self.sd_fitness.cache_clear()
+
+        return res
+
+    return wrapper
 
 
 class Population:
@@ -49,6 +61,7 @@ class Population:
 
         return breed
 
+    @clear_caches_after
     def evolve(self) -> None:
         """Method used to evolve the population into the next generation"""
         breed = self._offspring()
@@ -56,8 +69,11 @@ class Population:
             self.population, breed)
         self.population = survivors
         self.generation += 1
-        self.avg_fitness.cache_clear()
-        self.sd_fitness.cache_clear()
+
+    @clear_caches_after
+    def restart_population(self) -> None:
+        for individual in self.population:
+            individual.initialize()
 
     @lru_cache
     def avg_fitness(self) -> float:

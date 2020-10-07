@@ -39,7 +39,8 @@ class Experiment:
     def __init__(self, population_size: int, max_generations: int, 
         crossover_prob: float, mutation_prob: float, target_fitness: Optional[float],
         num_solutions: int, breed_size: int, max_fitness_computations: int,
-        num_parent_pairs: int, chromosome_cls: Type[Chromosome], 
+        num_parent_pairs: int, restart_zero_sd_tolerance: int, 
+        chromosome_cls: Type[Chromosome], 
         fitness_computer_cls: Type[FitnessComputer], 
         mutator_cls: Type[Mutator],
         recombiner_cls: Type[Recombiner],
@@ -57,6 +58,7 @@ class Experiment:
         self.breed_size = breed_size
         self.max_fitness_computations = max_fitness_computations
         self.num_parent_pairs = num_parent_pairs
+        self.restart_zero_sd_tolerance = restart_zero_sd_tolerance
         self.chromosome_cls = chromosome_cls
 
         self.fitness_computer_cls = fitness_computer_cls
@@ -108,9 +110,11 @@ class Experiment:
         statistics_collectors = [collector_type(self.custom_data) 
             for collector_type in self.stats_collector_types]
 
-        # Counts how many times fitness wall called for each individual id
+        # Counts how many times fitness was called for each individual id
         individual_num_fitness_computed: Dict[int, int] = defaultdict(int)
         current_num_fitness_computations = 0
+        # Count how many times sd was 0 in a row
+        zero_sd_counter = 0
 
         while population.generation <= self.max_generations:
             print("Evolving Generation {}: {} fitness computed, {:.3f} avg, {:.3f} standard deviation (fitness)."
@@ -138,6 +142,14 @@ class Experiment:
                     print("Target fitness achieved ({})."
                         .format(solution_selector.best_individual.fitness()))
                     break
+            if float_equal(population.sd_fitness(), 0.0):
+                zero_sd_counter += 1
+            else:
+                zero_sd_counter = 0
+
+            if self.restart_zero_sd_tolerance != -1 \
+                and zero_sd_counter >= self.restart_zero_sd_tolerance:
+                population.restart_population()
         else:
             print("Maximum generations achieved: {:.3f} avg, {:.3f} standard deviation (fitness)."
                 .format(population.avg_fitness(), population.sd_fitness()))
@@ -145,6 +157,9 @@ class Experiment:
         return (solution_selector.best_individuals, statistics_collectors)
             
 
+def float_equal(f1: float, f2: float) -> bool:
+    return abs(f1 - f2) < EPS
+
 def float_less_equal(f1: float, f2: float) -> bool:
-    return abs(f1-f2) < EPS or f1 < f2
+    return float_equal(f1, f2) or f1 < f2
     

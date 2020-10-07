@@ -178,6 +178,13 @@ ARGS = [
             algorithm for generating new individual through recombination.""",
         action_cls=CheckPositiveIntegerConstraintAction),
 
+    CLIArgumentDescription(_type=int, default_value=-1, short_name='rt', 
+        full_name='restart_tolerance', value_name='RESTART_TOLERANCE',
+        help_message="""Number of generations (in a row) with 0 fitness 
+            standard deviation fitness to restart the population. 
+            (-1 for no reset)""",
+        action_cls=NoConstraintAction),
+
     CLIArgumentDescription(_type=float, default_value=None, 
         short_name='tf', full_name='target_fitness', value_name='TARGET_FITNESS',
         help_message="""Specify the fitness of a good enough solution, so that 
@@ -260,8 +267,8 @@ def main(**kwargs) -> None:
         kwargs['crossover_probability'], kwargs['mutation_probability'],
         kwargs['target_fitness'], kwargs['number_solutions'], kwargs['breed_size'], 
         kwargs['max_fitness_comp'], kwargs['num_parent_pairs'], 
-        kwargs['chromosome'], kwargs['fitness_computer'], 
-        kwargs['mutator'], kwargs['recombiner'],
+        kwargs['restart_tolerance'], kwargs['chromosome'],
+        kwargs['fitness_computer'], kwargs['mutator'], kwargs['recombiner'],
         kwargs['mating_selector'], kwargs['survivor_selector'], 
         kwargs['solution_selector'], STATISTICS_COLLECTOR_TYPES,
         dict(chess_size=kwargs['chess_size']))
