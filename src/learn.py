@@ -4,7 +4,7 @@ This module instantiate genetic algorithm framework to find solutions for the
 eight queen problem.
 """
 from argparse import ArgumentParser, Action
-from typing import Type, Any
+from typing import Type, Any, List
 from enum import Enum
 
 import matplotlib.pyplot as plt # type: ignore
@@ -272,10 +272,13 @@ def main(**kwargs) -> None:
         print('Gen: {}, Fitness: {}'.format(individual.generation, individual.fitness()))
         print_chess_board(individual.chromosome)
         print('\n')
-    
-    avg_fitness_per_generation = stats_collectors[0]
-    best_fitness_per_generation = stats_collectors[1]
-    sd_fitness_per_generation = stats_collectors[2]
+
+    plot_experiment_statistics(stats_collectors)
+
+def plot_experiment_statistics(stats: List[StatisticsCollector]) -> None:
+    avg_fitness_per_generation = stats[0]
+    best_fitness_per_generation = stats[1]
+    sd_fitness_per_generation = stats[2]
 
     x_all, y_avg, y_best, y_sd, y_sdinv = [], [], [], [], []
 
