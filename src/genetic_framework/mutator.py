@@ -15,7 +15,6 @@ class Mutator(Generic[ChromosomeT], CustomDataHolder, ABC):
     Then, mutate and mutate_inplace methods can receive SubClassChromosome 
     safely typechecked.
     """
-
     @staticmethod
     @abstractmethod
     def mutate(chromosome: ChromosomeT) -> ChromosomeT:

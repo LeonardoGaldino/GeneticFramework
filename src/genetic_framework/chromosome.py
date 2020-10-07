@@ -1,7 +1,5 @@
 from typing import List, Dict, Generic, TypeVar
 from abc import ABC, abstractmethod
-
-
 """ TypeVariable for Generic types Chromosome, Phenotype, Genotype since each
 subclass of these will use its own data type to represent its internal data.
 """
@@ -9,22 +7,21 @@ T = TypeVar('T')
 
 
 class Phenotype(Generic[T], ABC):
-
     @abstractmethod
     def __init__(self, custom_data: Dict = {}) -> None:
         self.custom_data = custom_data
 
     # (https://github.com/python/mypy/issues/4165)
-    @property # type:ignore
+    @property  # type:ignore
     @abstractmethod
     def data(self) -> T:
         ...
 
     # (https://github.com/python/mypy/issues/4165)
-    @data.setter # type:ignore
+    @data.setter  # type:ignore
     @abstractmethod
     def data(self, new_data: T) -> None:
-        ... 
+        ...
 
     @abstractmethod
     def __str__(self) -> str:
@@ -37,7 +34,6 @@ class Phenotype(Generic[T], ABC):
 
 class Genotype(Generic[T], ABC):
     """Defines an abstract class for holding information about Genes."""
-
     @abstractmethod
     def __init__(self, custom_data: Dict = {}) -> None:
         self.custom_data = custom_data
@@ -49,19 +45,19 @@ class Genotype(Generic[T], ABC):
         ...
 
     # (https://github.com/python/mypy/issues/4165)
-    @property # type:ignore
+    @property  # type:ignore
     @abstractmethod
     def data(self) -> T:
         """Property containing the gene's data."""
         ...
 
     # (https://github.com/python/mypy/issues/4165)
-    @data.setter # type:ignore
+    @data.setter  # type:ignore
     @abstractmethod
     def data(self, new_data: T) -> None:
         """Set data property (contains the gene's data)."""
         ...
-    
+
     @abstractmethod
     def __str__(self) -> str:
         ...
@@ -82,7 +78,6 @@ GenotypeT = TypeVar('GenotypeT', bound=Genotype)
 
 
 class Chromosome(Generic[PhenotypeT, GenotypeT], ABC):
-
     @abstractmethod
     def __init__(self, custom_data: Dict = {}) -> None:
         self.custom_data = custom_data
@@ -101,26 +96,26 @@ class Chromosome(Generic[PhenotypeT, GenotypeT], ABC):
     def initialize(self) -> None:
         ...
 
-    # (https://github.com/python/mypy/issues/4165)    
-    @property # type:ignore
+    # (https://github.com/python/mypy/issues/4165)
+    @property  # type:ignore
     @abstractmethod
     def genotypes(self) -> List[GenotypeT]:
         ...
 
     # (https://github.com/python/mypy/issues/4165)
-    @genotypes.setter # type:ignore
+    @genotypes.setter  # type:ignore
     @abstractmethod
     def genotypes(self, genes: List[GenotypeT]) -> None:
         ...
 
     # (https://github.com/python/mypy/issues/4165)
-    @property # type:ignore
+    @property  # type:ignore
     @abstractmethod
     def phenotypes(self) -> List[PhenotypeT]:
         ...
 
     # (https://github.com/python/mypy/issues/4165)
-    @phenotypes.setter # type:ignore
+    @phenotypes.setter  # type:ignore
     @abstractmethod
     def phenotypes(self, phenotypes: List[PhenotypeT]) -> None:
         ...
@@ -132,6 +127,7 @@ class Chromosome(Generic[PhenotypeT, GenotypeT], ABC):
     @abstractmethod
     def __repr__(self) -> str:
         ...
+
 
 """ Python's method override is invariant, hence we cannot override methods 
 with specific types of Chromosome, only with Chromosome base class. This is

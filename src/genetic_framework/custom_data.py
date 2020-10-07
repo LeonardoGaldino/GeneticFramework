@@ -11,4 +11,3 @@ class CustomDataHolder(ABC):
     @classmethod
     def set_custom_data(cls, custom_data: Dict) -> None:
         cls.custom_data = custom_data
-

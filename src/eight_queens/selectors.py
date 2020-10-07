@@ -11,10 +11,11 @@ from eight_queens.utils import *
 
 
 class BestFitnessMatingSelector(MatingSelector, ABC):
-
     @staticmethod
-    def select_couples(population: List[Individual], num_pairs: int) -> List[Tuple[Individual, Individual]]:
-        population.sort(key=lambda individual: individual.fitness(), reverse=True)
+    def select_couples(population: List[Individual],
+                       num_pairs: int) -> List[Tuple[Individual, Individual]]:
+        population.sort(key=lambda individual: individual.fitness(),
+                        reverse=True)
         pairs: List[Tuple[Individual, Individual]] = []
         size = len(population)
 
@@ -22,8 +23,8 @@ class BestFitnessMatingSelector(MatingSelector, ABC):
             return []
 
         i = 0
-        for i in range(0, 2*num_pairs, 2):
-            pairs.append((population[i], population[i+1]))
+        for i in range(0, 2 * num_pairs, 2):
+            pairs.append((population[i], population[i + 1]))
 
         return pairs
 
@@ -48,6 +49,7 @@ class RouletteMatingSelector(MatingSelector, ABC):
 
         return pairs
 
+
 class BestFromRandomMatingSelector(MatingSelector, ABC):
     @staticmethod
     def select_couples(population: List[Individual], num_pairs: int) \
@@ -62,16 +64,19 @@ class BestFromRandomMatingSelector(MatingSelector, ABC):
         for _ in range(num_pairs):
             shuffle(population)
             possible_mates = population[:random_count]
-            selected_mates = sorted(possible_mates, key= lambda individual: individual.fitness(), reverse= True)[:2]
+            selected_mates = sorted(
+                possible_mates,
+                key=lambda individual: individual.fitness(),
+                reverse=True)[:2]
             pairs.append((selected_mates[0], selected_mates[1]))
 
         return pairs
 
-class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
 
+class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
-            breed: List[Individual]) -> List[Individual]:
+                         breed: List[Individual]) -> List[Individual]:
         parents.sort(key=lambda individual: individual.fitness(), reverse=True)
         breed.sort(key=lambda individual: individual.fitness(), reverse=True)
         new_generation_individuals = []
@@ -95,36 +100,36 @@ class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
 
 
 class GenerationalSurvivorSelector(SurvivorSelector, ABC):
-
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
-            breed: List[Individual]) -> List[Individual]:
+                         breed: List[Individual]) -> List[Individual]:
         new_generation_individuals = parents + breed
-        
-        avg_gen = mean([individual.generation for individual
-            in new_generation_individuals])
+
+        avg_gen = mean([
+            individual.generation for individual in new_generation_individuals
+        ])
         avg_gen = 1.0 if avg_gen == 0.0 else avg_gen
 
-        avg_fitness = mean([individual.fitness() for individual
-            in new_generation_individuals])
+        avg_fitness = mean([
+            individual.fitness() for individual in new_generation_individuals
+        ])
         avg_fitness = 1.0 if avg_fitness == 0.0 else avg_fitness
 
         def score(ind: Individual) -> float:
             fitness = ind.fitness()
             gen = ind.generation
 
-            return (fitness/avg_fitness)*(gen/avg_gen)
+            return (fitness / avg_fitness) * (gen / avg_gen)
 
         new_generation_individuals.sort(key=score, reverse=True)
         return new_generation_individuals[:population_size]
 
 
 class KBestFitnessSolutionSelector(SolutionSelector, ABC):
-
     def __init__(self, number_solutions: int, custom_data: Dict = {}) -> None:
         super().__init__(number_solutions, custom_data)
         self._best_individuals: List[Individual] = []
-    
+
     @property
     def best_individual(self) -> Individual:
         return self._best_individuals[-1]
@@ -136,11 +141,12 @@ class KBestFitnessSolutionSelector(SolutionSelector, ABC):
     def update_individuals(self, population: List[Individual]) -> None:
         population.sort(key=lambda individual: individual.fitness())
         size = len(population)
-    
+
         if not self._best_individuals:
-            # if no best individuals have been stored yet: 
+            # if no best individuals have been stored yet:
             # copy <number_solutions> best individuals from population
-            self._best_individuals = deepcopy(population[size - self.number_solutions:])
+            self._best_individuals = deepcopy(
+                population[size - self.number_solutions:])
             return
 
         i = 0
@@ -150,4 +156,5 @@ class KBestFitnessSolutionSelector(SolutionSelector, ABC):
             i += 1
         if i > 0:
             # elements have been added to the beginning: resort individuals
-            self._best_individuals.sort(key=lambda individual: individual.fitness())
+            self._best_individuals.sort(
+                key=lambda individual: individual.fitness())

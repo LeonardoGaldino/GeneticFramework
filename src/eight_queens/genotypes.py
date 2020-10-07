@@ -11,7 +11,6 @@ class BitStringGenotype(Genotype[str]):
         super().__init__(custom_data)
         self._data: str = ""
 
-
     def initialize(self) -> None:
         chess_size = self.custom_data['chess_size']
         row = randint(0, chess_size - 1)
@@ -26,16 +25,18 @@ class BitStringGenotype(Genotype[str]):
         chess_size = self.custom_data['chess_size']
 
         if len(new_data) != BitStringGenotype.STRING_SIZE:
-            raise ValueError('Tried to set BitStringGenotype data with data of wrong size ({}). Should be {}.'
+            raise ValueError(
+                'Tried to set BitStringGenotype data with data of wrong size ({}). Should be {}.'
                 .format(len(new_data), BitStringGenotype.STRING_SIZE))
 
         integer_data = int(new_data, 2)
         if integer_data < 0 or integer_data >= chess_size:
-            raise ValueError('Tried to set BitStringGenotype data with ({}). Should be [{}, {}]'
+            raise ValueError(
+                'Tried to set BitStringGenotype data with ({}). Should be [{}, {}]'
                 .format(integer_data, 0, chess_size - 1))
 
         self._data = new_data
-    
+
     def __str__(self) -> str:
         return str(self.data)
 
@@ -44,7 +45,6 @@ class BitStringGenotype(Genotype[str]):
 
 
 class IntGenotype(Genotype[int]):
-
     def __init__(self, custom_data: Dict = {}) -> None:
         super().__init__(custom_data)
         self._data: int = -1
@@ -62,11 +62,12 @@ class IntGenotype(Genotype[int]):
         chess_size = self.custom_data['chess_size']
 
         if new_data < 0 or new_data >= chess_size:
-            raise ValueError('Tried to set IntGenotype data with ({}). Should be [{}, {}]'
-                .format(new_data, 0, chess_size - 1))
+            raise ValueError(
+                'Tried to set IntGenotype data with ({}). Should be [{}, {}]'.
+                format(new_data, 0, chess_size - 1))
 
         self._data = new_data
-    
+
     def __str__(self) -> str:
         return str(self.data)
 

@@ -5,11 +5,9 @@ from genetic_framework.chromosome import Genotype
 
 
 class FloatGenotype(Genotype[float]):
-
     def __init__(self, custom_data: Dict = {}) -> None:
         super().__init__(custom_data)
         self._data: float = 0.0
-
 
     def initialize(self) -> None:
         lower_bound = self.custom_data['parameter_lower_bound']
@@ -24,13 +22,14 @@ class FloatGenotype(Genotype[float]):
     def data(self, new_data: float) -> None:
         lower_bound = self.custom_data['parameter_lower_bound']
         upper_bound = self.custom_data['parameter_upper_bound']
-        
+
         if self.data < lower_bound or self.data > upper_bound:
-            raise ValueError('Tried to set FloatGenotype data with ({}). Should be [{}, {}]'
+            raise ValueError(
+                'Tried to set FloatGenotype data with ({}). Should be [{}, {}]'
                 .format(new_data, lower_bound, upper_bound))
 
         self._data = new_data
-    
+
     def __str__(self) -> str:
         return str(self.data)
 

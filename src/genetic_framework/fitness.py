@@ -14,7 +14,6 @@ class FitnessComputer(Generic[ChromosomeT], CustomDataHolder, ABC):
 
     Then, fitness method can receive SubClassChromosome safely typechecked.
     """
-
     @staticmethod
     @abstractmethod
     def fitness(chromosome: ChromosomeT) -> float:

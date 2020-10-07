@@ -7,7 +7,6 @@ from eight_queens.chromosomes import BitStringChromosome, IntPermutationChromoso
 
 
 class RandomizeGeneMutator(Mutator[BitStringChromosome], ABC):
-
     @staticmethod
     def mutate(chromosome: BitStringChromosome) -> BitStringChromosome:
         new_chromosome = deepcopy(chromosome)
@@ -27,7 +26,6 @@ class RandomizeGeneMutator(Mutator[BitStringChromosome], ABC):
 
 
 class BitStringSwapGeneMutator(Mutator[BitStringChromosome], ABC):
-
     @staticmethod
     def mutate(chromosome: BitStringChromosome) -> BitStringChromosome:
         new_chromosome = deepcopy(chromosome)
@@ -51,9 +49,9 @@ class BitStringSwapGeneMutator(Mutator[BitStringChromosome], ABC):
 
 
 class IntPermutationSwapGeneMutator(Mutator[IntPermutationChromosome], ABC):
-
     @staticmethod
-    def mutate(chromosome: IntPermutationChromosome) -> IntPermutationChromosome:
+    def mutate(
+            chromosome: IntPermutationChromosome) -> IntPermutationChromosome:
         new_chromosome = deepcopy(chromosome)
         IntPermutationSwapGeneMutator.mutate_inplace(new_chromosome)
         return new_chromosome
@@ -74,24 +72,25 @@ class IntPermutationSwapGeneMutator(Mutator[IntPermutationChromosome], ABC):
         chromosome.genotypes = genes
 
 
-class IntPermutationSwapGeneRangeMutator(Mutator[IntPermutationChromosome], ABC):
-
+class IntPermutationSwapGeneRangeMutator(Mutator[IntPermutationChromosome],
+                                         ABC):
     @staticmethod
-    def mutate(chromosome: IntPermutationChromosome) -> IntPermutationChromosome:
+    def mutate(
+            chromosome: IntPermutationChromosome) -> IntPermutationChromosome:
         new_chromosome = deepcopy(chromosome)
         IntPermutationSwapGeneRangeMutator.mutate_inplace(new_chromosome)
         return new_chromosome
 
     @staticmethod
     def mutate_inplace(chromosome: IntPermutationChromosome) -> None:
-        chess_size = IntPermutationSwapGeneRangeMutator.custom_data['chess_size']
+        chess_size = IntPermutationSwapGeneRangeMutator.custom_data[
+            'chess_size']
 
         l = randint(0, chess_size - 1)
         r = randint(l, chess_size - 1)
 
         genes = chromosome.genotypes
-        _range = genes[l : r+1]
+        _range = genes[l:r + 1]
         _range.reverse()
 
-        chromosome.genotypes = genes[:l] + _range + genes[r+1:]
-
+        chromosome.genotypes = genes[:l] + _range + genes[r + 1:]

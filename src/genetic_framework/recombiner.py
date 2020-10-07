@@ -14,10 +14,10 @@ class Recombiner(Generic[ChromosomeT], CustomDataHolder, ABC):
 
     Then, recombine method can receive SubClassChromosome safely typechecked.
     """
-    
     @staticmethod
     @abstractmethod
-    def recombine(chromosome1: ChromosomeT, chromosome2: ChromosomeT) -> ChromosomeT:
+    def recombine(chromosome1: ChromosomeT,
+                  chromosome2: ChromosomeT) -> ChromosomeT:
         """Recombines two Chromosomes into a new one. Subclasses should 
         specify the correct type of Chromosome as parameter.
         (Accordingly to the ChromosomeType specified at the class declaration)

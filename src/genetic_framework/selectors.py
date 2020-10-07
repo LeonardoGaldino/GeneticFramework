@@ -6,7 +6,6 @@ from genetic_framework.individual import Individual
 
 
 class MatingSelector(CustomDataHolder, ABC):
-    
     @staticmethod
     @abstractmethod
     def select_couples(population: List[Individual], num_parent_pairs: int) \
@@ -19,12 +18,10 @@ class MatingSelector(CustomDataHolder, ABC):
 class SurvivorSelector(CustomDataHolder, ABC):
     """Class responsible for selecting survivors for the following
     generation. Subclasses should implement this logic."""
-
-
     @staticmethod
     @abstractmethod
     def select_survivors(population_size: int, parents: List[Individual],
-        breed: List[Individual]) -> List[Individual]:
+                         breed: List[Individual]) -> List[Individual]:
         """Implements logic of choosing which individuals will survive to next
         generation."""
         ...
@@ -34,7 +31,6 @@ class SolutionSelector(ABC):
     """
     Responsible for best individuals selection logic on a running experiment
     """
-
     @abstractmethod
     def __init__(self, number_solutions: int, custom_data: Dict = {}) -> None:
         self.number_solutions = number_solutions
@@ -45,7 +41,7 @@ class SolutionSelector(ABC):
     def best_individual(self) -> Individual:
         """Returns the best individual selected and stored so far."""
         ...
-    
+
     @property
     @abstractmethod
     def best_individuals(self) -> List[Individual]:

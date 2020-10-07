@@ -8,6 +8,8 @@ from genetic_framework.individual import Individual
 from genetic_framework.selectors import SurvivorSelector, MatingSelector
 
 T = TypeVar('T')
+
+
 def clear_caches_after(fn: Callable[..., T]) -> Callable[..., T]:
     # Decorator for clearing Population cache after given method execution
     def wrapper(self, *args):
@@ -21,11 +23,10 @@ def clear_caches_after(fn: Callable[..., T]) -> Callable[..., T]:
 
 
 class Population:
-
     def __init__(self, population: List[Individual], crossover_prob: float,
-            mutation_prob: float, breed_size: int, num_parent_pairs: int,
-            mating_selector_cls: Type[MatingSelector], 
-            survivor_selector_cls: Type[SurvivorSelector]) -> None:
+                 mutation_prob: float, breed_size: int, num_parent_pairs: int,
+                 mating_selector_cls: Type[MatingSelector],
+                 survivor_selector_cls: Type[SurvivorSelector]) -> None:
         self.population = population
         self.crossover_prob = crossover_prob
         self.mutation_prob = mutation_prob
@@ -65,8 +66,8 @@ class Population:
     def evolve(self) -> None:
         """Method used to evolve the population into the next generation"""
         breed = self._offspring()
-        survivors = self.survivor_selector_cls.select_survivors(len(self.population),
-            self.population, breed)
+        survivors = self.survivor_selector_cls.select_survivors(
+            len(self.population), self.population, breed)
         self.population = survivors
         self.generation += 1
 
@@ -81,5 +82,5 @@ class Population:
 
     @lru_cache
     def sd_fitness(self) -> float:
-        return stdev([individual.fitness() for individual
-            in self.population], self.avg_fitness())
+        return stdev([individual.fitness() for individual in self.population],
+                     self.avg_fitness())
