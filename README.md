@@ -11,6 +11,10 @@ An evolutionary approach to the eight queens puzzle.
 Type check is being done with `mypy`. Make sure to have it installed (v0.761).  
 Then, run `mypy src` in top level directory.
 
+### Code formatter
+Only commit code after running code formatter [yapf](https://github.com/google/yapf).
+Run `yapf src/ -ri`
+
 ### Observations
 1. Run modules from top level directory through **pipenv**.
 
