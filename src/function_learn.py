@@ -7,8 +7,8 @@ from argparse import ArgumentParser, Action
 from typing import Type, Any
 from enum import Enum
 
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt # type: ignore
+import matplotlib.patches as mpatches # type: ignore
 
 from function_minimization.chromosomes import FloatVectorChromosome
 from function_minimization.phenotypes import FloatPhenotype
