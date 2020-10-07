@@ -12,7 +12,7 @@ Type check is being done with `mypy`. Make sure to have it installed (v0.761).
 Then, run `mypy src` in top level directory.
 
 ### Code formatter
-Only commit code after running code formatter [yapf](https://github.com/google/yapf). 
+Only commit code after running code formatter [yapf](https://github.com/google/yapf).  
 Run `yapf src/ -ri`
 
 ### Observations
