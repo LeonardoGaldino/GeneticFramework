@@ -8,7 +8,7 @@ An evolutionary approach to the eight queens puzzle.
 3. Run `pipenv run python src/learn.py`. (or any other module)
 
 ### Type checking
-Type check is being done with `mypy`. Make sure to have it installed (v0.761).  
+Type check is being done with [mypy](https://mypy.readthedocs.io/en/stable/index.html). Make sure to have it installed (v0.761).  
 Then, run `mypy src` in top level directory.
 
 ### Code formatter
