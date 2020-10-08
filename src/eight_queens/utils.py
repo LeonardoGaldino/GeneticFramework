@@ -6,29 +6,27 @@ from genetic_framework.individual import Individual
 
 
 class Roulette:
-    def __init__(self, population: List[Individual], replacement: bool = False):
+    def __init__(self,
+                 population: List[Individual],
+                 replacement: bool = False):
         population.sort(key=lambda individual: individual.fitness(),
                         reverse=True)
         self.replacement = replacement
-        self.total_fitness = sum(
-            [individual.fitness() for individual in population])
-        self.total_fitness = 1.0 if self.total_fitness == 0.0 else self.total_fitness
-
-        self._items = [
-            Roulette.Item(individual,
-                          individual.fitness() / self.total_fitness)
-            for individual in population
-        ]
+        self._items: List[Roulette.Item] = list(
+            map(
+                lambda individual: Roulette.Item(individual,
+                                                 individual.fitness()),
+                population))
 
         for i in range(1, len(self._items)):
             self._items[i].acc_probability += self._items[i -
                                                           1].acc_probability
 
     def get_individual(self) -> Individual:
-        r = random()
+        r = random() * self._items[-1].acc_probability
         try:
             selected_item = next(item for item in self._items
-                            if r <= item.acc_probability)
+                                 if r <= item.acc_probability)
         except StopIteration:
             # When everyone has fitness 0.0, just take random one
             r2 = randint(0, len(self._items) - 1)
