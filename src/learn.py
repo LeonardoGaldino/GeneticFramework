@@ -201,7 +201,7 @@ ARGS = [
         action_cls=CheckPositiveIntegerConstraintAction),
     CLIArgumentDescription(
         _type=int,
-        default_value=-1,
+        default_value=None,
         short_name='rt',
         full_name='restart_tolerance',
         value_name='RESTART_TOLERANCE',

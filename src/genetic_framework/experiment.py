@@ -46,7 +46,7 @@ class Experiment:
                  breed_size: int,
                  max_fitness_computations: int,
                  num_parent_pairs: int,
-                 restart_zero_sd_tolerance: int,
+                 restart_zero_sd_tolerance: Optional[int],
                  chromosome_cls: Type[Chromosome],
                  fitness_computer_cls: Type[FitnessComputer],
                  mutator_cls: Type[Mutator],
@@ -171,7 +171,7 @@ class Experiment:
             else:
                 zero_sd_counter = 0
 
-            if self.restart_zero_sd_tolerance != -1 \
+            if self.restart_zero_sd_tolerance is not None \
                 and zero_sd_counter >= self.restart_zero_sd_tolerance:
                 population.restart_population()
         else:
