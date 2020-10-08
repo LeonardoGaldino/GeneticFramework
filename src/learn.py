@@ -53,6 +53,7 @@ class RecombinerEnum(Enum):
 class SurvivorSelectorEnum(Enum):
     BEST_FITNESS = BestFitnessSurvivorSelector
     GENERATIONAL = GenerationalSurvivorSelector
+    ROULETTE = RouletteSurvivorSelector
 
 
 class MatingSelectorEnum(Enum):

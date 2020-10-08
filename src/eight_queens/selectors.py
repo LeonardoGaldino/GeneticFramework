@@ -99,6 +99,16 @@ class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
         return new_generation_individuals
 
 
+class RouletteSurvivorSelector(SurvivorSelector, ABC):
+    @staticmethod
+    def select_survivors(population_size: int, parents: List[Individual],
+                         breed: List[Individual]) -> List[Individual]:
+        new_generation_individuals = []
+        roulette = Roulette(parents + breed)
+
+        return [roulette.get_individual() for _ in range(population_size)]
+
+
 class GenerationalSurvivorSelector(SurvivorSelector, ABC):
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
