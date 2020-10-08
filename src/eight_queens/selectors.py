@@ -42,6 +42,9 @@ class RouletteMatingSelector(MatingSelector, ABC):
         for _ in range(num_pairs):
             mate1 = roulette.get_individual()
             mate2 = roulette.get_individual()
+
+            while mate2 == mate1:
+                mate2 = roulette.get_individual()
             pairs.append((mate1, mate2))
 
         return pairs
