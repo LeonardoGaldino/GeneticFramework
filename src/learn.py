@@ -207,7 +207,7 @@ ARGS = [
         value_name='RESTART_TOLERANCE',
         help_message="""Number of generations (in a row) with 0 fitness 
             standard deviation fitness to restart the population. 
-            (-1 for no reset)""",
+            (None for no reset)""",
         action_cls=NoConstraintAction),
     CLIArgumentDescription(
         _type=float,
