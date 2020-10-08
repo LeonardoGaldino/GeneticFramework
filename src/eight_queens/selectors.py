@@ -85,10 +85,16 @@ class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
         while i + j < population_size:
             if i == len(parents) and j == len(breed):
                 break
-            if i == len(parents) or parents[i].fitness() < breed[j].fitness():
+            if i == len(parents):
                 new_generation_individuals.append(breed[j])
                 j += 1
-            elif j == len(breed) or parents[i].fitness() > breed[j].fitness():
+            elif j == len(breed):
+                new_generation_individuals.append(parents[i])
+                i += 1
+            elif parents[i].fitness() < breed[j].fitness():
+                new_generation_individuals.append(breed[j])
+                j += 1
+            elif parents[i].fitness() > breed[j].fitness():
                 new_generation_individuals.append(parents[i])
                 i += 1
             else:
@@ -103,7 +109,7 @@ class RouletteSurvivorSelector(SurvivorSelector, ABC):
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
                          breed: List[Individual]) -> List[Individual]:
-        new_generation_individuals = []
+        new_generation_individuals: List[Individual] = []
         roulette = Roulette(parents + breed)
 
         return [roulette.get_individual() for _ in range(population_size)]
