@@ -14,8 +14,6 @@ class FloatChromosome(Chromosome[FloatPhenotype, FloatGenotype]):
         self._genotypes: List[FloatGenotype] = []
 
     def initialize(self) -> None:
-        lower_bound = self.custom_data['lower_bound']
-        upper_bound = self.custom_data['upper_bound']
         n = self.custom_data['n']
 
         self._genotypes = [FloatGenotype(self.custom_data) for _ in range(n)]
