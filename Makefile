@@ -4,6 +4,9 @@ ifeq ($(PATH_ARG),)
 PATH_ARG:=src/
 endif
 
+init:
+	pipenv install --dev
+
 type-check:
 	pipenv run mypy $(PATH_ARG)
 
