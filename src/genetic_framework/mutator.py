@@ -1,5 +1,6 @@
 from typing import Generic, Type
 from abc import ABC, abstractmethod
+from copy import deepcopy
 
 from genetic_framework.chromosome import ChromosomeT
 from genetic_framework.custom_data import CustomDataHolder
@@ -16,13 +17,14 @@ class Mutator(Generic[ChromosomeT], CustomDataHolder, ABC):
     safely typechecked.
     """
     @classmethod
-    @abstractmethod
     def mutate(cls: Type, chromosome: ChromosomeT) -> ChromosomeT:
         """Mutate a given chromosome into a new one. Subclasses should specify
         the correct type of Chromosome as parameter. 
         (Accordingly to the ChromosomeType specified at the class declaration)
         """
-        ...
+        new_chromosome = deepcopy(chromosome)
+        cls.mutate_inplace(new_chromosome)
+        return new_chromosome
 
     @classmethod
     @abstractmethod

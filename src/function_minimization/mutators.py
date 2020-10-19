@@ -1,7 +1,7 @@
 from math import sqrt
 from random import randint, uniform
-from copy import deepcopy
 from abc import ABC
+from typing import Type
 
 from genetic_framework.mutator import Mutator
 from function_minimization.chromosomes import FloatVectorChromosome
@@ -9,17 +9,11 @@ from function_minimization.util import clamp
 
 
 class RandomizeGeneMutator(Mutator[FloatVectorChromosome], ABC):
-    @staticmethod
-    def mutate(chromosome: FloatVectorChromosome) -> FloatVectorChromosome:
-        new_chromosome = deepcopy(chromosome)
-        RandomizeGeneMutator.mutate_inplace(new_chromosome)
-        return new_chromosome
-
-    @staticmethod
-    def mutate_inplace(chromosome: FloatVectorChromosome) -> None:
-        vector_size = RandomizeGeneMutator.custom_data['vector_size']
-        lower_bound = RandomizeGeneMutator.custom_data['parameter_lower_bound']
-        upper_bound = RandomizeGeneMutator.custom_data['parameter_upper_bound']
+    @classmethod
+    def mutate_inplace(cls: Type, chromosome: FloatVectorChromosome) -> None:
+        vector_size: int = cls.custom_data['vector_size']
+        lower_bound: float = cls.custom_data['parameter_lower_bound']
+        upper_bound: float = cls.custom_data['parameter_upper_bound']
         genes = chromosome.genotypes
 
         gene_index = randint(0, vector_size - 1)

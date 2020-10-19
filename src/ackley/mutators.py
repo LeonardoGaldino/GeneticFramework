@@ -1,5 +1,4 @@
 from random import gauss
-from copy import deepcopy
 from abc import ABC
 from typing import Type
 
@@ -8,12 +7,6 @@ from ackley.chromosomes import FloatChromosome
 
 
 class IntPermutationSwapGeneRangeMutator(Mutator[FloatChromosome], ABC):
-    @classmethod
-    def mutate(cls: Type, chromosome: FloatChromosome) -> FloatChromosome:
-        new_chromosome = deepcopy(chromosome)
-        cls.mutate_inplace(new_chromosome)
-        return new_chromosome
-
     @classmethod
     def mutate_inplace(cls: Type, chromosome: FloatChromosome) -> None:
         step_size: float = cls.custom_data['lower_bound']
