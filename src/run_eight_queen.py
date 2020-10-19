@@ -39,10 +39,9 @@ class ChromosomeEnum(Enum):
 
 
 class MutatorEnum(Enum):
-    RANDOMIZE_GENE = RandomizeGeneMutator
-    BIT_STR_SWAP_GENE = BitStringSwapGeneMutator
-    INT_PERM_SWAP_GENE = IntPermutationSwapGeneMutator
-    INT_PERM_SWAP_RANGE = IntPermutationSwapGeneRangeMutator
+    RANDOMIZE_GENE = BitStringRandomizeGeneMutator
+    SWAP_GENE = SwapGeneMutator
+    SWAP_RANGE = SwapGeneRangeMutator
 
 
 class RecombinerEnum(Enum):
@@ -257,7 +256,7 @@ ARGS = [
         action_cls=EnumConstraintAction),
     CLIArgumentDescription(
         _type=MutatorEnum,
-        default_value=MutatorEnum.BIT_STR_SWAP_GENE.value,
+        default_value=MutatorEnum.SWAP_GENE.value,
         short_name='mut',
         full_name='mutator',
         value_name='MUTATOR',
