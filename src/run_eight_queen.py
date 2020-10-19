@@ -12,12 +12,12 @@ import matplotlib.patches as mpatches  # type: ignore
 
 from genetic_framework.experiment import Experiment
 from genetic_framework.statistics import *
+from genetic_framework.selectors import *
 from eight_queens.chromosomes import *
 from eight_queens.fitness import *
 from eight_queens.mutators import *
 from eight_queens.recombiners import *
-from eight_queens.selectors import *
-from eight_queens.utils import *
+from eight_queens.utils import print_chess_board
 
 PROGRAM_DESCRIPTION = "Learns eight queens puzzle through genetic algorithm"
 """ Enums for choosing classes for tunning the algorithm
