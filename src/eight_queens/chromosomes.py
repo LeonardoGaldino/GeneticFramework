@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Type
 from random import randint
 from functools import reduce
 from copy import deepcopy
@@ -24,15 +24,15 @@ class BitStringChromosome(Chromosome[QueenPositionPhenotype,
             new_gene.data = "{:032b}".format(new_data)
             self._genotypes.append(new_gene)
 
-    @staticmethod
-    def genotype_to_phenotype(gene: BitStringGenotype,
+    @classmethod
+    def genotype_to_phenotype(cls: Type, gene: BitStringGenotype,
                               **kwargs) -> QueenPositionPhenotype:
         new_phenotype = QueenPositionPhenotype(gene.custom_data)
         new_phenotype.data = (int(gene.data, 2), kwargs['index'])
         return new_phenotype
 
-    @staticmethod
-    def phenotype_to_genotype(phenotype: QueenPositionPhenotype,
+    @classmethod
+    def phenotype_to_genotype(cls: Type, phenotype: QueenPositionPhenotype,
                               **kwargs) -> BitStringGenotype:
         new_genotype = BitStringGenotype(phenotype.custom_data)
         new_genotype.data = "{:032b}".format(phenotype.data[0])
@@ -63,8 +63,7 @@ class BitStringChromosome(Chromosome[QueenPositionPhenotype,
     @property
     def phenotypes(self) -> List[QueenPositionPhenotype]:
         return [
-            BitStringChromosome.genotype_to_phenotype(self.genotypes[i],
-                                                      index=i)
+            self.genotype_to_phenotype(self.genotypes[i], index=i)
             for i in range(len(self.genotypes))
         ]
 
@@ -73,8 +72,7 @@ class BitStringChromosome(Chromosome[QueenPositionPhenotype,
         _phenotypes.sort(key=lambda phenotype: phenotype.data[1])
 
         self._genotypes = [
-            BitStringChromosome.phenotype_to_genotype(phenotype)
-            for phenotype in _phenotypes
+            self.phenotype_to_genotype(phenotype) for phenotype in _phenotypes
         ]
 
     def __str__(self) -> str:
@@ -106,15 +104,15 @@ class IntPermutationChromosome(Chromosome[QueenPositionPhenotype,
             self._genotypes[i], self._genotypes[random_swap_position] = \
                 self._genotypes[random_swap_position], self._genotypes[i]
 
-    @staticmethod
-    def genotype_to_phenotype(gene: IntGenotype,
+    @classmethod
+    def genotype_to_phenotype(cls: Type, gene: IntGenotype,
                               **kwargs) -> QueenPositionPhenotype:
         new_phenotype = QueenPositionPhenotype(gene.custom_data)
         new_phenotype.data = (gene.data, kwargs['index'])
         return new_phenotype
 
-    @staticmethod
-    def phenotype_to_genotype(phenotype: QueenPositionPhenotype,
+    @classmethod
+    def phenotype_to_genotype(cls: Type, phenotype: QueenPositionPhenotype,
                               **kwargs) -> IntGenotype:
         new_gene = IntGenotype(phenotype.custom_data)
         new_gene.data = phenotype.data[0]
@@ -146,7 +144,7 @@ class IntPermutationChromosome(Chromosome[QueenPositionPhenotype,
         genes = self.genotypes
 
         return [
-            IntPermutationChromosome.genotype_to_phenotype(genes[i], index=i)
+            self.genotype_to_phenotype(genes[i], index=i)
             for i in range(len(genes))
         ]
 
@@ -155,7 +153,7 @@ class IntPermutationChromosome(Chromosome[QueenPositionPhenotype,
         phenotypes.sort(key=lambda phenotype: phenotype.data[1])
 
         self._genotypes = [
-            IntPermutationChromosome.phenotype_to_genotype(phenotypes[i])
+            self.phenotype_to_genotype(phenotypes[i])
             for i in range(len(phenotypes))
         ]
 
