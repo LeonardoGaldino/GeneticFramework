@@ -6,7 +6,7 @@ from genetic_framework.mutator import Mutator
 from ackley.chromosomes import FloatChromosome
 
 
-class IntPermutationSwapGeneRangeMutator(Mutator[FloatChromosome], ABC):
+class DeltaMutator(Mutator[FloatChromosome], ABC):
     @classmethod
     def mutate_inplace(cls: Type, chromosome: FloatChromosome) -> None:
         step_size: float = cls.custom_data['lower_bound']
