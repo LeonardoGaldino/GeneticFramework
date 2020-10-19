@@ -1,4 +1,4 @@
-from typing import Generic
+from typing import Generic, Type
 from abc import ABC, abstractmethod
 
 from genetic_framework.chromosome import ChromosomeT
@@ -14,9 +14,9 @@ class FitnessComputer(Generic[ChromosomeT], CustomDataHolder, ABC):
 
     Then, fitness method can receive SubClassChromosome safely typechecked.
     """
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def fitness(chromosome: ChromosomeT) -> float:
+    def fitness(cls: Type, chromosome: ChromosomeT) -> float:
         """Computes fitness for a given Chromosome. Subclasses should specify
         the correct type of Chromosome as parameter. 
         (Accordingly to the ChromosomeType specified at the class declaration)
