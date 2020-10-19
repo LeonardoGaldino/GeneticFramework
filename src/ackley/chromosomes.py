@@ -11,7 +11,9 @@ from genetic_framework.chromosome import Chromosome
 class FloatChromosome(Chromosome[FloatPhenotype, FloatGenotype]):
     def __init__(self, custom_data: Dict = {}) -> None:
         super().__init__(custom_data)
-        self._genotypes: List[FloatGenotype] = []
+
+        n: int = self.custom_data['n']
+        self._genotypes = [FloatGenotype(self.custom_data) for _ in range(n)]
 
     def initialize(self) -> None:
         n: int = self.custom_data['n']
