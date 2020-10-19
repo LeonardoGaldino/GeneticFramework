@@ -1,4 +1,4 @@
-from typing import Generic
+from typing import Generic, Type
 from abc import ABC, abstractmethod
 
 from genetic_framework.chromosome import ChromosomeT
@@ -14,9 +14,9 @@ class Recombiner(Generic[ChromosomeT], CustomDataHolder, ABC):
 
     Then, recombine method can receive SubClassChromosome safely typechecked.
     """
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def recombine(chromosome1: ChromosomeT,
+    def recombine(cls: Type, chromosome1: ChromosomeT,
                   chromosome2: ChromosomeT) -> ChromosomeT:
         """Recombines two Chromosomes into a new one. Subclasses should 
         specify the correct type of Chromosome as parameter.
