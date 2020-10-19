@@ -1,5 +1,5 @@
 from random import randint
-from typing import List
+from typing import List, Type
 from abc import ABC
 
 from genetic_framework.recombiner import Recombiner
@@ -8,10 +8,10 @@ from eight_queens.genotypes import IntGenotype
 
 
 class BitStringCutCrossfillRecombiner(Recombiner[BitStringChromosome], ABC):
-    @staticmethod
-    def recombine(chromosome1: BitStringChromosome,
+    @classmethod
+    def recombine(cls: Type, chromosome1: BitStringChromosome,
                   chromosome2: BitStringChromosome) -> BitStringChromosome:
-        chess_size = BitStringCutCrossfillRecombiner.custom_data['chess_size']
+        chess_size = cls.custom_data['chess_size']
 
         new_chromosome = BitStringChromosome(chromosome1.custom_data)
         genes1 = chromosome1.genotypes
@@ -27,23 +27,23 @@ class BitStringCutCrossfillRecombiner(Recombiner[BitStringChromosome], ABC):
 class IntPermutationRecombiner(Recombiner[IntPermutationChromosome], ABC):
     # PMX crossover algorithm
 
-    @staticmethod
-    def _find_index(idx: int, left: int, right: int, genes1: List[int],
-                    genes2: List[int]) -> int:
+    @classmethod
+    def _find_index(cls: Type['IntPermutationRecombiner'], idx: int, left: int,
+                    right: int, genes1: List[int], genes2: List[int]) -> int:
         target = genes1[idx]
         target_idx_p2 = genes2.index(target)
 
         if target_idx_p2 >= left and target_idx_p2 <= right:
-            return IntPermutationRecombiner \
-                ._find_index(target_idx_p2, left, right, genes1, genes2)
+            return cls._find_index(target_idx_p2, left, right, genes1, genes2)
 
         return target_idx_p2
 
-    @staticmethod
+    @classmethod
     def recombine(
+            cls: Type['IntPermutationRecombiner'],
             chromosome1: IntPermutationChromosome,
             chromosome2: IntPermutationChromosome) -> IntPermutationChromosome:
-        chess_size = IntPermutationRecombiner.custom_data['chess_size']
+        chess_size = cls.custom_data['chess_size']
 
         new_chromosome = IntPermutationChromosome(chromosome1.custom_data)
         chromo1_data = list(map(lambda gene: gene.data, chromosome1.genotypes))
@@ -64,9 +64,8 @@ class IntPermutationRecombiner(Recombiner[IntPermutationChromosome], ABC):
             if chromo2_data[i] in new_data:
                 continue
 
-            idx = IntPermutationRecombiner._find_index(i, left_r, right_r,
-                                                       chromo1_data,
-                                                       chromo2_data)
+            idx = cls._find_index(i, left_r, right_r, chromo1_data,
+                                  chromo2_data)
             new_data[idx] = chromo2_data[i]
 
         for i in range(0, chess_size):
