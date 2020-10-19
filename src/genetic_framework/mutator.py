@@ -1,8 +1,9 @@
 from typing import Generic, Type
 from abc import ABC, abstractmethod
 from copy import deepcopy
+from random import randint
 
-from genetic_framework.chromosome import ChromosomeT
+from genetic_framework.chromosome import ChromosomeT, Chromosome
 from genetic_framework.custom_data import CustomDataHolder
 
 
@@ -34,3 +35,36 @@ class Mutator(Generic[ChromosomeT], CustomDataHolder, ABC):
         (Accordingly to the ChromosomeType specified at the class declaration)
         """
         ...
+
+
+class SwapGeneMutator(Mutator[Chromosome], ABC):
+    @classmethod
+    def mutate_inplace(cls: Type, chromosome: Chromosome) -> None:
+        number_genes = len(chromosome.genotypes)
+
+        r1 = randint(0, number_genes - 1)
+        r2 = randint(0, number_genes - 1)
+        while r1 == r2:
+            r2 = randint(0, number_genes - 1)
+
+        genes = chromosome.genotypes
+
+        # Swap genes
+        genes[r1], genes[r2] = genes[r2], genes[r1]
+        chromosome.genotypes = genes  # type: ignore
+
+
+class SwapGeneRangeMutator(Mutator[Chromosome], ABC):
+    @classmethod
+    def mutate_inplace(cls: Type, chromosome: Chromosome) -> None:
+        number_genes = len(chromosome.genotypes)
+
+        l = randint(0, number_genes - 1)
+        r = randint(l, number_genes - 1)
+
+        genes = chromosome.genotypes
+        _range = genes[l:r + 1]
+        _range.reverse()
+
+        chromosome.genotypes = genes[:l] + _range + genes[r +  # type: ignore
+                                                          1:]
