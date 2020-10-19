@@ -14,7 +14,7 @@ class FloatChromosome(Chromosome[FloatPhenotype, FloatGenotype]):
         self._genotypes: List[FloatGenotype] = []
 
     def initialize(self) -> None:
-        n = self.custom_data['n']
+        n: int = self.custom_data['n']
 
         self._genotypes = [FloatGenotype(self.custom_data) for _ in range(n)]
         for genotype in self._genotypes:
@@ -38,7 +38,7 @@ class FloatChromosome(Chromosome[FloatPhenotype, FloatGenotype]):
 
     @genotypes.setter
     def genotypes(self, genes: List[FloatGenotype]) -> None:
-        n = self.custom_data['n']
+        n: int = self.custom_data['n']
         if len(genes) != n:
             raise ValueError(
                 'Tried to assign genotypes to FloatChromosome with wrong number of genes ({}). Expected {}.'

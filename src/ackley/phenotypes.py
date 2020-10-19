@@ -14,8 +14,8 @@ class FloatPhenotype(Phenotype[float]):
 
     @data.setter
     def data(self, new_data: float) -> None:
-        lower_bound = self.custom_data['lower_bound']
-        upper_bound = self.custom_data['upper_bound']
+        lower_bound: float = self.custom_data['lower_bound']
+        upper_bound: float = self.custom_data['upper_bound']
 
         if new_data < lower_bound or new_data > upper_bound:
             raise ValueError(

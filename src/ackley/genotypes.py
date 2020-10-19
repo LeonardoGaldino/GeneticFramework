@@ -10,8 +10,8 @@ class FloatGenotype(Genotype[float]):
         self._data: float = 0.0
 
     def initialize(self) -> None:
-        lower_bound = self.custom_data['lower_bound']
-        upper_bound = self.custom_data['upper_bound']
+        lower_bound: float = self.custom_data['lower_bound']
+        upper_bound: float = self.custom_data['upper_bound']
         self._data = uniform(lower_bound, upper_bound)
 
     @property
@@ -20,8 +20,8 @@ class FloatGenotype(Genotype[float]):
 
     @data.setter
     def data(self, new_data: float) -> None:
-        lower_bound = self.custom_data['lower_bound']
-        upper_bound = self.custom_data['upper_bound']
+        lower_bound: float = self.custom_data['lower_bound']
+        upper_bound: float = self.custom_data['upper_bound']
 
         if new_data < lower_bound or new_data > upper_bound:
             raise ValueError(

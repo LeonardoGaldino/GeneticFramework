@@ -7,8 +7,7 @@ from genetic_framework.mutator import Mutator
 from ackley.chromosomes import FloatChromosome
 
 
-class IntPermutationSwapGeneRangeMutator(Mutator[FloatChromosome],
-                                         ABC):
+class IntPermutationSwapGeneRangeMutator(Mutator[FloatChromosome], ABC):
     @classmethod
     def mutate(cls: Type, chromosome: FloatChromosome) -> FloatChromosome:
         new_chromosome = deepcopy(chromosome)
@@ -24,6 +23,6 @@ class IntPermutationSwapGeneRangeMutator(Mutator[FloatChromosome],
         for gene in chromosome.genotypes:
             delta = gauss(0, step_size)
             # Avoid moving gene data outside boundaries
-            delta = min(upper_bound - gene.data, max(lower_bound - gene.data, delta))
+            delta = min(upper_bound - gene.data,
+                        max(lower_bound - gene.data, delta))
             gene.data = gene.data + delta
-
