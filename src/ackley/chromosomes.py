@@ -52,16 +52,12 @@ class FloatChromosome(Chromosome[FloatPhenotype, FloatGenotype]):
     def phenotypes(self) -> List[FloatPhenotype]:
         genes = self._genotypes
 
-        return [
-            FloatChromosome.genotype_to_phenotype(gene)
-            for gene in self._genotypes
-        ]
+        return [self.genotype_to_phenotype(gene) for gene in self._genotypes]
 
     @phenotypes.setter
     def phenotypes(self, phenotypes: List[FloatPhenotype]) -> None:
         self._genotypes = [
-            FloatChromosome.phenotype_to_genotype(phenotype)
-            for phenotype in phenotypes
+            self.phenotype_to_genotype(phenotype) for phenotype in phenotypes
         ]
 
     def __str__(self) -> str:
