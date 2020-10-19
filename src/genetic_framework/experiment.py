@@ -25,7 +25,7 @@ def is_correct_chromosome_type(cls: Type,
         for arg in args:
             if type(arg) == TypeVar:
                 continue
-            if issubclass(arg, chromosome_cls):
+            if issubclass(chromosome_cls, arg):
                 return True
 
         if hasattr(base, '__origin__') \
