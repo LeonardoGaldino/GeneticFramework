@@ -294,7 +294,7 @@ ARGS = [
         action_cls=EnumConstraintAction),
     CLIArgumentDescription(
         _type=MutatorEnum,
-        default_value=MutatorEnum.SWAP_GENE.value,
+        default_value=MutatorEnum.DELTA.value,
         short_name='mut',
         full_name='mutator',
         value_name='MUTATOR',
