@@ -55,6 +55,7 @@ class MatingSelectorEnum(Enum):
     BEST_FITNESS = BestFitnessMatingSelector
     ROULETTE = RouletteMatingSelector
     BEST_FROM_RAND = BestFromRandomMatingSelector
+    RANDOM = RandomMatingSelector
 
 
 class SolutionSelectorEnum(Enum):
@@ -321,7 +322,7 @@ ARGS = [
         action_cls=EnumConstraintAction),
     CLIArgumentDescription(
         _type=MatingSelectorEnum,
-        default_value=MatingSelectorEnum.BEST_FROM_RAND.value,
+        default_value=MatingSelectorEnum.RANDOM.value,
         short_name='msel',
         full_name='mating_selector',
         value_name='MATING_SEL',

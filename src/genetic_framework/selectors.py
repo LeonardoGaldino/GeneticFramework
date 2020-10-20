@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Dict
-from random import random, shuffle
+from random import random, shuffle, randint
 from statistics import mean
 from copy import deepcopy
 
@@ -74,6 +74,26 @@ class BestFitnessMatingSelector(MatingSelector, ABC):
         i = 0
         for i in range(0, 2 * num_pairs, 2):
             pairs.append((population[i], population[i + 1]))
+
+        return pairs
+
+
+class RandomMatingSelector(MatingSelector, ABC):
+    @staticmethod
+    def select_couples(population: List[Individual],
+                       num_pairs: int) -> List[Tuple[Individual, Individual]]:
+        pairs: List[Tuple[Individual, Individual]] = []
+        size = len(population)
+
+        if size <= 1:
+            return []
+
+        for _ in range(num_pairs):
+            p1 = randint(0, size - 1)
+            p2 = randint(0, size - 1)
+            while p1 == p2:
+                p2 = randint(0, size - 1)
+            pairs.append((population[p1], population[p2]))
 
         return pairs
 
