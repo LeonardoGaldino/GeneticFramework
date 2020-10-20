@@ -9,9 +9,9 @@ from ackley.chromosomes import FloatChromosome
 class DeltaMutator(Mutator[FloatChromosome], ABC):
     @classmethod
     def mutate_inplace(cls: Type, chromosome: FloatChromosome) -> None:
-        step_size: float = cls.custom_data['lower_bound']
-        lower_bound: float = cls.custom_data['upper_bound']
-        upper_bound: float = cls.custom_data['step_size']
+        step_size: float = cls.custom_data['step_size']
+        lower_bound: float = cls.custom_data['lower_bound']
+        upper_bound: float = cls.custom_data['upper_bound']
 
         for gene in chromosome.genotypes:
             delta = gauss(0, step_size)
