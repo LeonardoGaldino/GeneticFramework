@@ -16,7 +16,7 @@ class DeltaMutator(Mutator[FloatChromosome], ABC):
         for gene in chromosome.genotypes:
             delta = gauss(0, step_size)
             new_val = gene.data + delta
-            
+
             # Avoid moving gene data outside boundaries
             new_val = min(upper_bound, max(lower_bound, new_val))
             gene.data = new_val

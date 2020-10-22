@@ -19,7 +19,7 @@ class FloatPhenotype(Phenotype[float]):
 
         if new_data < lower_bound or new_data > upper_bound:
             raise ValueError(
-                'Tried to set QueenPositionPhenotype data with ({}). Should be [{}, {}]'
+                'Tried to set FloatPhenotype data with ({}). Should be [{}, {}]'
                 .format(new_data, lower_bound, upper_bound))
 
         self._data = new_data
