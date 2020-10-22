@@ -25,4 +25,4 @@ class AckleyFitnessComputer(FitnessComputer[FloatChromosome], ABC):
         result -= c1 * exp(-c2 * sqrt(squares / n))
         result -= exp(second_sum / n)
 
-        return 1.0 / result
+        return -result
