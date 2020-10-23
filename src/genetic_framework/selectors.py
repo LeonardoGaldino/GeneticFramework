@@ -168,7 +168,7 @@ class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
                 i += 1
             else:
                 # The same fitness
-                new_generation_individuals.append(parents[i])
+                new_generation_individuals.append(breed[j])
                 i += 1
 
         return new_generation_individuals
