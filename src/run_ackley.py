@@ -186,7 +186,7 @@ ARGS = [
         action_cls=NoConstraintAction),
     CLIArgumentDescription(
         _type=int,
-        default_value=100,
+        default_value=1,
         short_name='ps',
         full_name='population_size',
         value_name='POP_SIZE',
@@ -195,7 +195,7 @@ ARGS = [
         action_cls=CheckPositiveIntegerConstraintAction),
     CLIArgumentDescription(
         _type=int,
-        default_value=50,
+        default_value=50000,
         short_name='mg',
         full_name='max_generations',
         value_name='MAX_GENS',
@@ -213,7 +213,7 @@ ARGS = [
         action_cls=CheckPositiveIntegerConstraintAction),
     CLIArgumentDescription(
         _type=int,
-        default_value=2,
+        default_value=1,
         short_name='bs',
         full_name='breed_size',
         value_name='BREED_SIZE',
@@ -222,7 +222,7 @@ ARGS = [
         action_cls=CheckPositiveIntegerConstraintAction),
     CLIArgumentDescription(
         _type=int,
-        default_value=10000,
+        default_value=100000000,
         short_name='mfc',
         full_name='max_fitness_comp',
         value_name='MAX_FIT_COMPS',
@@ -231,7 +231,7 @@ ARGS = [
         action_cls=CheckPositiveIntegerConstraintAction),
     CLIArgumentDescription(
         _type=int,
-        default_value=30,
+        default_value=1,
         short_name='npp',
         full_name='num_parent_pairs',
         value_name='NUM_PAR_PAIRS',
@@ -259,7 +259,7 @@ ARGS = [
         action_cls=NoConstraintAction),
     CLIArgumentDescription(
         _type=float,
-        default_value=0.4,
+        default_value=1.0,
         short_name='mp',
         full_name='mutation_probability',
         value_name='MUTATION_PROB',
@@ -268,7 +268,7 @@ ARGS = [
         action_cls=CheckProbabilityConstraintAction),
     CLIArgumentDescription(
         _type=float,
-        default_value=0.9,
+        default_value=0.0,
         short_name='cp',
         full_name='crossover_probability',
         value_name='CROSS_PROB',

@@ -87,10 +87,6 @@ class Experiment:
         self.stats_collector_types = stats_collector_types
         self.custom_data = custom_data
 
-        if 2 * num_parent_pairs > population_size:
-            raise ValueError(
-                'Number of pairs is larger than half the population size!')
-
         classes_to_be_validated = (
             (fitness_computer_cls, 'FitnessComputer'),
             (mutator_cls, 'Mutator'),

@@ -1,5 +1,6 @@
 from typing import List, Type, Callable, TypeVar
 from functools import lru_cache
+from copy import deepcopy
 from random import random, randint
 from math import sqrt
 from statistics import mean, stdev
@@ -39,12 +40,27 @@ class Population:
     def _offspring(self) -> List[Individual]:
         """Internal method used to create a list of new individuals (breed)
         from the current generation."""
-        parents = self.mating_selector_cls \
-            .select_couples(self.population, self.num_parent_pairs)
+
         breed = []
 
+        # if population has a single individual return a copies of it (may suffer mutation)
+        if len(self.population) == 1:
+            for _ in range(self.num_parent_pairs * self.breed_size):
+                new_individual = deepcopy(self.population[0])
+
+                mutation_r = random()
+                if mutation_r < self.mutation_prob:
+                    new_individual.self_mutate()
+
+                breed.append(new_individual)
+
+            return breed
+
+        parents = self.mating_selector_cls \
+            .select_couples(self.population, self.num_parent_pairs)
+
         for (p1, p2) in parents:
-            for i in range(self.breed_size):
+            for _ in range(self.breed_size):
                 # Generate child maybe cloned from parents
                 crossover_r = random()
                 if crossover_r < self.crossover_prob:
@@ -82,5 +98,8 @@ class Population:
 
     @lru_cache
     def sd_fitness(self) -> float:
+        if (len(self.population) < 2):
+            return 0
+
         return stdev([individual.fitness() for individual in self.population],
                      self.avg_fitness())

@@ -224,22 +224,26 @@ class KBestFitnessSolutionSelector(SolutionSelector, ABC):
         return self._best_individuals
 
     def update_individuals(self, population: List[Individual]) -> None:
-        population.sort(key=lambda individual: individual.fitness())
-        size = len(population)
+        self.best_individuals.sort(key=lambda individual: individual.fitness(), reverse=True)
+        population.sort(key=lambda individual: individual.fitness(), reverse=True)
+        new_best_individuals = []
 
-        if not self._best_individuals:
-            # if no best individuals have been stored yet:
-            # copy <number_solutions> best individuals from population
-            self._best_individuals = deepcopy(
-                population[size - self.number_solutions:])
-            return
-
-        i = 0
-        while i < self.number_solutions and \
-                population[size - 1 - i].fitness() > self._best_individuals[i].fitness():
-            self._best_individuals[i] = deepcopy(population[size - 1 - i])
-            i += 1
-        if i > 0:
-            # elements have been added to the beginning: resort individuals
-            self._best_individuals.sort(
-                key=lambda individual: individual.fitness())
+        i, j = 0, 0
+        while len(new_best_individuals) < self.number_solutions:
+            if i == len(population) and j == len(self.best_individuals):
+                break
+            elif i == len(population):
+                new_best_individuals.append(self.best_individuals[j])
+                j += 1
+            elif j == len(self.best_individuals):
+                new_best_individuals.append(deepcopy(population[i]))
+                i += 1
+            elif self.best_individuals[j].fitness() >= population[i].fitness():
+                new_best_individuals.append(self.best_individuals[j])
+                j += 1
+            else:
+                new_best_individuals.append(deepcopy(population[i]))
+                i += 1
+        
+        self.best_individuals.clear()
+        self.best_individuals.extend(new_best_individuals)
