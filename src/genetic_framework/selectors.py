@@ -224,9 +224,11 @@ class KBestFitnessSolutionSelector(SolutionSelector, ABC):
         return self._best_individuals
 
     def update_individuals(self, population: List[Individual]) -> None:
-        self.best_individuals.sort(key=lambda individual: individual.fitness(), reverse=True)
-        population.sort(key=lambda individual: individual.fitness(), reverse=True)
-        new_best_individuals = []
+        self.best_individuals.sort(key=lambda individual: individual.fitness(),
+                                   reverse=True)
+        population.sort(key=lambda individual: individual.fitness(),
+                        reverse=True)
+        new_best_individuals: List[Individual] = []
 
         i, j = 0, 0
         while len(new_best_individuals) < self.number_solutions:
@@ -244,6 +246,6 @@ class KBestFitnessSolutionSelector(SolutionSelector, ABC):
             else:
                 new_best_individuals.append(deepcopy(population[i]))
                 i += 1
-        
+
         self.best_individuals.clear()
         self.best_individuals.extend(new_best_individuals)
