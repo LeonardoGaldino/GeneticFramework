@@ -52,6 +52,7 @@ class Population:
                 if mutation_r < self.mutation_prob:
                     new_individual.self_mutate()
 
+                new_individual.generation = self.generation
                 breed.append(new_individual)
 
             return breed
