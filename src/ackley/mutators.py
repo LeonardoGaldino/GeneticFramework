@@ -1,11 +1,12 @@
 from random import gauss
 from abc import ABC
 from typing import Type
-from math import cos, exp, sqrt, e
+from math import sqrt, exp
 
 from genetic_framework.mutator import Mutator
 from genetic_framework.fitness import FitnessComputer
-from ackley.chromosomes import FloatChromosome
+from ackley.chromosomes import FloatChromosome, AdaptiveStepFloatChromosome
+from ackley.util import clamp
 
 
 class DeltaMutator(Mutator[FloatChromosome], ABC):
@@ -38,10 +39,31 @@ class DeltaMutator(Mutator[FloatChromosome], ABC):
             new_val = gene.data + delta
 
             # Avoid moving gene data outside boundaries
-            new_val = min(upper_bound, max(lower_bound, new_val))
+            new_val = clamp(new_val, lower_bound, upper_bound)
             gene.data = new_val
 
         new_fitness: float = fitness_computer.fitness(chromosome)
 
         if (new_fitness > old_fitness):
             cls.successful_mutations += 1
+
+
+class AdaptiveStepMutator(Mutator[AdaptiveStepFloatChromosome], ABC):
+    @classmethod
+    def learning_rate(cls: Type) -> float:
+        n: int = cls.custom_data['n']
+        lr_multiplier: float = cls.custom_data['learning_rate_multiplier']
+        return lr_multiplier / sqrt(n)
+
+    @classmethod
+    def mutate_inplace(cls: Type,
+                       chromosome: AdaptiveStepFloatChromosome) -> None:
+        lower_bound: float = cls.custom_data['lower_bound']
+        upper_bound: float = cls.custom_data['upper_bound']
+        lr = cls.learning_rate()
+
+        for gene in chromosome.genotypes:
+            new_delta = gene.data[1] * exp(lr * gauss(0, 1))
+            new_value = gene.data[0] + new_delta * gauss(0, 1)
+            new_value = clamp(new_value, lower_bound, upper_bound)
+            gene.data = (new_value, new_delta)

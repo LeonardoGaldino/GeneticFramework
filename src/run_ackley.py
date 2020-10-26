@@ -185,6 +185,15 @@ ARGS = [
         """Specify the size of the step (standard deviation) to mutate.""",
         action_cls=NoConstraintAction),
     CLIArgumentDescription(
+        _type=float,
+        default_value=1.0,
+        short_name='lrm',
+        full_name='learning_rate_multiplier',
+        value_name='LR_MULTIPLIER',
+        help_message=
+        """Specify the value to scale the learning rate.""",
+        action_cls=NoConstraintAction),
+    CLIArgumentDescription(
         _type=int,
         default_value=1,
         short_name='ps',
@@ -358,6 +367,7 @@ def main(**kwargs) -> None:
                        lower_bound=kwargs['lower_bound'],
                        upper_bound=kwargs['upper_bound'],
                        step_size=kwargs['step_size'],
+                       learning_rate_multiplier=kwargs['learning_rate_multiplier'],
                        fitness_computer=kwargs['fitness_computer'])
 
     experiment = Experiment(
