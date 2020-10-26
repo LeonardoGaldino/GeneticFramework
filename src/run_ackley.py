@@ -194,8 +194,7 @@ ARGS = [
         short_name='lrm',
         full_name='learning_rate_multiplier',
         value_name='LR_MULTIPLIER',
-        help_message=
-        """Specify the value to scale the learning rate.""",
+        help_message="""Specify the value to scale the learning rate.""",
         action_cls=NoConstraintAction),
     CLIArgumentDescription(
         _type=int,
@@ -364,15 +363,16 @@ STATISTICS_COLLECTOR_TYPES = [
 def main(**kwargs) -> None:
     print('Using these CLI arguments: {}\n'.format(kwargs))
 
-    custom_data = dict(n=kwargs['n'],
-                       c1=kwargs['c1'],
-                       c2=kwargs['c2'],
-                       c3=kwargs['c3'],
-                       lower_bound=kwargs['lower_bound'],
-                       upper_bound=kwargs['upper_bound'],
-                       step_size=kwargs['step_size'],
-                       learning_rate_multiplier=kwargs['learning_rate_multiplier'],
-                       fitness_computer=kwargs['fitness_computer'])
+    custom_data = dict(
+        n=kwargs['n'],
+        c1=kwargs['c1'],
+        c2=kwargs['c2'],
+        c3=kwargs['c3'],
+        lower_bound=kwargs['lower_bound'],
+        upper_bound=kwargs['upper_bound'],
+        step_size=kwargs['step_size'],
+        learning_rate_multiplier=kwargs['learning_rate_multiplier'],
+        fitness_computer=kwargs['fitness_computer'])
 
     experiment = Experiment(
         kwargs['population_size'], kwargs['max_generations'],
@@ -380,8 +380,8 @@ def main(**kwargs) -> None:
         kwargs['target_fitness'], kwargs['number_solutions'],
         kwargs['breed_size'], kwargs['max_fitness_comp'],
         kwargs['num_parent_pairs'], kwargs['restart_tolerance'],
-        kwargs['chromosome'], kwargs['fitness_computer'], kwargs['mutator'],
-        kwargs['recombiner'], kwargs['mating_selector'],
+        kwargs['chromosome'], kwargs['fitness_computer'], False,
+        kwargs['mutator'], kwargs['recombiner'], kwargs['mating_selector'],
         kwargs['survivor_selector'], kwargs['solution_selector'],
         STATISTICS_COLLECTOR_TYPES, custom_data)
     best_individuals, stats_collectors = experiment.run_experiment()

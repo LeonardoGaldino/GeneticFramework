@@ -3,6 +3,7 @@ from typing import List, Tuple, Dict
 from random import random, shuffle, randint
 from statistics import mean
 from copy import deepcopy
+from operator import le, ge
 
 from genetic_framework.custom_data import CustomDataHolder
 from genetic_framework.individual import Individual
@@ -12,11 +13,11 @@ from genetic_framework.utils import Roulette
 class MatingSelector(CustomDataHolder, ABC):
     @staticmethod
     @abstractmethod
-    def select_couples(population: List[Individual], num_parent_pairs: int) \
-            -> List[Tuple[Individual, Individual]]:
+    def select_couples(
+            population: List[Individual], num_parent_pairs: int,
+            maximize_fitness: bool) -> List[Tuple[Individual, Individual]]:
         """Pairs individuals to mate and produce children. Subclass should
         implement this logic of selecting individual to mate."""
-        ...
 
 
 class SurvivorSelector(CustomDataHolder, ABC):
@@ -25,10 +26,10 @@ class SurvivorSelector(CustomDataHolder, ABC):
     @staticmethod
     @abstractmethod
     def select_survivors(population_size: int, parents: List[Individual],
-                         breed: List[Individual]) -> List[Individual]:
+                         breed: List[Individual],
+                         maximize_fitness: bool) -> List[Individual]:
         """Implements logic of choosing which individuals will survive to next
         generation."""
-        ...
 
 
 class SolutionSelector(ABC):
@@ -36,35 +37,37 @@ class SolutionSelector(ABC):
     Responsible for best individuals selection logic on a running experiment
     """
     @abstractmethod
-    def __init__(self, number_solutions: int, custom_data: Dict = {}) -> None:
+    def __init__(self,
+                 number_solutions: int,
+                 maximize_fitness: bool,
+                 custom_data: Dict = {}) -> None:
         self.number_solutions = number_solutions
+        self.maximize_fitness = maximize_fitness
         self.custom_data = custom_data
 
     @property
     @abstractmethod
     def best_individual(self) -> Individual:
         """Returns the best individual selected and stored so far."""
-        ...
 
     @property
     @abstractmethod
     def best_individuals(self) -> List[Individual]:
         """Returns the best individuals selected and stored so far."""
-        ...
 
     @abstractmethod
     def update_individuals(self, population: List[Individual]) -> None:
         """Updates (if necessary) the list of best individuals with 
         individuals from the specified population."""
-        ...
 
 
 class BestFitnessMatingSelector(MatingSelector, ABC):
     @staticmethod
-    def select_couples(population: List[Individual],
-                       num_pairs: int) -> List[Tuple[Individual, Individual]]:
+    def select_couples(
+            population: List[Individual], num_pairs: int,
+            maximize_fitness: bool) -> List[Tuple[Individual, Individual]]:
         population.sort(key=lambda individual: individual.fitness(),
-                        reverse=True)
+                        reverse=maximize_fitness)
         pairs: List[Tuple[Individual, Individual]] = []
         size = len(population)
 
@@ -80,8 +83,8 @@ class BestFitnessMatingSelector(MatingSelector, ABC):
 
 class RandomMatingSelector(MatingSelector, ABC):
     @staticmethod
-    def select_couples(population: List[Individual],
-                       num_pairs: int) -> List[Tuple[Individual, Individual]]:
+    def select_couples(population: List[Individual], num_pairs: int,
+                       __: bool) -> List[Tuple[Individual, Individual]]:
         pairs: List[Tuple[Individual, Individual]] = []
         size = len(population)
 
@@ -100,10 +103,11 @@ class RandomMatingSelector(MatingSelector, ABC):
 
 class RouletteMatingSelector(MatingSelector, ABC):
     @staticmethod
-    def select_couples(population: List[Individual], num_pairs: int) \
-            -> List[Tuple[Individual, Individual]]:
+    def select_couples(
+            population: List[Individual], num_pairs: int,
+            maximize_fitness: bool) -> List[Tuple[Individual, Individual]]:
         pairs: List[Tuple[Individual, Individual]] = []
-        roulette = Roulette(population)
+        roulette = Roulette(population, maximize_fitness)
 
         if len(population) <= 1:
             return []
@@ -121,8 +125,9 @@ class RouletteMatingSelector(MatingSelector, ABC):
 
 class BestFromRandomMatingSelector(MatingSelector, ABC):
     @staticmethod
-    def select_couples(population: List[Individual], num_pairs: int) \
-            -> List[Tuple[Individual, Individual]]:
+    def select_couples(
+            population: List[Individual], num_pairs: int,
+            maximize_fitness: bool) -> List[Tuple[Individual, Individual]]:
         pairs: List[Tuple[Individual, Individual]] = []
 
         if len(population) <= 1:
@@ -136,7 +141,7 @@ class BestFromRandomMatingSelector(MatingSelector, ABC):
             selected_mates = sorted(
                 possible_mates,
                 key=lambda individual: individual.fitness(),
-                reverse=True)[:2]
+                reverse=maximize_fitness)[:2]
             pairs.append((selected_mates[0], selected_mates[1]))
 
         return pairs
@@ -145,9 +150,12 @@ class BestFromRandomMatingSelector(MatingSelector, ABC):
 class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
-                         breed: List[Individual]) -> List[Individual]:
-        parents.sort(key=lambda individual: individual.fitness(), reverse=True)
-        breed.sort(key=lambda individual: individual.fitness(), reverse=True)
+                         breed: List[Individual],
+                         maximize_fitness: bool) -> List[Individual]:
+        parents.sort(key=lambda individual: individual.fitness(),
+                     reverse=maximize_fitness)
+        breed.sort(key=lambda individual: individual.fitness(),
+                   reverse=maximize_fitness)
         new_generation_individuals = []
 
         i, j = 0, 0
@@ -177,9 +185,10 @@ class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
 class RouletteSurvivorSelector(SurvivorSelector, ABC):
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
-                         breed: List[Individual]) -> List[Individual]:
+                         breed: List[Individual],
+                         maximize_fitness: bool) -> List[Individual]:
         new_generation_individuals: List[Individual] = []
-        roulette = Roulette(parents + breed)
+        roulette = Roulette(parents + breed, maximize_fitness)
 
         return [roulette.get_individual() for _ in range(population_size)]
 
@@ -187,7 +196,8 @@ class RouletteSurvivorSelector(SurvivorSelector, ABC):
 class GenerationalSurvivorSelector(SurvivorSelector, ABC):
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
-                         breed: List[Individual]) -> List[Individual]:
+                         breed: List[Individual],
+                         maximize_fitness: bool) -> List[Individual]:
         new_generation_individuals = parents + breed
 
         avg_gen = mean([
@@ -206,13 +216,16 @@ class GenerationalSurvivorSelector(SurvivorSelector, ABC):
 
             return (fitness / avg_fitness) * (gen / avg_gen)
 
-        new_generation_individuals.sort(key=score, reverse=True)
+        new_generation_individuals.sort(key=score, reverse=maximize_fitness)
         return new_generation_individuals[:population_size]
 
 
 class KBestFitnessSolutionSelector(SolutionSelector, ABC):
-    def __init__(self, number_solutions: int, custom_data: Dict = {}) -> None:
-        super().__init__(number_solutions, custom_data)
+    def __init__(self,
+                 number_solutions: int,
+                 maximize_fitness: bool,
+                 custom_data: Dict = {}) -> None:
+        super().__init__(number_solutions, maximize_fitness, custom_data)
         self._best_individuals: List[Individual] = []
 
     @property
@@ -225,10 +238,11 @@ class KBestFitnessSolutionSelector(SolutionSelector, ABC):
 
     def update_individuals(self, population: List[Individual]) -> None:
         self.best_individuals.sort(key=lambda individual: individual.fitness(),
-                                   reverse=True)
+                                   reverse=self.maximize_fitness)
         population.sort(key=lambda individual: individual.fitness(),
-                        reverse=True)
+                        reverse=self.maximize_fitness)
         new_best_individuals: List[Individual] = []
+        comparison = ge if self.maximize_fitness else le
 
         i, j = 0, 0
         while len(new_best_individuals) < self.number_solutions:
@@ -240,7 +254,8 @@ class KBestFitnessSolutionSelector(SolutionSelector, ABC):
             elif j == len(self.best_individuals):
                 new_best_individuals.append(deepcopy(population[i]))
                 i += 1
-            elif self.best_individuals[j].fitness() >= population[i].fitness():
+            elif comparison(self.best_individuals[j].fitness(),
+                            population[i].fitness()):
                 new_best_individuals.append(self.best_individuals[j])
                 j += 1
             else:

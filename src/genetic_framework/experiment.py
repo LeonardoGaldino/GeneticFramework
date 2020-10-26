@@ -49,6 +49,7 @@ class Experiment:
                  restart_zero_sd_tolerance: Optional[int],
                  chromosome_cls: Type[Chromosome],
                  fitness_computer_cls: Type[FitnessComputer],
+                 maximize_fitness: bool,
                  mutator_cls: Type[Mutator],
                  recombiner_cls: Type[Recombiner],
                  mating_selector_cls: Type[MatingSelector],
@@ -70,6 +71,7 @@ class Experiment:
 
         self.fitness_computer_cls = fitness_computer_cls
         self.fitness_computer_cls.set_custom_data(custom_data)
+        self.maximize_fitness = maximize_fitness
 
         self.mutator_cls = mutator_cls
         self.mutator_cls.set_custom_data(custom_data)
@@ -114,10 +116,11 @@ class Experiment:
         initial_individuals = self._generate_initial_individuals()
         population = Population(initial_individuals, self.crossover_prob,
                                 self.mutation_prob, self.breed_size,
-                                self.num_parent_pairs,
+                                self.num_parent_pairs, self.maximize_fitness,
                                 self.mating_selector_cls,
                                 self.survivor_selector_cls)
         solution_selector = self.solution_selector_cls(self.num_solutions,
+                                                       self.maximize_fitness,
                                                        self.custom_data)
         statistics_collectors = [
             collector_type(self.custom_data)

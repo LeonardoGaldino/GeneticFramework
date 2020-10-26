@@ -18,7 +18,7 @@ def ackley_fitness(c1: float, c2: float, c3: float,
     result -= c1 * exp(-c2 * sqrt(1.0 / n) * squares)
     result -= exp(second_sum / n)
 
-    return -result
+    return result
 
 
 class AckleyFitnessComputer(FitnessComputer[FloatChromosome], ABC):

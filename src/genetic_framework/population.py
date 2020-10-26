@@ -26,6 +26,7 @@ def clear_caches_after(fn: Callable[..., T]) -> Callable[..., T]:
 class Population:
     def __init__(self, population: List[Individual], crossover_prob: float,
                  mutation_prob: float, breed_size: int, num_parent_pairs: int,
+                 maximize_fitness: bool,
                  mating_selector_cls: Type[MatingSelector],
                  survivor_selector_cls: Type[SurvivorSelector]) -> None:
         self.population = population
@@ -33,6 +34,7 @@ class Population:
         self.mutation_prob = mutation_prob
         self.breed_size = breed_size
         self.num_parent_pairs = num_parent_pairs
+        self.maximize_fitness = maximize_fitness
         self.mating_selector_cls = mating_selector_cls
         self.survivor_selector_cls = survivor_selector_cls
         self.generation = 1
@@ -57,8 +59,8 @@ class Population:
 
             return breed
 
-        parents = self.mating_selector_cls \
-            .select_couples(self.population, self.num_parent_pairs)
+        parents = self.mating_selector_cls.select_couples(
+            self.population, self.num_parent_pairs, self.maximize_fitness)
 
         for (p1, p2) in parents:
             for _ in range(self.breed_size):
@@ -84,7 +86,8 @@ class Population:
         """Method used to evolve the population into the next generation"""
         breed = self._offspring()
         survivors = self.survivor_selector_cls.select_survivors(
-            len(self.population), self.population, breed)
+            len(self.population), self.population, breed,
+            self.maximize_fitness)
         self.population = survivors
         self.generation += 1
 

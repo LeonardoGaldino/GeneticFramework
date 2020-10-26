@@ -7,9 +7,10 @@ from genetic_framework.individual import Individual
 class Roulette:
     def __init__(self,
                  population: List[Individual],
+                 maximize_fitness: bool,
                  replacement: bool = False):
         population.sort(key=lambda individual: individual.fitness(),
-                        reverse=True)
+                        reverse=maximize_fitness)
         self.replacement = replacement
         self._items: List[Roulette.Item] = list(
             map(

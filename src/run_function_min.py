@@ -316,9 +316,10 @@ def main(**kwargs) -> None:
         kwargs['target_fitness'], kwargs['number_solutions'],
         kwargs['breed_size'], kwargs['max_fitness_comp'],
         kwargs['num_parent_pairs'], -1, kwargs['chromosome'],
-        kwargs['fitness_computer'], kwargs['mutator'], kwargs['recombiner'],
-        kwargs['mating_selector'], kwargs['survivor_selector'],
-        kwargs['solution_selector'], STATISTICS_COLLECTOR_TYPES,
+        kwargs['fitness_computer'], True, kwargs['mutator'],
+        kwargs['recombiner'], kwargs['mating_selector'],
+        kwargs['survivor_selector'], kwargs['solution_selector'],
+        STATISTICS_COLLECTOR_TYPES,
         dict(parameter_lower_bound=kwargs['parameter_lower_bound'],
              parameter_upper_bound=kwargs['parameter_upper_bound'],
              vector_size=kwargs['vector_size']))

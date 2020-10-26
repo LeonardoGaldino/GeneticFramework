@@ -319,8 +319,8 @@ def main(**kwargs) -> None:
         kwargs['target_fitness'], kwargs['number_solutions'],
         kwargs['breed_size'], kwargs['max_fitness_comp'],
         kwargs['num_parent_pairs'], kwargs['restart_tolerance'],
-        kwargs['chromosome'], kwargs['fitness_computer'], kwargs['mutator'],
-        kwargs['recombiner'], kwargs['mating_selector'],
+        kwargs['chromosome'], kwargs['fitness_computer'], True,
+        kwargs['mutator'], kwargs['recombiner'], kwargs['mating_selector'],
         kwargs['survivor_selector'], kwargs['solution_selector'],
         STATISTICS_COLLECTOR_TYPES, dict(chess_size=kwargs['chess_size']))
     best_individuals, stats_collectors = experiment.run_experiment()
