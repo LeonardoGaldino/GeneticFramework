@@ -29,20 +29,24 @@ to make it available as CLI argument.
 
 class FitnessComputerEnum(Enum):
     ACKLEY = AckleyFitnessComputer
+    ADAPTIVE_ACKLEY = AdaptiveStepAckleyFitnessComputer
 
 
 class ChromosomeEnum(Enum):
     FLOAT = FloatChromosome
+    ADAPTIVE_STEP = AdaptiveStepFloatChromosome
 
 
 class MutatorEnum(Enum):
     DELTA = DeltaMutator
+    ADAPTIVE_STEP = AdaptiveStepMutator
     SWAP_GENE = SwapGeneMutator
     SWAP_RANGE = SwapGeneRangeMutator
 
 
 class RecombinerEnum(Enum):
     MID_POINT = MidPointRecombiner
+    ADAPTIVE_MID_POINT = AdaptiveStepMidPointRecombiner
 
 
 class SurvivorSelectorEnum(Enum):
