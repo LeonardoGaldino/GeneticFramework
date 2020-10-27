@@ -51,9 +51,9 @@ class DeltaMutator(Mutator[FloatChromosome], ABC):
 class AdaptiveStepMutator(Mutator[AdaptiveStepFloatChromosome], ABC):
     @classmethod
     def learning_rate(cls: Type) -> float:
-        n: int = cls.custom_data['n']
+        generation: int = cls.custom_data['generation']
         lr_multiplier: float = cls.custom_data['learning_rate_multiplier']
-        return lr_multiplier / sqrt(n)
+        return lr_multiplier / sqrt(generation)
 
     @classmethod
     def mutate_inplace(cls: Type,
