@@ -29,9 +29,9 @@ class AdaptiveStepMidPointRecombiner(Recombiner[AdaptiveStepFloatChromosome],
                                      ABC):
     @classmethod
     def learning_rate(cls: Type) -> float:
-        generation: int = cls.custom_data['generation']
+        n: int = cls.custom_data['n']
         lr_multiplier: float = cls.custom_data['learning_rate_multiplier']
-        return lr_multiplier / sqrt(generation)
+        return lr_multiplier / sqrt(n)
 
     @classmethod
     def recombine(
