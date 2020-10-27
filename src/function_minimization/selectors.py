@@ -10,9 +10,11 @@ from genetic_framework.individual import Individual
 
 class MinimizeFitnessMatingSelector(MatingSelector, ABC):
     @staticmethod
-    def select_couples(population: List[Individual],
-                       num_pairs: int) -> List[Tuple[Individual, Individual]]:
-        population.sort(key=lambda individual: individual.fitness())
+    def select_couples(
+            population: List[Individual], num_pairs: int,
+            maximize_fitness: bool) -> List[Tuple[Individual, Individual]]:
+        population.sort(key=lambda individual: individual.fitness(),
+                        reverse=maximize_fitness)
         pairs: List[Tuple[Individual, Individual]] = []
         size = len(population)
 
@@ -29,16 +31,21 @@ class MinimizeFitnessMatingSelector(MatingSelector, ABC):
 class MinimizeFitnessSurvivorSelector(SurvivorSelector, ABC):
     @staticmethod
     def select_survivors(population_size: int, parents: List[Individual],
-                         breed: List[Individual]) -> List[Individual]:
+                         breed: List[Individual],
+                         maximize_fitness: bool) -> List[Individual]:
         new_generation_individuals = parents + breed
         new_generation_individuals.sort(
-            key=lambda individual: individual.fitness())
+            key=lambda individual: individual.fitness(),
+            reverse=maximize_fitness)
         return new_generation_individuals[:population_size]
 
 
 class KLowerFitnessSolutionSelector(SolutionSelector, ABC):
-    def __init__(self, number_solutions: int, custom_data: Dict = {}) -> None:
-        super().__init__(number_solutions, custom_data)
+    def __init__(self,
+                 number_solutions: int,
+                 maximize_fitness: bool,
+                 custom_data: Dict = {}) -> None:
+        super().__init__(number_solutions, maximize_fitness, custom_data)
         self._best_individuals: List[Individual] = []
 
     @property
@@ -52,5 +59,6 @@ class KLowerFitnessSolutionSelector(SolutionSelector, ABC):
     def update_individuals(self, population: List[Individual]) -> None:
         self._best_individuals.extend(population)
         self._best_individuals.sort(
-            key=lambda individual: individual.fitness())
+            key=lambda individual: individual.fitness(),
+            reverse=self.maximize_fitness)
         self._best_individuals = self.best_individuals[:self.number_solutions]
