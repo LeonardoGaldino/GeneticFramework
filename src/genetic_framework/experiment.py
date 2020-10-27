@@ -1,6 +1,7 @@
 from typing import Type, Tuple, TypeVar, List, Dict, Optional, get_args
 from collections import defaultdict
 from operator import le, ge
+from threading import Thread
 
 from genetic_framework.fitness import FitnessComputer
 from genetic_framework.chromosome import Chromosome
@@ -12,6 +13,14 @@ from genetic_framework.population import Population
 from genetic_framework.statistics import StatisticsCollector
 
 EPS = 1e-9
+
+
+# YOLO
+def listen_commands(v) -> None:
+    while True:
+        k = input()
+        if k in 'sqdSQD':
+            v['running'] = False
 
 
 # Check if cls class works with the specified chromosome type
@@ -114,6 +123,12 @@ class Experiment:
 
     def run_experiment(
             self) -> Tuple[List[Individual], List[StatisticsCollector]]:
+        control = {'running': True}
+        commands_thread = Thread(target=listen_commands,
+                                 daemon=True,
+                                 args=(control, ))
+        commands_thread.start()
+
         initial_individuals = self._generate_initial_individuals()
         population = Population(initial_individuals, self.crossover_prob,
                                 self.mutation_prob, self.breed_size,
@@ -134,7 +149,8 @@ class Experiment:
         # Count how many times sd was 0 in a row
         zero_sd_counter = 0
 
-        while population.generation <= self.max_generations:
+        while population.generation <= self.max_generations and control[
+                'running']:
             print(
                 "Evolving Generation {}: {} fitness computed, {:.3f} avg, {:.3f} standard deviation (fitness)."
                 .format(population.generation,
