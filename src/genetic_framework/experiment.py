@@ -1,4 +1,4 @@
-from typing import Type, Tuple, TypeVar, List, Dict, Optional, get_args
+from typing import Type, Tuple, TypeVar, List, Dict, Any, Optional, get_args
 from collections import defaultdict
 from operator import le, ge
 from threading import Thread
@@ -16,11 +16,11 @@ EPS = 1e-9
 
 
 # YOLO
-def listen_commands(v) -> None:
+def listen_commands(control: Dict[str, Any]) -> None:
     while True:
-        k = input()
-        if k in 'sqdSQD':
-            v['running'] = False
+        command = input()
+        if command in 'sqdSQD':
+            control['running'] = False
 
 
 # Check if cls class works with the specified chromosome type
