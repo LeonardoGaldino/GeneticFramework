@@ -151,6 +151,7 @@ class Experiment:
 
         while population.generation <= self.max_generations and control[
                 'running']:
+            self.custom_data['generation'] = population.generation
             print(
                 "Evolving Generation {}: {} fitness computed, {:.3f} avg, {:.3f} standard deviation (fitness)."
                 .format(population.generation,
