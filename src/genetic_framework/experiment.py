@@ -1,5 +1,6 @@
 from typing import Type, Tuple, TypeVar, List, Dict, Optional, get_args
 from collections import defaultdict
+from operator import le, ge
 
 from genetic_framework.fitness import FitnessComputer
 from genetic_framework.chromosome import Chromosome
@@ -159,9 +160,10 @@ class Experiment:
                         current_num_fitness_computations))
                 break
 
-            if self.target_fitness is not None \
-                and float_less_equal(self.target_fitness,
-                    solution_selector.best_individual.fitness()):
+            fitness_comparator = ge if self.maximize_fitness else le
+            if self.target_fitness is not None and fitness_comparator(
+                    solution_selector.best_individual.fitness(),
+                    self.target_fitness):
                 print("Target fitness achieved ({}).".format(
                     solution_selector.best_individual.fitness()))
                 break
@@ -183,7 +185,3 @@ class Experiment:
 
 def float_equal(f1: float, f2: float) -> bool:
     return abs(f1 - f2) < EPS
-
-
-def float_less_equal(f1: float, f2: float) -> bool:
-    return float_equal(f1, f2) or f1 < f2
