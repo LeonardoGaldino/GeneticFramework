@@ -3,7 +3,7 @@ from typing import List, Tuple, Dict
 from random import random, shuffle, randint
 from statistics import mean
 from copy import deepcopy
-from operator import le, ge
+from operator import lt, le, gt, ge
 
 from genetic_framework.custom_data import CustomDataHolder
 from genetic_framework.individual import Individual
@@ -157,6 +157,7 @@ class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
         breed.sort(key=lambda individual: individual.fitness(),
                    reverse=maximize_fitness)
         new_generation_individuals = []
+        comparison = lt if maximize_fitness else gt
 
         i, j = 0, 0
         while i + j < population_size:
@@ -168,18 +169,24 @@ class BestFitnessSurvivorSelector(SurvivorSelector, ABC):
             elif j == len(breed):
                 new_generation_individuals.append(parents[i])
                 i += 1
-            elif parents[i].fitness() < breed[j].fitness():
+            elif comparison(parents[i].fitness(), breed[j].fitness()):
                 new_generation_individuals.append(breed[j])
                 j += 1
-            elif parents[i].fitness() > breed[j].fitness():
-                new_generation_individuals.append(parents[i])
-                i += 1
             else:
-                # The same fitness
-                new_generation_individuals.append(breed[j])
+                new_generation_individuals.append(parents[i])
                 i += 1
 
         return new_generation_individuals
+
+
+class BestBreedFitnessSurvivorSelector(SurvivorSelector, ABC):
+    @staticmethod
+    def select_survivors(population_size: int, _: List[Individual],
+                         breed: List[Individual],
+                         maximize_fitness: bool) -> List[Individual]:
+        breed.sort(key=lambda individual: individual.fitness(),
+                   reverse=maximize_fitness)
+        return breed[:population_size]
 
 
 class RouletteSurvivorSelector(SurvivorSelector, ABC):
