@@ -4,7 +4,7 @@ from functools import reduce
 from math import cos, exp, sqrt, e
 
 from genetic_framework.fitness import FitnessComputer
-from ackley.chromosomes import FloatChromosome, AdaptiveStepFloatChromosome
+from ackley.chromosomes import FloatChromosome, AdaptiveStepFloatChromosome, CovarianceFloatChromosome
 
 
 def ackley_fitness(c1: float, c2: float, c3: float,
@@ -40,5 +40,18 @@ class AdaptiveStepAckleyFitnessComputer(
         c2: float = cls.custom_data['c2']
         c3: float = cls.custom_data['c3']
         data = list(map(lambda gene: gene.data[0], chromosome.genotypes))
+
+        return ackley_fitness(c1, c2, c3, data)
+
+
+class CovarianceAckleyFitnessComputer(
+        FitnessComputer[CovarianceFloatChromosome], ABC):
+    @classmethod
+    def fitness(cls: Type, chromosome: CovarianceFloatChromosome) -> float:
+        n: int = cls.custom_data['n']
+        c1: float = cls.custom_data['c1']
+        c2: float = cls.custom_data['c2']
+        c3: float = cls.custom_data['c3']
+        data = list(map(lambda gene: gene.data, chromosome.genotypes[:n]))
 
         return ackley_fitness(c1, c2, c3, data)

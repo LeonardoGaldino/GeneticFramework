@@ -1,12 +1,14 @@
 from typing import Dict, Tuple
 
 from genetic_framework.chromosome import Phenotype
+from ackley.util import DataType
 
 
 class FloatPhenotype(Phenotype[float]):
     def __init__(self, custom_data: Dict = {}) -> None:
         super().__init__(custom_data)
         self._data: float = 0.0
+        self.type: DataType = DataType.VARIABLE
 
     @property
     def data(self) -> float:
@@ -17,7 +19,8 @@ class FloatPhenotype(Phenotype[float]):
         lower_bound: float = self.custom_data['lower_bound']
         upper_bound: float = self.custom_data['upper_bound']
 
-        if new_data < lower_bound or new_data > upper_bound:
+        if self.type == DataType.VARIABLE and (new_data < lower_bound
+                                               or new_data > upper_bound):
             raise ValueError(
                 'Tried to set FloatPhenotype data with ({}). Should be [{}, {}]'
                 .format(new_data, lower_bound, upper_bound))
