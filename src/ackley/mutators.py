@@ -1,12 +1,14 @@
 from random import gauss
 from abc import ABC
 from typing import Type
-from math import sqrt, exp
+from math import sqrt, exp, radians, tan, pi
+from numpy.random import multivariate_normal  #type: ignore
+import numpy as np  #type: ignore
 
 from genetic_framework.mutator import Mutator
 from genetic_framework.fitness import FitnessComputer
-from ackley.chromosomes import FloatChromosome, AdaptiveStepFloatChromosome
-from ackley.util import clamp
+from ackley.chromosomes import FloatChromosome, AdaptiveStepFloatChromosome, CovarianceFloatChromosome
+from ackley.util import clamp, sign
 
 
 class DeltaMutator(Mutator[FloatChromosome], ABC):
@@ -67,3 +69,51 @@ class AdaptiveStepMutator(Mutator[AdaptiveStepFloatChromosome], ABC):
             new_value = gene.data[0] + new_delta * gauss(0, 1)
             new_value = clamp(new_value, lower_bound, upper_bound)
             gene.data = (new_value, new_delta)
+
+
+class CovarianceMutator(Mutator[CovarianceFloatChromosome], ABC):
+    @classmethod
+    def learning_rate(cls: Type) -> float:
+        generation: int = cls.custom_data['generation']
+        lr_multiplier: float = cls.custom_data['learning_rate_multiplier']
+        return lr_multiplier / sqrt(generation)
+
+    @classmethod
+    def mutate_inplace(cls: Type,
+                       chromosome: CovarianceFloatChromosome) -> None:
+        n: int = cls.custom_data['n']
+        lower_bound: float = cls.custom_data['lower_bound']
+        upper_bound: float = cls.custom_data['upper_bound']
+        lr = cls.learning_rate()
+
+        variables = chromosome.genotypes[:n]
+        step_sizes = chromosome.genotypes[n:(2 * n)]
+        rotation_angles = chromosome.genotypes[(2 * n):]
+
+        for gene in step_sizes:
+            gene.data = gene.data * exp(lr * gauss(0, 1))
+
+        for gene in rotation_angles:
+            gene.data = gene.data * radians(5) * gauss(0, 1)
+            if gene.data > pi:
+                gene.data = gene.data - 2 * pi * sign(gene.data)
+
+        means = np.zeros((n))
+        covariance_matrix = np.zeros((n, n))
+
+        k = 0
+        for i in range(n):
+            for j in range(i, n):
+                if i == j:
+                    covariance_matrix[i][j] = step_sizes[i].data**2
+                else:
+                    value = 0.5 * (step_sizes[i].data**2 - step_sizes[j].data**
+                                   2) * tan(rotation_angles[k].data)
+                    covariance_matrix[i][j] = covariance_matrix[j][i] = value
+                    k += 1
+
+        offsets = multivariate_normal(means, covariance_matrix)
+        for i in range(n):
+            variables[i].data = variables[i].data + offsets[i]
+            variables[i].data = clamp(variables[i].data, lower_bound,
+                                      upper_bound)

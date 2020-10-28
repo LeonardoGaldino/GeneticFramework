@@ -18,3 +18,7 @@ def lerp(t: float, v1: float, v2: float) -> float:
 
 def clamp(x: float, minimum: float, maximum: float) -> float:
     return max(minimum, min(x, maximum))
+
+
+def sign(x: float):
+    return 1 if x >= 0 else -1
