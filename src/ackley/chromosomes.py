@@ -8,6 +8,7 @@ from ackley.genotypes import FloatGenotype, FloatPairGenotype
 from ackley.util import DataType
 from genetic_framework.chromosome import Chromosome
 
+
 class FloatChromosome(Chromosome[FloatPhenotype, FloatGenotype]):
     def __init__(self, custom_data: Dict = {}) -> None:
         super().__init__(custom_data)

@@ -19,7 +19,8 @@ class FloatPhenotype(Phenotype[float]):
         lower_bound: float = self.custom_data['lower_bound']
         upper_bound: float = self.custom_data['upper_bound']
 
-        if self.type == DataType.VARIABLE and (new_data < lower_bound or new_data > upper_bound):
+        if self.type == DataType.VARIABLE and (new_data < lower_bound
+                                               or new_data > upper_bound):
             raise ValueError(
                 'Tried to set FloatPhenotype data with ({}). Should be [{}, {}]'
                 .format(new_data, lower_bound, upper_bound))

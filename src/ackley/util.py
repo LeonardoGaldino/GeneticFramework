@@ -1,10 +1,12 @@
 from random import random
 from enum import Enum
 
+
 class DataType(Enum):
     VARIABLE = 0
     STEP_SIZE = 1
     ROTATION_ANGLE = 2
+
 
 def random_lerp(v1: float, v2: float) -> float:
     return lerp(random(), v1, v2)
