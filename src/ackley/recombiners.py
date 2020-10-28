@@ -5,7 +5,7 @@ from math import sqrt
 
 from genetic_framework.fitness import FitnessComputer
 from genetic_framework.recombiner import Recombiner
-from ackley.chromosomes import FloatChromosome, AdaptiveStepFloatChromosome
+from ackley.chromosomes import FloatChromosome, AdaptiveStepFloatChromosome, CovarianceFloatChromosome
 from ackley.util import lerp, clamp
 
 
@@ -62,6 +62,43 @@ class AdaptiveStepMidPointRecombiner(Recombiner[AdaptiveStepFloatChromosome],
             new_delta = lerp(t, genes1[i].data[1], genes2[i].data[1])
 
             new_genes[i].data = (new_value, new_delta)
+
+        new_chromosome.genotypes = new_genes
+        return new_chromosome
+
+
+class CovarianceMidPointRecombiner(Recombiner[CovarianceFloatChromosome], ABC):
+    @classmethod
+    def learning_rate(cls: Type) -> float:
+        generation: int = cls.custom_data['generation']
+        lr_multiplier: float = cls.custom_data['learning_rate_multiplier']
+        return lr_multiplier / sqrt(generation)
+
+    @classmethod
+    def recombine(
+            cls: Type, chromosome1: CovarianceFloatChromosome,
+            chromosome2: CovarianceFloatChromosome
+    ) -> CovarianceFloatChromosome:
+        lower_bound: float = cls.custom_data['lower_bound']
+        upper_bound: float = cls.custom_data['upper_bound']
+        fitness_computer_cls: Type[FitnessComputer] = cls.custom_data[
+            'fitness_computer']
+        lr = cls.learning_rate()
+
+        new_chromosome = CovarianceFloatChromosome(chromosome1.custom_data)
+        new_genes = new_chromosome.genotypes
+        genes1 = chromosome1.genotypes
+        genes2 = chromosome2.genotypes
+        fitness1, fitness2 = fitness_computer_cls.fitness(
+            chromosome1), fitness_computer_cls.fitness(chromosome2)
+
+        diff_fitness = abs(fitness1 - fitness2) / (fitness1 + fitness2)
+
+        t = fitness1 / (fitness1 + fitness2)
+        t += gauss(0, lr * diff_fitness)
+        t = clamp(t, 0, 1)
+        for i in range(len(new_genes)):
+            new_genes[i].data = lerp(t, genes1[i].data, genes2[i].data)
 
         new_chromosome.genotypes = new_genes
         return new_chromosome
