@@ -22,7 +22,7 @@ class FloatGenotype(Genotype[float]):
         elif self.type == DataType.STEP_SIZE:
             self._data = step_size
         else:
-            self._data = uniform(0, 2 * pi)
+            self._data = uniform(-pi, pi)
 
     @property
     def data(self) -> float:
