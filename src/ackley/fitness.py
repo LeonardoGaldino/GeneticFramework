@@ -7,8 +7,8 @@ from genetic_framework.fitness import FitnessComputer
 from ackley.chromosomes import FloatChromosome, AdaptiveStepFloatChromosome, CovarianceFloatChromosome
 
 
-def ackley_fitness(c1: float, c2: float, c3: float,
-                   data: List[float]) -> float:
+def ackley_function(c1: float, c2: float, c3: float,
+                    data: List[float]) -> float:
     n: int = len(data)
 
     squares = reduce(lambda acc, value: acc + value * value, data, 0.0)
@@ -29,7 +29,7 @@ class AckleyFitnessComputer(FitnessComputer[FloatChromosome], ABC):
         c3: float = cls.custom_data['c3']
         data = list(map(lambda gene: gene.data, chromosome.genotypes))
 
-        return ackley_fitness(c1, c2, c3, data)
+        return ackley_function(c1, c2, c3, data)
 
 
 class AdaptiveStepAckleyFitnessComputer(
@@ -41,7 +41,7 @@ class AdaptiveStepAckleyFitnessComputer(
         c3: float = cls.custom_data['c3']
         data = list(map(lambda gene: gene.data[0], chromosome.genotypes))
 
-        return ackley_fitness(c1, c2, c3, data)
+        return ackley_function(c1, c2, c3, data)
 
 
 class CovarianceAckleyFitnessComputer(
@@ -54,4 +54,4 @@ class CovarianceAckleyFitnessComputer(
         c3: float = cls.custom_data['c3']
         data = list(map(lambda gene: gene.data, chromosome.genotypes[:n]))
 
-        return ackley_fitness(c1, c2, c3, data)
+        return ackley_function(c1, c2, c3, data)

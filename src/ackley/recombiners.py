@@ -27,7 +27,6 @@ class MidPointRecombiner(Recombiner[FloatChromosome], ABC):
 
 class AdaptiveStepMidPointRecombiner(Recombiner[AdaptiveStepFloatChromosome],
                                      ABC):
-
     @classmethod
     def recombine(
         cls: Type, chromosome1: AdaptiveStepFloatChromosome,
