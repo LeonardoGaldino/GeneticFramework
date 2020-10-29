@@ -18,9 +18,13 @@ EPS = 1e-9
 # YOLO
 def listen_commands(control: Dict[str, Any]) -> None:
     while True:
-        command = input()
-        if command in 'sqdSQD':
+        try:
+            command = input()
+            if command in 'sqdSQD':
+                control['running'] = False
+        except EOFError:
             control['running'] = False
+
 
 
 # Check if cls class works with the specified chromosome type
