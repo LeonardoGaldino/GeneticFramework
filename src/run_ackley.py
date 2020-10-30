@@ -19,6 +19,7 @@ from ackley.chromosomes import *
 from ackley.fitness import *
 from ackley.mutators import *
 from ackley.recombiners import *
+from ackley.util import assembly_covariance_matrix, ackley_function
 
 PROGRAM_DESCRIPTION = "Learns eight queens puzzle through genetic algorithm"
 """ Enums for choosing classes for tunning the algorithm
@@ -56,6 +57,7 @@ class RecombinerEnum(Enum):
 class SurvivorSelectorEnum(Enum):
     BEST_FITNESS = BestFitnessSurvivorSelector
     BEST_BREED_FITNESS = BestBreedFitnessSurvivorSelector
+    BEST_PARENT_PLUS_BREED = BestParentPlusBestBreedFitnessSurvivorSelector
     GENERATIONAL = GenerationalSurvivorSelector
     ROULETTE = RouletteSurvivorSelector
 
