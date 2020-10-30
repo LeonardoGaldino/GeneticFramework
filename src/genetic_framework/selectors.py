@@ -188,6 +188,17 @@ class BestBreedFitnessSurvivorSelector(SurvivorSelector, ABC):
                    reverse=maximize_fitness)
         return breed[:population_size]
 
+class BestParentPlusBestBreedFitnessSurvivorSelector(SurvivorSelector, ABC):
+    @staticmethod
+    def select_survivors(population_size: int, parents: List[Individual],
+                         breed: List[Individual],
+                         maximize_fitness: bool) -> List[Individual]:
+        parents.sort(key=lambda individual: individual.fitness(),
+                   reverse=maximize_fitness)
+        breed.sort(key=lambda individual: individual.fitness(),
+            reverse=maximize_fitness)
+
+        return parents[0:1] + breed[:population_size - 1]
 
 class RouletteSurvivorSelector(SurvivorSelector, ABC):
     @staticmethod

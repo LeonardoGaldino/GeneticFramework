@@ -8,7 +8,7 @@ import numpy as np  #type: ignore
 from genetic_framework.mutator import Mutator
 from genetic_framework.fitness import FitnessComputer
 from ackley.chromosomes import FloatChromosome, AdaptiveStepFloatChromosome, CovarianceFloatChromosome
-from ackley.util import clamp, sign
+from ackley.util import clamp, sign, assembly_covariance_matrix
 
 
 class DeltaMutator(Mutator[FloatChromosome], ABC):
@@ -74,9 +74,9 @@ class AdaptiveStepMutator(Mutator[AdaptiveStepFloatChromosome], ABC):
 class CovarianceMutator(Mutator[CovarianceFloatChromosome], ABC):
     @classmethod
     def learning_rate(cls: Type) -> float:
-        generation: int = cls.custom_data['generation']
+        n: int = cls.custom_data['n']
         lr_multiplier: float = cls.custom_data['learning_rate_multiplier']
-        return lr_multiplier / sqrt(generation)
+        return lr_multiplier / sqrt(n)
 
     @classmethod
     def mutate_inplace(cls: Type,
@@ -94,26 +94,16 @@ class CovarianceMutator(Mutator[CovarianceFloatChromosome], ABC):
             gene.data = gene.data * exp(lr * gauss(0, 1))
 
         for gene in rotation_angles:
-            gene.data = gene.data * radians(5) * gauss(0, 1)
+            gene.data = gene.data + radians(5) * gauss(0, 1)
             if gene.data > pi:
                 gene.data = gene.data - 2 * pi * sign(gene.data)
 
+        step_floats = list(map(lambda gene: gene.data, step_sizes))
+        angle_floats = list(map(lambda gene: gene.data, rotation_angles))
+        covariance_matrix = assembly_covariance_matrix(step_floats, angle_floats)
         means = np.zeros((n))
-        covariance_matrix = np.zeros((n, n))
-
-        k = 0
-        for i in range(n):
-            for j in range(i, n):
-                if i == j:
-                    covariance_matrix[i][j] = step_sizes[i].data**2
-                else:
-                    value = 0.5 * (step_sizes[i].data**2 - step_sizes[j].data**
-                                   2) * tan(rotation_angles[k].data)
-                    covariance_matrix[i][j] = covariance_matrix[j][i] = value
-                    k += 1
-
         offsets = multivariate_normal(means, covariance_matrix)
         for i in range(n):
-            variables[i].data = variables[i].data + offsets[i]
-            variables[i].data = clamp(variables[i].data, lower_bound,
+            new_value = variables[i].data + offsets[i]
+            variables[i].data = clamp(new_value, lower_bound,
                                       upper_bound)

@@ -70,6 +70,7 @@ class Population:
                     breed.append(p1.recombine(p2))
                 else:
                     chosen_parent_clone = p1 if randint(0, 1) == 0 else p2
+                    chosen_parent_clone = deepcopy(chosen_parent_clone)
                     breed.append(chosen_parent_clone)
 
                 breed[-1].generation = self.generation
