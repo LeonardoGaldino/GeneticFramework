@@ -26,7 +26,6 @@ def listen_commands(control: Dict[str, Any]) -> None:
             control['running'] = False
 
 
-
 # Check if cls class works with the specified chromosome type
 def is_correct_chromosome_type(cls: Type,
                                chromosome_cls: Type[Chromosome]) -> bool:

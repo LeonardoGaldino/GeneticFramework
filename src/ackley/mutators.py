@@ -8,7 +8,7 @@ import numpy as np  #type: ignore
 from genetic_framework.mutator import Mutator
 from genetic_framework.fitness import FitnessComputer
 from ackley.chromosomes import FloatChromosome, AdaptiveStepFloatChromosome, CovarianceFloatChromosome
-from ackley.util import clamp, sign, assembly_covariance_matrix
+from ackley.util import clamp, sign, assembly_covariance_matrix, lerp, compute_learning_rate
 
 
 class DeltaMutator(Mutator[FloatChromosome], ABC):
@@ -52,20 +52,38 @@ class DeltaMutator(Mutator[FloatChromosome], ABC):
 
 class AdaptiveStepMutator(Mutator[AdaptiveStepFloatChromosome], ABC):
     @classmethod
-    def learning_rate(cls: Type) -> float:
+    def mutate_inplace(cls: Type,
+                       chromosome: AdaptiveStepFloatChromosome) -> None:
+        lower_bound: float = cls.custom_data['lower_bound']
+        upper_bound: float = cls.custom_data['upper_bound']
         n: int = cls.custom_data['n']
         lr_multiplier: float = cls.custom_data['learning_rate_multiplier']
-        return lr_multiplier / sqrt(n)
+        lr = compute_learning_rate(n, lr_multiplier)
 
+        for gene in chromosome.genotypes:
+            new_delta = gene.data[1] * exp(lr * gauss(0, 1))
+            new_value = gene.data[0] + new_delta * gauss(0, 1)
+            new_value = clamp(new_value, lower_bound, upper_bound)
+            gene.data = (new_value, new_delta)
+
+
+class AdaptiveFitnessStepMutator(Mutator[AdaptiveStepFloatChromosome], ABC):
     @classmethod
     def mutate_inplace(cls: Type,
                        chromosome: AdaptiveStepFloatChromosome) -> None:
         lower_bound: float = cls.custom_data['lower_bound']
         upper_bound: float = cls.custom_data['upper_bound']
-        lr = cls.learning_rate()
+        fitness_multiplier: float = cls.custom_data['mutator_fitness_scale']
+        fitness_computer_cls: FitnessComputer = cls.custom_data[
+            'fitness_computer']
+        n: int = cls.custom_data['n']
+        lr_multiplier: float = cls.custom_data['learning_rate_multiplier']
+        lr = compute_learning_rate(n, lr_multiplier)
+
+        fitness = fitness_computer_cls.fitness(chromosome)
 
         for gene in chromosome.genotypes:
-            new_delta = gene.data[1] * exp(lr * gauss(0, 1))
+            new_delta = lerp(lr, fitness * fitness_multiplier, gene.data[1])
             new_value = gene.data[0] + new_delta * gauss(0, 1)
             new_value = clamp(new_value, lower_bound, upper_bound)
             gene.data = (new_value, new_delta)
@@ -100,10 +118,10 @@ class CovarianceMutator(Mutator[CovarianceFloatChromosome], ABC):
 
         step_floats = list(map(lambda gene: gene.data, step_sizes))
         angle_floats = list(map(lambda gene: gene.data, rotation_angles))
-        covariance_matrix = assembly_covariance_matrix(step_floats, angle_floats)
+        covariance_matrix = assembly_covariance_matrix(step_floats,
+                                                       angle_floats)
         means = np.zeros((n))
         offsets = multivariate_normal(means, covariance_matrix)
         for i in range(n):
             new_value = variables[i].data + offsets[i]
-            variables[i].data = clamp(new_value, lower_bound,
-                                      upper_bound)
+            variables[i].data = clamp(new_value, lower_bound, upper_bound)

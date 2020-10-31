@@ -43,6 +43,7 @@ class ChromosomeEnum(Enum):
 class MutatorEnum(Enum):
     DELTA = DeltaMutator
     ADAPTIVE_STEP = AdaptiveStepMutator
+    ADAPTIVE_FITNESS = AdaptiveFitnessStepMutator
     COVARIANCE = CovarianceMutator
     SWAP_GENE = SwapGeneMutator
     SWAP_RANGE = SwapGeneRangeMutator
@@ -186,6 +187,15 @@ ARGS = [
                            value_name='UPPER_BOUND',
                            help_message="""Specify genes upper bound.""",
                            action_cls=NoConstraintAction),
+    CLIArgumentDescription(
+        _type=float,
+        default_value=0.05,
+        short_name='mfs',
+        full_name='mutator_fitness_scale',
+        value_name='MUTATOR_FITNESS_SCALE',
+        help_message=
+        """Specify the constant by which fitness of individual is multiplied in mutations.""",
+        action_cls=NoConstraintAction),
     CLIArgumentDescription(
         _type=float,
         default_value=10.0,
@@ -377,6 +387,7 @@ def main(**kwargs) -> None:
         c3=kwargs['c3'],
         lower_bound=kwargs['lower_bound'],
         upper_bound=kwargs['upper_bound'],
+        mutator_fitness_scale=kwargs['mutator_fitness_scale'],
         step_size=kwargs['step_size'],
         learning_rate_multiplier=kwargs['learning_rate_multiplier'],
         fitness_computer=kwargs['fitness_computer'])

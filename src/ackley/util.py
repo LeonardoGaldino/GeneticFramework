@@ -27,7 +27,9 @@ def clamp(x: float, minimum: float, maximum: float) -> float:
 def sign(x: float):
     return 1 if x >= 0 else -1
 
-def assembly_covariance_matrix(step_sizes: List[float], rotation_angles: List[float]):
+
+def assembly_covariance_matrix(step_sizes: List[float],
+                               rotation_angles: List[float]):
     n: int = len(step_sizes)
     covariance_matrix = np.zeros((n, n))
 
@@ -37,10 +39,11 @@ def assembly_covariance_matrix(step_sizes: List[float], rotation_angles: List[fl
             if i == j:
                 covariance_matrix[i][j] = pow(step_sizes[i], 2)
             else:
-                value = 0.5 * pow(step_sizes[i] - step_sizes[j], 2) * tan(2 * rotation_angles[k])
+                value = 0.5 * pow(step_sizes[i] - step_sizes[j], 2) * tan(
+                    2 * rotation_angles[k])
                 covariance_matrix[i][j] = covariance_matrix[j][i] = value
                 k += 1
-    
+
     return covariance_matrix
 
 
@@ -56,3 +59,7 @@ def ackley_function(c1: float, c2: float, c3: float,
     result -= exp(second_sum / n)
 
     return result
+
+
+def compute_learning_rate(n: int, lr_multiplier: float) -> float:
+    return lr_multiplier / sqrt(n)
